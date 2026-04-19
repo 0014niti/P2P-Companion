@@ -9,7 +9,10 @@ export const fetchBitget = async (props: { type: 'buy' | 'sell'; token: string; 
 			'content-type': 'application/json;charset=UTF-8',
 			language: 'en_US',
 			locale: 'en_US',
-			usenewpwdversion: 'true'
+			usenewpwdversion: 'true',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+			'Referer': 'https://www.bitget.com/p2p-trade',
+			'Origin': 'https://www.bitget.com'
 		},
 		body: JSON.stringify({
 			side: props.type === 'buy' ? 1 : 2,
