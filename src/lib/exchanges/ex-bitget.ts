@@ -34,7 +34,11 @@ export const fetchBitget = async (props: { type: 'buy' | 'sell'; token: string; 
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const data = (await res.json()) as { data: { dataList: Record<string, any>[] } };
+	const data = (await res.json()) as { data?: { dataList?: Record<string, any>[] } };
+
+	if (!data?.data?.dataList) {
+		return [];
+	}
 
 	return data.data.dataList.map((item) => ({
 		advNo: item.adNo,
@@ -48,12 +52,12 @@ export const fetchBitget = async (props: { type: 'buy' | 'sell'; token: string; 
 		minSingleTransAmount: item.minAmount,
 		maxSingleTransAmount: item.maxAmount,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		paymentMethods: item.paymethodInfo.map((method: Record<string, any>) => ({
+		paymentMethods: item.paymethodInfo ? item.paymethodInfo.map((method: Record<string, any>) => ({
 			type: method.paymethodName,
 			identifier: method.paymethodId,
 			name: method.paymethodName,
 			bgColor: method.colorValue
-		})),
+		})) : [],
 		advertiser: {
 			name: item.nickName,
 			userId: item.nickName,
