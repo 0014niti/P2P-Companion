@@ -11,10 +11,12 @@ export const exchanges = {
 		icon: 'https://www.okx.com/cdn/assets/imgs/253/59830BB78B18A776.png',
 		p2pLink: 'https://www.okx.com/p2p-markets'
 	},
-	// bybit: {
-	// 	name: 'Bybit',
-	// 	tokensList: ['USDT', 'BTC', 'ETH', 'USDC'] as string[]
-	// },
+	bybit: {
+		name: 'Bybit',
+		tokensList: ['USDT', 'BTC', 'ETH', 'USDC'] as string[],
+		icon: 'https://cdn.bybit.com/favicon.ico',
+		p2pLink: 'https://www.bybit.com/fiat/trade/otc'
+	},
 	mexc: {
 		name: 'MEXC',
 		tokensList: ['USDT', 'BTC', 'ETH', 'USDC', 'TRX', 'DOGE', 'SOL', 'TON'] as string[],

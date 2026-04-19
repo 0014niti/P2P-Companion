@@ -2,6 +2,7 @@ import { fetchBinance } from '$lib/exchanges/ex-binance';
 import { fetchBitget } from '$lib/exchanges/ex-bitget.js';
 import { fetchMexc } from '$lib/exchanges/ex-mexc.js';
 import { fetchOkx } from '$lib/exchanges/ex-okx.js';
+import { fetchBybit } from '$lib/exchanges/ex-bybit.js';
 import type { ExchangeP2PAd } from '$lib/exchanges/index.js';
 
 export async function GET({ request }) {
@@ -26,6 +27,9 @@ export async function GET({ request }) {
 			break;
 		case 'bitget':
 			response = await fetchBitget({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		case 'bybit':
+			response = await fetchBybit({ type: type as 'buy' | 'sell', token, fiat });
 			break;
 		// Future exchanges can be added here
 		default:
