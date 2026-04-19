@@ -28,6 +28,18 @@ export const exchanges = {
 		tokensList: ['USDT', 'USDC', 'BTC', 'ETH', 'BGB', 'DAI'] as string[],
 		icon: 'https://www.bitget.com/baseasset/favicon4.png',
 		p2pLink: 'https://www.bitget.com/p2p-trade'
+	},
+	kucoin: {
+		name: 'KuCoin',
+		tokensList: ['USDT', 'BTC', 'ETH', 'KCS', 'USDC'] as string[],
+		icon: 'https://assets.staticimg.com/cms/media/3g12bgqVCEJ4yVw9EIfYg7w2bBvE2rRihD1EaZk5s.png',
+		p2pLink: 'https://www.kucoin.com/p2p'
+	},
+	htx: {
+		name: 'HTX',
+		tokensList: ['USDT', 'BTC', 'ETH', 'HT', 'USDC'] as string[],
+		icon: 'https://www.htx.com/favicon.ico',
+		p2pLink: 'https://www.htx.com/en-us/fiat-crypto/trade/buy-usdt-usd'
 	}
 } as const;
 
