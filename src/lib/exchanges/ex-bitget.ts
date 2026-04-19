@@ -4,7 +4,7 @@ export const fetchBitget = async (props: { type: 'buy' | 'sell'; token: string; 
 	const res = await fetch('https://www.bitget.com/v1/p2p/pub/adv/queryAdvList', {
 		headers: {
 			accept: 'application/json, text/plain, */*',
-			'accept-language': 'en-US,en;q=0.6',
+			'accept-language': 'en-US,en;q=0.9',
 			apptheme: 'standard',
 			'content-type': 'application/json;charset=UTF-8',
 			language: 'en_US',
@@ -12,7 +12,13 @@ export const fetchBitget = async (props: { type: 'buy' | 'sell'; token: string; 
 			usenewpwdversion: 'true',
 			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
 			'Referer': 'https://www.bitget.com/p2p-trade',
-			'Origin': 'https://www.bitget.com'
+			'Origin': 'https://www.bitget.com',
+			'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+			'Sec-Ch-Ua-Mobile': '?0',
+			'Sec-Ch-Ua-Platform': '"Windows"',
+			'Sec-Fetch-Dest': 'empty',
+			'Sec-Fetch-Mode': 'cors',
+			'Sec-Fetch-Site': 'same-origin'
 		},
 		body: JSON.stringify({
 			side: props.type === 'buy' ? 1 : 2,
