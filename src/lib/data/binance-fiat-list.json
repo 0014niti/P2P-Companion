@@ -1,0 +1,856 @@
+[
+	{
+		"currencyCode": "AFN",
+		"currencySymbol": "؋",
+		"currencyScale": 2,
+		"countryCode": "AF",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/0f04a850-ab10-44bf-bca4-a612f453a46f.png"
+	},
+	{
+		"currencyCode": "ALL",
+		"currencySymbol": "L",
+		"currencyScale": 2,
+		"countryCode": "AL",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/b0361eae-31de-4d67-8132-8db8ed0c510c.png"
+	},
+	{
+		"currencyCode": "AOA",
+		"currencySymbol": "Kz",
+		"currencyScale": 2,
+		"countryCode": "AO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/6c69c976-7563-4b27-a7a3-1d7d8f937525.png"
+	},
+	{
+		"currencyCode": "AZN",
+		"currencySymbol": "₼",
+		"currencyScale": 2,
+		"countryCode": "AZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/fb3b63a7-87f0-4819-88d2-a9c1025b1f34.png"
+	},
+	{
+		"currencyCode": "BAM",
+		"currencySymbol": "KM",
+		"currencyScale": 2,
+		"countryCode": "BA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/2379d6c1-7f04-4bfb-beeb-426d78236e7e.png"
+	},
+	{
+		"currencyCode": "BIF",
+		"currencySymbol": "FBu",
+		"currencyScale": 2,
+		"countryCode": "BI",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/e9fc6e9e-c8ae-4995-b799-89ba4f5fe3c0.png"
+	},
+	{
+		"currencyCode": "BND",
+		"currencySymbol": "B$",
+		"currencyScale": 3,
+		"countryCode": "BN",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/b59caea8-ebc9-4a2d-8e66-0c252a8341fc.png"
+	},
+	{
+		"currencyCode": "BSD",
+		"currencySymbol": "B$",
+		"currencyScale": 2,
+		"countryCode": "BS",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/81fc7f06-a8ac-4f8a-ac56-ec8d35895a33.png"
+	},
+	{
+		"currencyCode": "BWP",
+		"currencySymbol": "P",
+		"currencyScale": 2,
+		"countryCode": "BW",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/cd1846b1-dc64-4354-83d1-6ee766cc6e0d.png"
+	},
+	{
+		"currencyCode": "BYN",
+		"currencySymbol": "Br",
+		"currencyScale": 2,
+		"countryCode": "BY",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/04effbff-df3c-4f6b-89c6-d945ca213b2a.png"
+	},
+	{
+		"currencyCode": "BZD",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "BZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/2fe7fd99-b653-426a-a3c6-80f1d3035202.png"
+	},
+	{
+		"currencyCode": "CDF",
+		"currencySymbol": "FC",
+		"currencyScale": 2,
+		"countryCode": "CD",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/fc9afd98-cef0-45a5-b054-eaaa707ea369.png"
+	},
+	{
+		"currencyCode": "CNY",
+		"currencySymbol": "￥",
+		"currencyScale": 2,
+		"countryCode": "CN",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/afcb170c-9373-4d3f-9ca0-23bbb1cdcb28.png"
+	},
+	{
+		"currencyCode": "CRC",
+		"currencySymbol": "₡",
+		"currencyScale": 2,
+		"countryCode": "CR",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/7ccbf9cc-2224-43e8-8b52-78894dfd364b.png"
+	},
+	{
+		"currencyCode": "CVE",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "CV",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/2438b6d1-4957-4fda-9661-d49aa43afab8.png"
+	},
+	{
+		"currencyCode": "DJF",
+		"currencySymbol": "Fdj",
+		"currencyScale": 2,
+		"countryCode": "DJ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/41c04bb9-8d23-48c9-abcf-a54a935af8a0.png"
+	},
+	{
+		"currencyCode": "DKK",
+		"currencySymbol": "Kr.",
+		"currencyScale": 2,
+		"countryCode": "DK",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/17736427-c3e2-442e-861c-4246183e9af7.png"
+	},
+	{
+		"currencyCode": "ERN",
+		"currencySymbol": "Nfk",
+		"currencyScale": 2,
+		"countryCode": "ER",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/f788447a-84ca-4784-a71d-fc432c7f57ec.png"
+	},
+	{
+		"currencyCode": "ETB",
+		"currencySymbol": "Br",
+		"currencyScale": 2,
+		"countryCode": "ET",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/9427e3ee-fbe9-4926-803a-6d674c6dc38b.png"
+	},
+	{
+		"currencyCode": "GMD",
+		"currencySymbol": "D",
+		"currencyScale": 2,
+		"countryCode": "GM",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/4e2eb8f5-47b0-4b64-acb9-522f64e01f4c.png"
+	},
+	{
+		"currencyCode": "GNF",
+		"currencySymbol": "FG",
+		"currencyScale": 2,
+		"countryCode": "GN",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/acda1cf8-35dd-4d5c-8236-64b5bd64a633.png"
+	},
+	{
+		"currencyCode": "GTQ",
+		"currencySymbol": "Q",
+		"currencyScale": 2,
+		"countryCode": "GT",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/731d5ea8-99b5-4ffa-9fcf-1b2a33a364f0.png"
+	},
+	{
+		"currencyCode": "HNL",
+		"currencySymbol": "L",
+		"currencyScale": 2,
+		"countryCode": "HN",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/a74a7f4d-31cf-463d-bf0e-9e108aa77321.png"
+	},
+	{
+		"currencyCode": "HTG",
+		"currencySymbol": "G",
+		"currencyScale": 2,
+		"countryCode": "HT",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/043147e1-99f0-42b5-ba84-ad621acac72a.png"
+	},
+	{
+		"currencyCode": "HUF",
+		"currencySymbol": "Ft",
+		"currencyScale": 2,
+		"countryCode": "HU",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/ca2ba970-3d4e-42f0-bbbc-c1fedc22ca5b.png"
+	},
+	{
+		"currencyCode": "IQD",
+		"currencySymbol": "دينار",
+		"currencyScale": 0,
+		"countryCode": "IQ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/46744676-799b-439c-96f3-a55af5a55dd5.png"
+	},
+	{
+		"currencyCode": "ISK",
+		"currencySymbol": "Íkr",
+		"currencyScale": 2,
+		"countryCode": "IS",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/ef45f098-7384-4905-9341-deb2dd4ebbca.png"
+	},
+	{
+		"currencyCode": "JMD",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "JM",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/33fd4d3a-601f-4609-b3a7-af92e2affb56.png"
+	},
+	{
+		"currencyCode": "JOD",
+		"currencySymbol": "د.ا",
+		"currencyScale": 3,
+		"countryCode": "JO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/ac42d7c1-ac21-4067-8d1d-26b637c5ca9a.png"
+	},
+	{
+		"currencyCode": "KGS",
+		"currencySymbol": "som",
+		"currencyScale": 2,
+		"countryCode": "KG",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/d6a87b43-a99e-46d6-b30b-d121bc8f5d27.png"
+	},
+	{
+		"currencyCode": "KMF",
+		"currencySymbol": "CF",
+		"currencyScale": 2,
+		"countryCode": "KM",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/e934e2f1-3f3d-484e-b8a3-034e6756ebb0.png"
+	},
+	{
+		"currencyCode": "KWD",
+		"currencySymbol": "د.ك",
+		"currencyScale": 3,
+		"countryCode": "KW",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/cc2243f3-a68b-474d-9110-ccafa0e91035.png"
+	},
+	{
+		"currencyCode": "KYD",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "KY",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/6a0b8d8b-fe07-4e97-99c1-76cd7499bef5.png"
+	},
+	{
+		"currencyCode": "LRD",
+		"currencySymbol": "L$",
+		"currencyScale": 2,
+		"countryCode": "LR",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/807f9a43-0b11-4e32-bcc9-70b6d0573b9c.png"
+	},
+	{
+		"currencyCode": "LYD",
+		"currencySymbol": "LYD",
+		"currencyScale": 2,
+		"countryCode": "LY",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/638a4d87-f47d-40c8-8533-679f6a4b3728.png"
+	},
+	{
+		"currencyCode": "MDL",
+		"currencySymbol": "L",
+		"currencyScale": 2,
+		"countryCode": "MD",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/d27343ba-6eaa-42b6-891c-4af20ebd50cc.png"
+	},
+	{
+		"currencyCode": "MGA",
+		"currencySymbol": "Ar",
+		"currencyScale": 2,
+		"countryCode": "MG",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/d09f931f-3b11-4d94-9363-65ed03ed80bb.png"
+	},
+	{
+		"currencyCode": "MKD",
+		"currencySymbol": "ден",
+		"currencyScale": 2,
+		"countryCode": "MK",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/26bc3730-827e-4ba1-b8c9-dbc754b83f05.png"
+	},
+	{
+		"currencyCode": "MOP",
+		"currencySymbol": "MOP$",
+		"currencyScale": 2,
+		"countryCode": "MO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/5824a996-9049-49ae-9a4c-89f1bd8b88af.png"
+	},
+	{
+		"currencyCode": "MRU",
+		"currencySymbol": "UM",
+		"currencyScale": 2,
+		"countryCode": "MR",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/ac8ab9b8-0fc3-4c1f-9317-13f36504a49a.png"
+	},
+	{
+		"currencyCode": "MWK",
+		"currencySymbol": "MK",
+		"currencyScale": 2,
+		"countryCode": "MW",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/42ed1514-3be1-4f31-9ad5-a4c5431aec79.png"
+	},
+	{
+		"currencyCode": "MZN",
+		"currencySymbol": "MT",
+		"currencyScale": 2,
+		"countryCode": "MZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/03e49057-e460-4122-bac9-2d38672c00ae.png"
+	},
+	{
+		"currencyCode": "NAD",
+		"currencySymbol": "N$",
+		"currencyScale": 2,
+		"countryCode": "NA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/87ae6472-3e66-4c45-b78d-400d1c7587e2.png"
+	},
+	{
+		"currencyCode": "NIO",
+		"currencySymbol": "C$",
+		"currencyScale": 2,
+		"countryCode": "NI",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/e311965a-14a3-4b50-ae46-888caf37b631.png"
+	},
+	{
+		"currencyCode": "NOK",
+		"currencySymbol": "kr",
+		"currencyScale": 2,
+		"countryCode": "NO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/579b63ca-cf61-4be3-9676-a169e987212e.png"
+	},
+	{
+		"currencyCode": "PGK",
+		"currencySymbol": "K",
+		"currencyScale": 3,
+		"countryCode": "PG",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/2c4318a1-8ad0-4cd6-8ede-8f2dd337c0f0.png"
+	},
+	{
+		"currencyCode": "RSD",
+		"currencySymbol": "din",
+		"currencyScale": 2,
+		"countryCode": "RS",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/d06760ab-618f-4cdc-b1bc-b466c26fca0d.png"
+	},
+	{
+		"currencyCode": "SCR",
+		"currencySymbol": "SRe",
+		"currencyScale": 2,
+		"countryCode": "SC",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/7a35936e-c674-4fd0-981f-fead9a4f1f86.png"
+	},
+	{
+		"currencyCode": "SLE",
+		"currencySymbol": "Le",
+		"currencyScale": 2,
+		"countryCode": "SL",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20241205/1a32b1b6-bd9f-4d96-add5-2b5639c39cf8.png"
+	},
+	{
+		"currencyCode": "SOS",
+		"currencySymbol": "Sh.so.",
+		"currencyScale": 2,
+		"countryCode": "SO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/0a3782b8-86e9-4376-ac97-1981e78dc88b.png"
+	},
+	{
+		"currencyCode": "SYP",
+		"currencySymbol": "£",
+		"currencyScale": 2,
+		"countryCode": "SY",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250611/3cb710d5-c728-46cc-99a5-d85b5980a9a6.png"
+	},
+	{
+		"currencyCode": "TJS",
+		"currencySymbol": "SM",
+		"currencyScale": 2,
+		"countryCode": "TJ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/f5935398-ff7d-4212-8597-efb5770c17ab.png"
+	},
+	{
+		"currencyCode": "TMT",
+		"currencySymbol": "T",
+		"currencyScale": 2,
+		"countryCode": "TM",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/13ae5aa7-56be-4b63-8f8d-acbb230ca3e3.png"
+	},
+	{
+		"currencyCode": "TTD",
+		"currencySymbol": "TT$",
+		"currencyScale": 2,
+		"countryCode": "TT",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/b372e862-7e09-4a05-ad4d-287cbc7a6f0c.png"
+	},
+	{
+		"currencyCode": "YER",
+		"currencySymbol": "﷼",
+		"currencyScale": 2,
+		"countryCode": "YE",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/fdb5affe-593c-4cc3-ab36-a2bc6d914640.png"
+	},
+	{
+		"currencyCode": "ZMW",
+		"currencySymbol": "ZK",
+		"currencyScale": 2,
+		"countryCode": "ZM",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/2837f45b-4b29-4097-80b1-bbd4de2f39d7.png"
+	},
+	{
+		"currencyCode": "ZWG",
+		"currencySymbol": "Z$",
+		"currencyScale": 2,
+		"countryCode": "ZW",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/74bb0df7-8e33-4472-b3ab-292795cedd94.png"
+	},
+	{
+		"currencyCode": "VND",
+		"currencySymbol": "₫",
+		"currencyScale": 0,
+		"countryCode": "VN",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/f10e05d5-5b80-4e98-a2c9-d2040ad5963f.png"
+	},
+	{
+		"currencyCode": "UAH",
+		"currencySymbol": "₴",
+		"currencyScale": 2,
+		"countryCode": "UA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/c10b5cec-ae22-4c8b-b6e5-6e4e6d4b1b1c.png"
+	},
+	{
+		"currencyCode": "EUR",
+		"currencySymbol": "€",
+		"currencyScale": 2,
+		"countryCode": "EU",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/fa20a228-dcb7-4205-8d94-ed6d1548d7da.png"
+	},
+	{
+		"currencyCode": "COP",
+		"currencySymbol": "COL$",
+		"currencyScale": 2,
+		"countryCode": "CO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/3dd210b2-a15a-42d7-9633-6c30dc465cde.png"
+	},
+	{
+		"currencyCode": "BRL",
+		"currencySymbol": "R$",
+		"currencyScale": 2,
+		"countryCode": "BR",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/94b785ed-aa06-4204-8e18-9cb702fac121.png"
+	},
+	{
+		"currencyCode": "ARS",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "AR",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/f48b25f7-eda3-4240-bc79-f8d9d4ca12cd.png"
+	},
+	{
+		"currencyCode": "PEN",
+		"currencySymbol": "S/.",
+		"currencyScale": 3,
+		"countryCode": "PE",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/7b1cf14f-d63e-45c0-b3cc-ca32c32de796.png"
+	},
+	{
+		"currencyCode": "ZAR",
+		"currencySymbol": "R",
+		"currencyScale": 2,
+		"countryCode": "ZA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/0d62225c-6d67-4a8d-b4d4-75d020f41c15.png"
+	},
+	{
+		"currencyCode": "MXN",
+		"currencySymbol": "Mex$",
+		"currencyScale": 2,
+		"countryCode": "MX",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/d433df14-c21d-4270-9d2c-16e5d10bf1af.png"
+	},
+	{
+		"currencyCode": "HKD",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "HK",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/109c335f-3ff6-4d71-a4d5-b771d1765056.png"
+	},
+	{
+		"currencyCode": "GBP",
+		"currencySymbol": "£",
+		"currencyScale": 3,
+		"countryCode": "GB",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/e7ddcee4-3d87-4421-8896-c807165da3ca.png"
+	},
+	{
+		"currencyCode": "KES",
+		"currencySymbol": "KSh",
+		"currencyScale": 2,
+		"countryCode": "KE",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/ee56944d-980b-4c88-a5ae-766968216b00.png"
+	},
+	{
+		"currencyCode": "AUD",
+		"currencySymbol": "A$",
+		"currencyScale": 3,
+		"countryCode": "AU",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/e64a9c87-b476-4d74-8211-0d9f74ee1961.png"
+	},
+	{
+		"currencyCode": "CAD",
+		"currencySymbol": "C$",
+		"currencyScale": 3,
+		"countryCode": "CA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/c1d80d41-c0ee-4106-b473-198f9817aa1e.png"
+	},
+	{
+		"currencyCode": "VES",
+		"currencySymbol": "Bs",
+		"currencyScale": 3,
+		"countryCode": "VE",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/0249322f-c992-42d8-a1b6-266db6579840.png"
+	},
+	{
+		"currencyCode": "INR",
+		"currencySymbol": "₹",
+		"currencyScale": 2,
+		"countryCode": "IN",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/c45cb740-bf09-4f0d-90fb-4bc70f3cf950.png"
+	},
+	{
+		"currencyCode": "IDR",
+		"currencySymbol": "Rp",
+		"currencyScale": 2,
+		"countryCode": "ID",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/ecce742c-1d2c-4f72-a199-09ecb5dff160.png"
+	},
+	{
+		"currencyCode": "KZT",
+		"currencySymbol": "〒",
+		"currencyScale": 2,
+		"countryCode": "KZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/1953a46f-60db-4854-8b55-420ef22aa90d.png"
+	},
+	{
+		"currencyCode": "USD",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "US",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/96d375d4-8385-498e-bd5b-548c6aa62bc3.png"
+	},
+	{
+		"currencyCode": "JPY",
+		"currencySymbol": "¥",
+		"currencyScale": 2,
+		"countryCode": "JP",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/30011910-8858-4906-8395-fcd6184e4d7e.png"
+	},
+	{
+		"currencyCode": "THB",
+		"currencySymbol": "฿",
+		"currencyScale": 2,
+		"countryCode": "TH",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/568e21c0-4f98-447f-b365-ac20ee261244.png"
+	},
+	{
+		"currencyCode": "PHP",
+		"currencySymbol": "₱",
+		"currencyScale": 2,
+		"countryCode": "PH",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/91d841f3-a06c-4130-a798-367e2a969a8b.png"
+	},
+	{
+		"currencyCode": "TWD",
+		"currencySymbol": "＄",
+		"currencyScale": 2,
+		"countryCode": "TW",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/1df1179a-9033-4381-986b-20b62496496b.png"
+	},
+	{
+		"currencyCode": "SAR",
+		"currencySymbol": "ر.س",
+		"currencyScale": 2,
+		"countryCode": "SA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/4a7b0105-b38d-40ed-933a-3f8f97641ccf.png"
+	},
+	{
+		"currencyCode": "BDT",
+		"currencySymbol": "Tk.",
+		"currencyScale": 0,
+		"countryCode": "BD",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/7f29ba1d-2900-45c3-8951-14b9b8d76d8f.png"
+	},
+	{
+		"currencyCode": "EGP",
+		"currencySymbol": "E£",
+		"currencyScale": 2,
+		"countryCode": "EG",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/2a63f885-0085-450d-9eef-7b05d3931495.png"
+	},
+	{
+		"currencyCode": "AED",
+		"currencySymbol": "د.إ",
+		"currencyScale": 3,
+		"countryCode": "AE",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250807/0f7b6ae4-8ef2-4391-9eed-1090929ada3d.png"
+	},
+	{
+		"currencyCode": "BGN",
+		"currencySymbol": "лв",
+		"currencyScale": 2,
+		"countryCode": "BG",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/cb07d96b-b9bf-4981-ad67-6a23423f775d.png"
+	},
+	{
+		"currencyCode": "MAD",
+		"currencySymbol": "د.م.",
+		"currencyScale": 2,
+		"countryCode": "MA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/5ff4aee8-cb8b-4a43-8eee-b9c95d539451.png"
+	},
+	{
+		"currencyCode": "PLN",
+		"currencySymbol": "zł",
+		"currencyScale": 2,
+		"countryCode": "PL",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/79f90962-b2b3-4e5e-917a-5c99ce9a8b90.png"
+	},
+	{
+		"currencyCode": "PKR",
+		"currencySymbol": "₨",
+		"currencyScale": 2,
+		"countryCode": "PK",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/88000dfb-541a-4103-8de2-ad378e55cdb8.png"
+	},
+	{
+		"currencyCode": "RON",
+		"currencySymbol": "lei",
+		"currencyScale": 2,
+		"countryCode": "RO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/4cc29570-c27d-4c21-8233-2a5d3af97306.png"
+	},
+	{
+		"currencyCode": "CHF",
+		"currencySymbol": "Fr.",
+		"currencyScale": 3,
+		"countryCode": "CH",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/c5ad5793-e549-42eb-a518-81d1cea502d9.png"
+	},
+	{
+		"currencyCode": "CZK",
+		"currencySymbol": "Kč",
+		"currencyScale": 2,
+		"countryCode": "CZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/0c346cc2-d432-44ec-b4d3-adbfe5bd5368.png"
+	},
+	{
+		"currencyCode": "SEK",
+		"currencySymbol": "kr",
+		"currencyScale": 2,
+		"countryCode": "SE",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/3d67a787-aa6e-4893-8d87-7ed04fd34557.png"
+	},
+	{
+		"currencyCode": "TRY",
+		"currencySymbol": "₺",
+		"currencyScale": 2,
+		"countryCode": "TR",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/6f5c0ff4-8e24-4178-8a25-316f56f62bae.png"
+	},
+	{
+		"currencyCode": "UGX",
+		"currencySymbol": "Sh",
+		"currencyScale": 2,
+		"countryCode": "UG",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/092e5438-dd3b-4979-b9de-383f0ff7858b.png"
+	},
+	{
+		"currencyCode": "GHS",
+		"currencySymbol": "GH¢",
+		"currencyScale": 0,
+		"countryCode": "GH",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/13346d1f-b1a8-43e0-8b65-1da791758bca.png"
+	},
+	{
+		"currencyCode": "LBP",
+		"currencySymbol": "ل.ل",
+		"currencyScale": 2,
+		"countryCode": "LB",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/da5ed5cf-903f-461e-a9af-a8c3d5f6a7f5.png"
+	},
+	{
+		"currencyCode": "AMD",
+		"currencySymbol": "դր.",
+		"currencyScale": 2,
+		"countryCode": "AM",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/322589f9-4287-4b58-a59d-859e478e2872.png"
+	},
+	{
+		"currencyCode": "GEL",
+		"currencySymbol": "₾",
+		"currencyScale": 2,
+		"countryCode": "GE",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/02728746-d1bb-47b6-ae6a-2d5b015350d7.png"
+	},
+	{
+		"currencyCode": "UYU",
+		"currencySymbol": "$U",
+		"currencyScale": 2,
+		"countryCode": "UY",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/01dbcf86-1ba7-4a13-bb55-97df1999cb10.png"
+	},
+	{
+		"currencyCode": "CLP",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "CL",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/6cad06ee-7ce0-4340-b05d-4714c6866886.png"
+	},
+	{
+		"currencyCode": "XAF",
+		"currencySymbol": "Fr",
+		"currencyScale": 2,
+		"countryCode": "XA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/963b24d8-e4af-4361-9c65-ddcc06940bf2.png"
+	},
+	{
+		"currencyCode": "DZD",
+		"currencySymbol": "د.ج",
+		"currencyScale": 2,
+		"countryCode": "DZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/cdc6f0df-1312-42cd-89eb-628ab5745f31.png"
+	},
+	{
+		"currencyCode": "PYG",
+		"currencySymbol": "₲",
+		"currencyScale": 2,
+		"countryCode": "PY",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/43810c0c-3c46-4542-8ab6-31f36f03cd5e.png"
+	},
+	{
+		"currencyCode": "BOB",
+		"currencySymbol": "Bs.",
+		"currencyScale": 2,
+		"countryCode": "BO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/de92c142-cf6f-45bd-9b57-f08f27fa424e.png"
+	},
+	{
+		"currencyCode": "LKR",
+		"currencySymbol": "රු",
+		"currencyScale": 2,
+		"countryCode": "LK",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/0a785ba3-e52f-4c86-9133-8baf6d75d95b.png"
+	},
+	{
+		"currencyCode": "PAB",
+		"currencySymbol": "B/.",
+		"currencyScale": 2,
+		"countryCode": "PA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/31e81a3b-50c7-49e1-9dd1-91542b88b688.png"
+	},
+	{
+		"currencyCode": "NZD",
+		"currencySymbol": "$",
+		"currencyScale": 2,
+		"countryCode": "NZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/f922d1c6-d9ab-495e-8fe5-cfd18b8db2ab.png"
+	},
+	{
+		"currencyCode": "KHR",
+		"currencySymbol": "៛",
+		"currencyScale": 2,
+		"countryCode": "KH",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/0444fa6c-3beb-4909-8aff-fdc850ffc0f3.png"
+	},
+	{
+		"currencyCode": "LAK",
+		"currencySymbol": "₭",
+		"currencyScale": 2,
+		"countryCode": "LA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/7d246169-1c32-4576-99f7-8301b3132cfa.png"
+	},
+	{
+		"currencyCode": "MMK",
+		"currencySymbol": "K",
+		"currencyScale": 2,
+		"countryCode": "MM",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/19b120a9-be20-4852-b5b7-d3db4b226a34.png"
+	},
+	{
+		"currencyCode": "DOP",
+		"currencySymbol": "RD$",
+		"currencyScale": 2,
+		"countryCode": "DO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/53dc62a8-1929-49aa-acdb-8e78caf5edc4.png"
+	},
+	{
+		"currencyCode": "QAR",
+		"currencySymbol": "ر.ق",
+		"currencyScale": 2,
+		"countryCode": "QA",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/1b5b9dcc-0544-46d2-8c9f-c1ec0b626311.png"
+	},
+	{
+		"currencyCode": "BHD",
+		"currencySymbol": "ب.د",
+		"currencyScale": 3,
+		"countryCode": "BH",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/bff7e91a-3190-467f-bb80-06ed4d1d4bdf.png"
+	},
+	{
+		"currencyCode": "OMR",
+		"currencySymbol": "ر.ع.",
+		"currencyScale": 3,
+		"countryCode": "OM",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/f7e68747-ad4b-49ed-aea8-63e5c41086ce.png"
+	},
+	{
+		"currencyCode": "TND",
+		"currencySymbol": "د.ت",
+		"currencyScale": 2,
+		"countryCode": "TN",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/cda05742-4ef0-4145-a817-b742a7248c00.png"
+	},
+	{
+		"currencyCode": "SDG",
+		"currencySymbol": "ج.س.",
+		"currencyScale": 2,
+		"countryCode": "SD",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/352c6ee1-39ff-4f92-9d00-54852f4ffbad.png"
+	},
+	{
+		"currencyCode": "MNT",
+		"currencySymbol": "₮",
+		"currencyScale": 2,
+		"countryCode": "MN",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/88ac4e4f-e023-4900-9d6e-ce9bc841ea31.png"
+	},
+	{
+		"currencyCode": "UZS",
+		"currencySymbol": "so'm",
+		"currencyScale": 2,
+		"countryCode": "UZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/94710f88-29cb-4507-babd-f2e7ad8bbcc6.png"
+	},
+	{
+		"currencyCode": "NPR",
+		"currencySymbol": "रु",
+		"currencyScale": 2,
+		"countryCode": "NP",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/f2144c0b-b79b-48dc-b82e-f70e3b80500c.png"
+	},
+	{
+		"currencyCode": "TZS",
+		"currencySymbol": "TSh",
+		"currencyScale": 2,
+		"countryCode": "TZ",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/d8444dd2-b3aa-4d35-b3e1-9b968fe265e8.png"
+	},
+	{
+		"currencyCode": "XOF",
+		"currencySymbol": "FCFA",
+		"currencyScale": 2,
+		"countryCode": "XO",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/33d18940-482e-4c42-a532-661ceb13adc7.png"
+	},
+	{
+		"currencyCode": "RWF",
+		"currencySymbol": "FRw",
+		"currencyScale": 2,
+		"countryCode": "RW",
+		"iconUrl": "https://bin.bnbstatic.com/image/admin_mgs_image_upload/20250825/c0aa6096-eaf7-440c-a029-7fc5588576e8.png"
+	}
+]
