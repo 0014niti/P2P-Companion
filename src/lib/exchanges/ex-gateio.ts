@@ -6,14 +6,9 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 	
 	const targetUrl = 'https://www.gate.io/json_cmp/c2c/pushTradeAds';
 	const bodyPayload = new URLSearchParams({
-		// Gate.io's internal API changes parameter names often. We send aliases to guarantee a match.
 		fiat: props.fiat.toUpperCase(),
-		currency: props.fiat.toUpperCase(),
 		coin: props.token.toUpperCase(),
-		asset: props.token.toUpperCase(),
-		symbol: props.token.toUpperCase(),
 		type: tradeType,
-		tradeType: tradeType,
 		amount: '',
 		pay_type: '',
 		page: '1'
@@ -52,16 +47,15 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		console.error('Gate.io direct fetch failed:', e);
 	}
 
-	// Method 2: Proxy fallback using corsproxy.io (which natively handles POSTs).
-	// We deliberately strip out the spoofed Chrome headers here so Cloudflare 
-	// doesn't flag the proxy's server IP for an obvious fingerprint mismatch.
+	// Method 2: Proxy fallback using api.codetabs.com
 	if (!data || (!data.data && !data.list)) {
 		try {
-			const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+			const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`;
 			const proxyRes = await fetch(proxyUrl, {
 				headers: {
 					'content-type': 'application/x-www-form-urlencoded',
 					'X-Requested-With': 'XMLHttpRequest',
+					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
 				},
 				body: bodyPayload,
 				method: 'POST'
