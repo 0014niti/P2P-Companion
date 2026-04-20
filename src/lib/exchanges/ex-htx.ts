@@ -39,7 +39,8 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 
 	const res = await fetch(url, {
 		headers: {
-			'accept': 'application/json',
+			'accept': 'application/json, text/plain, */*',
+			'accept-language': 'en-US,en;q=0.9',
 			'content-type': 'application/json',
 			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
 			'Origin': 'https://www.htx.com',
