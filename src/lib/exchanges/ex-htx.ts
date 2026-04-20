@@ -37,35 +37,33 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	
 	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}`;
 
-	const headers = {
-		'accept': 'application/json, text/plain, */*',
-		'accept-language': 'en-US,en;q=0.9',
-		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-		'Origin': 'https://www.htx.com',
-		'Referer': 'https://www.htx.com/',
-		'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-		'Sec-Ch-Ua-Mobile': '?0',
-		'Sec-Ch-Ua-Platform': '"Windows"',
-		'Sec-Fetch-Dest': 'empty',
-		'Sec-Fetch-Mode': 'cors',
-		'Sec-Fetch-Site': 'same-origin'
-	};
-
-	let res = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`, { headers, method: 'GET' });
-
-	if (!res.ok) {
-		// Fallback to direct fetch just in case the proxy is temporarily down or rate-limited
-		res = await fetch(targetUrl, { headers, method: 'GET' });
-	}
-
-	if (!res.ok) {
-		throw new Error(`Error fetching HTX data: ${res.status} ${res.statusText}`);
-	}
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const data = (await res.json()) as { code: number; data?: Record<string, any>[] };
+	let data: { code?: number; data?: Record<string, any>[] } | null = null;
 
-	if (data.code !== 200 || !data.data) {
+	try {
+		// Method 1: Use AllOrigins GET wrapper without ANY custom headers.
+		// This forces the proxy to use its own clean IP and default headers.
+		const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+		const res = await fetch(proxyUrl);
+		const proxyResponse = await res.json();
+		
+		if (proxyResponse?.contents) {
+			data = JSON.parse(proxyResponse.contents);
+		}
+	} catch (e) {
+		console.error('HTX Proxy fetch failed:', e);
+	}
+
+	// Method 2: Fallback to direct fetch if proxy fails or returns an HTML block instead of JSON
+	if (!data || data.code !== 200) {
+		const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' };
+		const res = await fetch(targetUrl, { headers, method: 'GET' });
+		if (res.ok) {
+			data = await res.json();
+		}
+	}
+
+	if (!data || data.code !== 200 || !data.data) {
 		return [];
 	}
 
