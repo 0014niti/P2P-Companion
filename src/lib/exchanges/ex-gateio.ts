@@ -102,7 +102,7 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 			type: method.name || method.type || 'Bank',
 			identifier: method.id?.toString() || 'unknown',
 			name: method.name || 'Bank Transfer'
-		})) : [],
+		})),
 		advertiser: {
 			name: item.merchant_name || item.nickname || 'Unknown',
 			userId: item.merchant_id?.toString() || item.uid?.toString() || '',
