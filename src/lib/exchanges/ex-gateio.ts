@@ -4,35 +4,48 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 	// Gate.io uses 'sell' ads to fulfill a user's 'buy' request
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
 	
-	const targetUrl = `https://www.gate.io/json_cmp/c2c/pushTradeAds?fiat=${props.fiat.toUpperCase()}&coin=${props.token.toUpperCase()}&type=${tradeType}&page=1&t=${Date.now()}`;
+	const targetUrl = 'https://www.gate.io/json_cmp/c2c/pushTradeAds';
+
+	const headers = {
+		'accept': 'application/json, text/plain, */*',
+		'accept-language': 'en-US,en;q=0.9',
+		'content-type': 'application/x-www-form-urlencoded',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+		'Origin': 'https://www.gate.io',
+		'Referer': 'https://www.gate.io/p2p',
+		'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+		'Sec-Ch-Ua-Mobile': '?0',
+		'Sec-Ch-Ua-Platform': '"Windows"',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-origin'
+	};
+
+	const body = new URLSearchParams({
+		fiat: props.fiat.toUpperCase(),
+		coin: props.token.toUpperCase(),
+		type: tradeType,
+		page: '1'
+	}).toString();
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: { code?: number; data?: { list?: Record<string, any>[] } } | null = null;
 
 	try {
-		// Method 1: Use AllOrigins GET wrapper to bypass Cloudflare
-		const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-		const res = await fetch(proxyUrl);
-		const proxyResponse = await res.json();
-		
-		if (proxyResponse?.contents) {
-			data = JSON.parse(proxyResponse.contents);
+		// Method 1: Direct POST fetch
+		const res = await fetch(targetUrl, { headers, body, method: 'POST' });
+		if (res.ok) {
+			data = await res.json();
+		} else {
+			// Method 2: Fallback to CORS proxy which supports POST
+			const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+			const proxyRes = await fetch(proxyUrl, { headers, body, method: 'POST' });
+			if (proxyRes.ok) {
+				data = await proxyRes.json();
+			}
 		}
 	} catch (e) {
-		console.error('Gate.io Proxy fetch failed:', e);
-	}
-
-	// Method 2: Fallback to direct fetch
-	if (!data) {
-		try {
-			const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' };
-			const res = await fetch(targetUrl, { headers, method: 'GET' });
-			if (res.ok) {
-				data = await res.json();
-			}
-		} catch (e) {
-			console.error('Gate.io direct fetch fallback failed:', e);
-		}
+		console.error('Gate.io fetch failed:', e);
 	}
 
 	if (!data || !data.data || !data.data.list) {
