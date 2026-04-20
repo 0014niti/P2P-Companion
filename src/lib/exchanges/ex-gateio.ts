@@ -9,6 +9,8 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		fiat: props.fiat.toUpperCase(),
 		coin: props.token.toUpperCase(),
 		type: tradeType,
+		amount: '',
+		pay_type: '',
 		page: '1'
 	}).toString();
 
@@ -38,62 +40,74 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		});
 
 		if (res.ok) {
-			data = await res.json();
+			const text = await res.text();
+			try { data = JSON.parse(text); } catch (e) { /* Ignore HTML Cloudflare blocks */ }
 		}
 	} catch (e) {
 		console.error('Gate.io direct fetch failed:', e);
 	}
 
-	// Method 2: POST-compatible proxy fallback if Cloudflare blocks the direct Vercel IP
+	// Method 2: Proxy fallback using corsproxy.io (which natively handles POSTs).
+	// We deliberately strip out the spoofed Chrome headers here so Cloudflare 
+	// doesn't flag the proxy's server IP for an obvious fingerprint mismatch.
 	if (!data || (!data.data && !data.list)) {
 		try {
-			const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`;
+			const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
 			const proxyRes = await fetch(proxyUrl, {
 				headers: {
 					'content-type': 'application/x-www-form-urlencoded',
 					'X-Requested-With': 'XMLHttpRequest',
-					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
 				},
 				body: bodyPayload,
 				method: 'POST'
 			});
 			
 			if (proxyRes.ok) {
-				data = await proxyRes.json();
+				const text = await proxyRes.text();
+				try { data = JSON.parse(text); } catch (e) { /* Ignore HTML Cloudflare blocks */ }
 			}
 		} catch (e) {
 			console.error('Gate.io proxy fetch failed:', e);
 		}
 	}
 
-	const rawList = Array.isArray(data?.data) ? data.data : (data?.data?.list || data?.data?.advs || data?.list || []);
+	// Deep array extraction: Find the first array in the response object regardless of the key name
+	let rawList: any[] = [];
+	if (Array.isArray(data?.data)) rawList = data.data;
+	else if (Array.isArray(data?.data?.list)) rawList = data.data.list;
+	else if (Array.isArray(data?.data?.advs)) rawList = data.data.advs;
+	else if (Array.isArray(data?.list)) rawList = data.list;
+	else if (data) {
+		const found = Object.values(data).find(val => Array.isArray(val));
+		if (found) rawList = found;
+	}
 
 	if (!Array.isArray(rawList) || rawList.length === 0) {
 		return [];
 	}
 
 	return rawList.map((item) => ({
-		advNo: item.adv_id?.toString() || Math.random().toString(),
+		advNo: item.adv_id?.toString() || item.id?.toString() || Math.random().toString(),
 		tradeType: props.type.toUpperCase(),
 		asset: props.token.toUpperCase(),
 		fiatUnit: props.fiat.toUpperCase(),
-		price: item.price || '0',
-		surplusAmount: item.amount || '0',
-		tradableQuantity: item.amount || '0',
+		price: item.price || item.rate || '0',
+		surplusAmount: item.amount || item.remain_amount || '0',
+		tradableQuantity: item.amount || item.remain_amount || '0',
 		fiatSymbol: props.fiat.toUpperCase(),
-		minSingleTransAmount: item.min_amount || '0',
-		maxSingleTransAmount: item.max_amount || '0',
+		minSingleTransAmount: item.min_amount || item.min_order_amount || '0',
+		maxSingleTransAmount: item.max_amount || item.max_order_amount || '0',
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		paymentMethods: item.pay_methods ? item.pay_methods.map((method: any) => ({
-			type: method.name || 'Bank',
+		paymentMethods: (item.pay_methods || item.payments || []).map((method: any) => ({
+			type: method.name || method.type || 'Bank',
 			identifier: method.id?.toString() || 'unknown',
 			name: method.name || 'Bank Transfer'
 		})) : [],
 		advertiser: {
-			name: item.merchant_name || 'Unknown',
-			userId: item.merchant_id?.toString() || '',
-			monthOrderCount: item.trade_count || 0,
-			positiveRate: item.completion_rate || 0
+			name: item.merchant_name || item.nickname || 'Unknown',
+			userId: item.merchant_id?.toString() || item.uid?.toString() || '',
+			monthOrderCount: item.trade_count || item.month_order_count || 0,
+			positiveRate: item.completion_rate || item.complete_rate || 0
 		}
 	})) as ExchangeP2PAd[];
 };
