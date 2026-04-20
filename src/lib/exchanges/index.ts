@@ -40,6 +40,18 @@ export const exchanges = {
 		tokensList: ['USDT', 'BTC', 'ETH', 'HT', 'USDC'] as string[],
 		icon: 'https://www.htx.com/favicon.ico',
 		p2pLink: 'https://www.htx.com/en-us/fiat-crypto/trade/buy-usdt-usd'
+	},
+	bingx: {
+		name: 'BingX',
+		tokensList: ['USDT', 'BTC', 'ETH', 'USDC'] as string[],
+		icon: 'https://bingx.com/favicon.ico',
+		p2pLink: 'https://bingx.com/en-us/p2p/'
+	},
+	gateio: {
+		name: 'Gate.io',
+		tokensList: ['USDT', 'BTC', 'ETH', 'DOGE'] as string[],
+		icon: 'https://www.gate.io/favicon.ico',
+		p2pLink: 'https://www.gate.io/p2p'
 	}
 } as const;
 

@@ -5,6 +5,8 @@ import { fetchOkx } from '$lib/exchanges/ex-okx.js';
 import { fetchBybit } from '$lib/exchanges/ex-bybit.js';
 import { fetchKucoin } from '$lib/exchanges/ex-kucoin.js';
 import { fetchHtx } from '$lib/exchanges/ex-htx.js';
+import { fetchBingx } from '$lib/exchanges/ex-bingx.js';
+import { fetchGateio } from '$lib/exchanges/ex-gateio.js';
 import type { ExchangeP2PAd } from '$lib/exchanges/index.js';
 
 export async function GET({ request }) {
@@ -38,6 +40,12 @@ export async function GET({ request }) {
 			break;
 		case 'htx':
 			response = await fetchHtx({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		case 'bingx':
+			response = await fetchBingx({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		case 'gateio':
+			response = await fetchGateio({ type: type as 'buy' | 'sell', token, fiat });
 			break;
 		// Future exchanges can be added here
 		default:
