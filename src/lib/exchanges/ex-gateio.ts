@@ -6,9 +6,14 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 	
 	const targetUrl = 'https://www.gate.io/json_cmp/c2c/pushTradeAds';
 	const bodyPayload = new URLSearchParams({
+		// Gate.io's internal API changes parameter names often. We send aliases to guarantee a match.
 		fiat: props.fiat.toUpperCase(),
+		currency: props.fiat.toUpperCase(),
 		coin: props.token.toUpperCase(),
+		asset: props.token.toUpperCase(),
+		symbol: props.token.toUpperCase(),
 		type: tradeType,
+		tradeType: tradeType,
 		amount: '',
 		pay_type: '',
 		page: '1'
