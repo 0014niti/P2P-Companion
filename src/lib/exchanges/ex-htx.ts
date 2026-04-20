@@ -56,10 +56,14 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 
 	// Method 2: Fallback to direct fetch if proxy fails or returns an HTML block instead of JSON
 	if (!data || data.code !== 200) {
-		const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' };
-		const res = await fetch(targetUrl, { headers, method: 'GET' });
-		if (res.ok) {
-			data = await res.json();
+		try {
+			const headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' };
+			const res = await fetch(targetUrl, { headers, method: 'GET' });
+			if (res.ok) {
+				data = await res.json();
+			}
+		} catch (e) {
+			console.error('HTX Direct fetch fallback failed or returned HTML instead of JSON:', e);
 		}
 	}
 
