@@ -37,13 +37,26 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	
 	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}`;
 
-	// HTX aggressively blacklists datacenter IPs globally. 
-	// Using a reliable GET proxy completely sidesteps the IP/Geo restriction.
-	const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+	const headers = {
+		'accept': 'application/json, text/plain, */*',
+		'accept-language': 'en-US,en;q=0.9',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+		'Origin': 'https://www.htx.com',
+		'Referer': 'https://www.htx.com/',
+		'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+		'Sec-Ch-Ua-Mobile': '?0',
+		'Sec-Ch-Ua-Platform': '"Windows"',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-origin'
+	};
 
-	const res = await fetch(url, {
-		method: 'GET'
-	});
+	let res = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`, { headers, method: 'GET' });
+
+	if (!res.ok) {
+		// Fallback to direct fetch just in case the proxy is temporarily down or rate-limited
+		res = await fetch(targetUrl, { headers, method: 'GET' });
+	}
 
 	if (!res.ok) {
 		throw new Error(`Error fetching HTX data: ${res.status} ${res.statusText}`);
