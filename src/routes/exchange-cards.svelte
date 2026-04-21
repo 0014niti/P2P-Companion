@@ -1,58 +1,29 @@
 <script lang="ts">
-	import { filterState, refreshTimers } from '$lib/components/filter/stateFilter.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import {
 		Card,
 		CardContent,
-		CardDescription,
-		CardFooter,
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import type { ExchangeP2PAd, filterExchangesArr } from '$lib/exchanges';
-	import { fetchUrlBuilder } from '$lib/exchanges/url-builder';
+	import type { filterExchangesArr } from '$lib/exchanges';
+	import type { P2POrder } from '$lib/types';
 	import { cn } from '$lib/utils';
 	import { ChevronDown } from 'lucide-svelte';
-	import { createQuery } from '@tanstack/svelte-query';
 
 	let {
-		exchange
+		exchange,
+		ads = [],
+		isLoading = false,
+		error = null
 	}: {
 		exchange: ReturnType<typeof filterExchangesArr>[number];
+		ads?: P2POrder[];
+		isLoading?: boolean;
+		error?: Error | null;
 	} = $props();
 
-	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
-	const filterStateType = $derived(filterState.current.type);
-	const filterStateFiat = $derived(filterState.current.fiat);
-	const refreshTimer = $derived(filterState.current.refreshTimer);
-
 	let expandedAds = $state<Set<string>>(new Set());
-
-	let ads = $derived.by(() =>
-		createQuery<{ responses: null | ExchangeP2PAd[] }>({
-			queryKey: ['ads', exchange.key, filterStateSelectedToken, filterStateType, filterStateFiat],
-			queryFn: async () => {
-				const res = await fetch(
-					fetchUrlBuilder(
-						{
-							type: filterStateType,
-							fiat: filterStateFiat,
-							token: filterStateSelectedToken
-						},
-						exchange.key
-					)
-				);
-
-				if (!res.ok) {
-					throw new Error('Network response was not ok');
-				}
-
-				return (await res.json()) as { responses: null | ExchangeP2PAd[] };
-			},
-			refetchInterval: refreshTimer ? refreshTimers[refreshTimer].value : false,
-			refetchIntervalInBackground: refreshTimer ? true : false
-		})
-	);
 
 	const toggleExpand = (advNo: string) => {
 		expandedAds = new Set(
@@ -63,103 +34,112 @@
 	};
 </script>
 
-<Card
-	class="hover:shadow-lg hover:border-primary/50"
->
-	<CardHeader class="pb-2">
-		<CardTitle class="inline-flex items-center gap-2">
+<Card class="hover:shadow-md transition-shadow overflow-hidden flex flex-col h-full">
+	<CardHeader class="p-2 md:p-3 border-b flex flex-row items-center justify-between space-y-0 bg-muted/20">
+		<CardTitle class="flex items-center gap-2">
 			<img
 				src={exchange.icon}
 				alt={exchange.name}
-				class="size-8 rounded-md border bg-secondary p-0.5 shadow-sm"
+				class="size-5 rounded-sm border bg-background p-0.5 shadow-sm"
 			/>
-
-			<span class="font-bold text-sm md:text-base truncate">{exchange.name}</span>
+			<span class="font-bold text-sm md:text-base truncate tracking-tight">{exchange.name}</span>
 		</CardTitle>
+		<a
+			href={exchange.p2pLink}
+			target="_blank"
+			rel="noopener noreferrer"
+			class="text-[11px] font-semibold text-primary hover:underline flex items-center gap-0.5 bg-primary/10 px-2 py-1 rounded-md transition-colors hover:bg-primary/20"
+			title={`Trade on ${exchange.name}`}
+		>
+			Trade <span class="text-[14px] leading-none">↗</span>
+		</a>
 	</CardHeader>
 
-	<CardContent class="bg-secondary/30 py-3 text-sm">
-		{#if $ads.isPending}
-			<div class="space-y-2">
-				<div class="h-6 bg-primary/10 rounded w-3/4"></div>
-				<div class="h-3 bg-primary/10 rounded w-1/2"></div>
-				<div class="h-3 bg-primary/10 rounded w-2/3"></div>
+	<CardContent class="p-0 text-sm bg-background flex-1">
+		{#if isLoading && ads.length === 0}
+			<div class="divide-y">
+				{#each Array(5) as _}
+					<div class="p-3 space-y-2">
+						<div class="flex justify-between items-center"><div class="h-4 bg-muted rounded w-1/3 animate-pulse"></div><div class="h-3 bg-muted rounded w-1/4 animate-pulse"></div></div>
+						<div class="h-3 bg-muted/50 rounded w-1/2 animate-pulse"></div>
+					</div>
+				{/each}
 			</div>
-		{:else if $ads.isError}
-			<div class="text-red-500 flex items-center gap-2">
+		{:else if error}
+			<div class="text-red-500 flex items-center gap-2 p-3">
 				<span class="text-lg">⚠️</span>
-				<p class="text-xs">Error loading data</p>
+				<p class="text-xs">{error.message || 'Error loading data'}</p>
 			</div>
-		{:else if $ads.data?.responses && $ads.data.responses.length > 0}
-			<div class="space-y-2 max-h-96 overflow-y-auto">
-				{#each $ads.data.responses as ad (ad.advNo)}
+		{:else if ads.length > 0}
+			<div class="divide-y max-h-[60vh] md:max-h-[400px] overflow-y-auto hide-scrollbar">
+				{#each ads as ad (ad.id)}
 					<div
-						class="border rounded-lg p-2 cursor-pointer bg-card hover:bg-primary/5"
-						on:click={() => toggleExpand(ad.advNo)}
+						class="p-2.5 hover:bg-muted/30 cursor-pointer transition-colors"
+						role="button"
+						tabindex="0"
+						onclick={() => toggleExpand(ad.id)}
+						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleExpand(ad.id); }}
 					>
-						<!-- Basic Info Always Visible -->
-						<div class="flex items-start justify-between gap-2 mb-2">
-							<div class="flex-1">
-								<div class="text-sm font-bold text-primary">
-									{new Intl.NumberFormat('en-US', {
-										style: 'currency',
-										currency: ad.fiatUnit
-									}).format(Number(ad.price))}
+						<!-- Ultra Compact 2-Line Header -->
+						<div class="flex justify-between items-start">
+							<div class="flex flex-col gap-0.5">
+								<div class="font-bold text-primary text-[15px] leading-none flex items-center gap-1.5">
+									{new Intl.NumberFormat('en-US', { style: 'currency', currency: ad.fiat }).format(Number(ad.price))}
+									{#if ad.isRestricted}
+										<span class="text-[8px] font-bold px-1 py-0.5 rounded-sm bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 leading-none uppercase tracking-wider">Restricted</span>
+									{:else}
+										<span class="text-[8px] font-bold px-1 py-0.5 rounded-sm bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 leading-none uppercase tracking-wider">Tradable</span>
+									{/if}
 								</div>
-								<div class="text-xs text-muted-foreground line-clamp-1">
-									{ad.advertiser.name}
+								<div class="text-[11px] text-muted-foreground flex items-center gap-1.5">
+									<span class="truncate max-w-[100px]" title={ad.merchantName}>{ad.merchantName}</span>
+									{#if ad.merchantStats}
+										<span class="text-emerald-600 dark:text-emerald-400 font-medium">
+											{(ad.merchantStats.positiveRate * 100).toFixed(0)}%
+										</span>
+									{/if}
 								</div>
 							</div>
-							<ChevronDown class={cn('size-4 mt-1 flex-shrink-0', {
-								'rotate-180': expandedAds.has(ad.advNo)
-							})} />
+							<div class="flex flex-col items-end gap-1 text-right">
+								<div class="text-[11px] font-medium text-foreground tracking-tight">
+									{new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.minLimit)} - {new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.maxLimit)}
+								</div>
+								<ChevronDown class={cn('size-3.5 text-muted-foreground transition-transform', { 'rotate-180': expandedAds.has(ad.id) })} />
+							</div>
 						</div>
 
-						<!-- Always Show Seller Rating -->
-						<div class="flex items-center gap-1 text-xs text-green-600 dark:text-green-400 mb-2">
-							<span>✓</span>
-							<span class="font-semibold">{ad.advertiser.monthOrderCount}</span>
-							<span class="text-muted-foreground">trades •</span>
-							<span class="font-semibold">{Number((ad.advertiser.positiveRate * 100).toFixed(2))}%</span>
+						<!-- Always-visible Terms snippet -->
+						<div class="mt-1.5 text-[10px] text-muted-foreground/70 line-clamp-1 italic">
+							{ad.terms?.trim() ? ad.terms.replace(/\n/g, ' ').trim() : 'No terms specified'}
 						</div>
 
 						<!-- Expandable Details -->
-						{#if expandedAds.has(ad.advNo)}
-							<div class="border-t pt-2 mt-2 space-y-2">
-								<!-- Transaction Limits -->
-								<div class="text-xs">
-									<div class="text-muted-foreground font-medium">Limit:</div>
-									<div class="text-foreground">
-										{new Intl.NumberFormat('en-US', {
-											style: 'currency',
-											currency: ad.fiatUnit
-										}).format(Number(ad.minSingleTransAmount))} - {new Intl.NumberFormat('en-US', {
-											style: 'currency',
-											currency: ad.fiatUnit
-										}).format(Number(ad.maxSingleTransAmount))}
-									</div>
+						{#if expandedAds.has(ad.id)}
+							<div class="mt-2 pt-2 border-t text-[11px] space-y-1.5">
+								<div class="flex justify-between">
+									<span class="text-muted-foreground">Available:</span>
+									<span class="font-medium">{ad.available.toLocaleString()} {ad.token}</span>
 								</div>
-
-								<!-- Payment Methods -->
+								<div class="flex justify-between">
+									<span class="text-muted-foreground">Orders (30d):</span>
+									<span class="font-medium">{ad.merchantStats?.monthOrderCount || 0}</span>
+								</div>
 								{#if ad.paymentMethods.length > 0}
-									<div class="text-xs">
-										<div class="text-muted-foreground font-medium mb-1">Payment:</div>
-										<div class="flex flex-wrap gap-1">
-											{#each ad.paymentMethods as payment}
-												<Badge
-													variant="outline"
-													style={`${payment.bgColor ? `background-color: ${payment.bgColor}` : ''}`}
-													class={cn('text-xs font-medium', {
-														'text-neutral-50': !!payment.bgColor,
-														'text-neutral-950 dark:text-neutral-50': !payment.bgColor
-													})}
-												>
-													{payment.name}
-												</Badge>
-											{/each}
-										</div>
+									<div class="pt-1 flex flex-wrap gap-1">
+										{#each ad.paymentMethods as payment}
+											<Badge variant="outline" style={payment.bgColor ? `background-color: ${payment.bgColor}` : undefined} class={cn('text-[9px] px-1.5 py-0.5 h-auto border-transparent leading-tight', { 'text-white': !!payment.bgColor, 'text-foreground border-border': !payment.bgColor })}>
+												{payment.name}
+											</Badge>
+										{/each}
 									</div>
 								{/if}
+
+								<div class="pt-1.5 mt-1.5 border-t border-muted/50">
+									<span class="text-[10px] text-muted-foreground block mb-0.5 font-medium">Merchant Terms:</span>
+									<div class="text-[10px] text-foreground/80 whitespace-pre-wrap leading-relaxed">
+										{ad.terms?.trim() || 'No terms specified'}
+									</div>
+								</div>
 							</div>
 						{/if}
 					</div>
@@ -169,18 +149,4 @@
 			<p class="text-muted-foreground text-xs text-center py-2">No ads available</p>
 		{/if}
 	</CardContent>
-
-	<CardFooter class="border-t bg-secondary/30 py-2">
-		<small>
-			<a
-				href={exchange.p2pLink}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="text-primary underline font-medium text-xs"
-				title={`Trade on ${exchange.name}`}
-			>
-				Trade on {exchange.name} →
-			</a>
-		</small>
-	</CardFooter>
 </Card>

@@ -24,7 +24,6 @@
 	import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 	import { cn } from '$lib/utils';
-	import Refresh from './refresh.svelte';
 	import { filterState } from './stateFilter.svelte';
 
 	let openFiatList = $state(false);
@@ -116,9 +115,5 @@
 				</PopoverContent>
 			</Popover>
 		</div>
-	</div>
-
-	<div class="md:ml-auto">
-		<Refresh />
 	</div>
 </div>

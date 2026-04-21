@@ -10,7 +10,8 @@ export const fetchUrlBuilder = (
 		type: props.type,
 		token: props.token,
 		fiat: props.fiat,
-		exchange
+		exchange,
+		t: Date.now().toString()
 	});
 
 	return `/api?${searchParams.toString()}`;

@@ -1,4 +1,4 @@
-import type { ExchangeP2PAd } from '.';
+import { extractTerms, checkIsRestricted, type ExchangeP2PAd } from '.';
 
 export const fetchBitget = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
 	const res = await fetch('https://www.bitget.com/v1/p2p/pub/adv/queryAdvList', {
@@ -69,6 +69,8 @@ export const fetchBitget = async (props: { type: 'buy' | 'sell'; token: string; 
 			userId: item.nickName,
 			monthOrderCount: item.thirtyTunoverNum,
 			positiveRate: item.thirtyCompletionRate
-		}
+		},
+		terms: extractTerms(item),
+		isRestricted: checkIsRestricted(item)
 	})) as ExchangeP2PAd[];
 };

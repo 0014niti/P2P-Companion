@@ -1,4 +1,4 @@
-import type { ExchangeP2PAd } from '.';
+import { extractTerms, checkIsRestricted, type ExchangeP2PAd } from '.';
 
 export const fetchBybit = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
 	const res = await fetch('https://api2.bybit.com/fiat/otc/item/online', {
@@ -58,6 +58,8 @@ export const fetchBybit = async (props: { type: 'buy' | 'sell'; token: string; f
 			userId: item.userId || '',
 			monthOrderCount: item.recentOrderNum || 0,
 			positiveRate: item.recentExecuteRate || 0
-		}
+		},
+		terms: extractTerms(item),
+		isRestricted: checkIsRestricted(item)
 	})) as ExchangeP2PAd[];
 };

@@ -1,4 +1,4 @@
-import type { ExchangeP2PAd } from '.';
+import { extractTerms, checkIsRestricted, type ExchangeP2PAd } from '.';
 
 export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
 	// BingX uses 'SELL' ads to fulfill a user's 'buy' request
@@ -93,6 +93,8 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 			userId: item.userId?.toString() || '',
 			monthOrderCount: item.monthOrderCount || 0,
 			positiveRate: item.positiveRate || 0
-		}
+		},
+		terms: extractTerms(item),
+		isRestricted: checkIsRestricted(item)
 	})) as ExchangeP2PAd[];
 };

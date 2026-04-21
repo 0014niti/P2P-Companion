@@ -1,4 +1,4 @@
-import type { ExchangeP2PAd } from '.';
+import { extractTerms, checkIsRestricted, type ExchangeP2PAd } from '.';
 
 // HTX (Huobi) uses internal integer IDs for tokens and fiats instead of standard string codes.
 // Add additional fiat mapping IDs here if you expand the app to more countries.
@@ -93,6 +93,8 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 			userId: item.uid?.toString() || '',
 			monthOrderCount: item.tradeMonthTimes || 0,
 			positiveRate: item.orderCompleteRate || 0
-		}
+		},
+		terms: extractTerms(item),
+		isRestricted: checkIsRestricted(item)
 	})) as ExchangeP2PAd[];
 };

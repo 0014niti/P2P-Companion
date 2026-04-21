@@ -1,4 +1,4 @@
-import type { ExchangeP2PAd } from '.';
+import { extractTerms, checkIsRestricted, type ExchangeP2PAd } from '.';
 
 export const fetchBinance = async (props: {
 	type: 'buy' | 'sell';
@@ -62,6 +62,8 @@ export const fetchBinance = async (props: {
 			userId: item.advertiser.userNo,
 			monthOrderCount: item.advertiser.monthOrderCount,
 			positiveRate: item.advertiser.monthFinishRate
-		}
+		},
+		terms: extractTerms(item),
+		isRestricted: checkIsRestricted(item)
 	})) as ExchangeP2PAd[];
 };

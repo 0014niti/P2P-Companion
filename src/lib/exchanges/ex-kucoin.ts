@@ -1,4 +1,4 @@
-import type { ExchangeP2PAd } from '.';
+import { extractTerms, checkIsRestricted, type ExchangeP2PAd } from '.';
 
 export const fetchKucoin = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
 	// KuCoin P2P API uses 'SELL' ads to fulfill a user's 'buy' request
@@ -50,6 +50,8 @@ export const fetchKucoin = async (props: { type: 'buy' | 'sell'; token: string; 
 			userId: item.userId || '',
 			monthOrderCount: item.dealCount || 0,
 			positiveRate: (item.dealRate || 0) * 100
-		}
+		},
+		terms: extractTerms(item),
+		isRestricted: checkIsRestricted(item)
 	})) as ExchangeP2PAd[];
 };
