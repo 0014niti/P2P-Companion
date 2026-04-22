@@ -15,7 +15,7 @@ export type P2POrder = {
 	paymentMethods: { name: string; bgColor?: string }[];
 	terms?: string;
 	tradeUrl?: string;
-	isRestricted?: boolean;
+	isNewUserOnly?: boolean;
 };
 
 export type ExchangeP2PAd = {
@@ -37,5 +37,5 @@ export type ExchangeP2PAd = {
 	remarks?: string;
 	remark?: string;
 	terms?: string;
-	isRestricted?: boolean;
+	isNewUserOnly?: boolean;
 };

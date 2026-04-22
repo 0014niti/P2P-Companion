@@ -1,4 +1,4 @@
-import { extractTerms, checkIsRestricted, type ExchangeP2PAd } from '.';
+import { extractTerms, checkIsNewUserOnly, type ExchangeP2PAd } from '.';
 
 export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
 	// Gate.io uses 'sell' ads to fulfill a user's 'buy' request
@@ -109,6 +109,6 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 			positiveRate: item.completion_rate || item.complete_rate || 0
 		},
 		terms: extractTerms(item),
-		isRestricted: checkIsRestricted(item)
+		isNewUserOnly: checkIsNewUserOnly(item)
 	})) as ExchangeP2PAd[];
 };

@@ -7,17 +7,48 @@ type P2PState = {
 	orders: P2POrder[];
 	isLoading: boolean;
 	errors: Partial<Record<ExchangeKey, Error | null>>;
+	marketRate: number | null;
+	usdRate: number | null;
+	token: string | null;
+	fiat: string | null;
 };
 
 function createP2POrderStore() {
 	const { subscribe, set, update } = writable<P2PState>({
 		orders: [],
 		isLoading: false,
-		errors: {}
+		errors: {},
+		marketRate: null,
+		usdRate: null,
+		token: null,
+		fiat: null
 	});
 
 	async function fetchOrders(filters: { type: 'buy' | 'sell'; token: string; fiat: string }) {
-		update((s) => ({ ...s, isLoading: true, orders: [], errors: {} }));
+		update((s) => ({ ...s, isLoading: true, orders: [], errors: {}, marketRate: null, usdRate: null, token: filters.token, fiat: filters.fiat }));
+
+		// Fetch live market rates in parallel using Coinbase's free public API
+		fetch('https://api.coinbase.com/v2/exchange-rates?currency=USD')
+			.then(res => res.json())
+			.then(json => {
+				const rates = json?.data?.rates;
+				if (!rates) return;
+
+				const fiatRate = Number(rates[filters.fiat.toUpperCase()]);
+				const tokenRate = Number(rates[filters.token.toUpperCase()]);
+				
+				if (fiatRate) {
+					let mRate = null;
+					const tokenUp = filters.token.toUpperCase();
+					if (['USDT', 'USDC', 'FDUSD', 'DAI'].includes(tokenUp)) {
+						mRate = tokenRate ? (fiatRate / tokenRate) : fiatRate;
+					} else if (tokenRate) {
+						mRate = fiatRate / tokenRate;
+					}
+					update(s => ({ ...s, usdRate: fiatRate, marketRate: mRate }));
+				}
+			})
+			.catch(err => console.error('Failed to fetch market rates:', err));
 
 		const exchangesToFetch = filterExchangesArr(filters.token);
 
@@ -57,7 +88,7 @@ function createP2POrderStore() {
 					paymentMethods: ad.paymentMethods || [],
 					terms: ad.terms || ad.remarks || ad.remark || '',
 					tradeUrl: exchange.p2pLink,
-					isRestricted: ad.isRestricted ?? false
+					isNewUserOnly: ad.isNewUserOnly ?? false
 				}));
 
 				// Incrementally update the store with the new orders

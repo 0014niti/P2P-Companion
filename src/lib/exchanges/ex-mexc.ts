@@ -1,4 +1,4 @@
-import { extractTerms, checkIsRestricted, type ExchangeP2PAd } from '.';
+import { extractTerms, checkIsNewUserOnly, type ExchangeP2PAd } from '.';
 
 const coinIdsMap: Record<string, string> = {
 	USDT: '128f589271cb4951b03e71e6323eb7be',
@@ -63,6 +63,6 @@ export const fetchMexc = async (props: { type: 'buy' | 'sell'; token: string; fi
 			positiveRate: Number(item.merchantStatistics.completeRate)
 		},
 		terms: extractTerms(item),
-		isRestricted: checkIsRestricted(item)
+		isNewUserOnly: checkIsNewUserOnly(item)
 	})) as ExchangeP2PAd[];
 };

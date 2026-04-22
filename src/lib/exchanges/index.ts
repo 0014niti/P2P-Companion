@@ -2,55 +2,55 @@ export const exchanges = {
 	binance: {
 		name: 'Binance',
 		tokensList: ['USDT', 'BTC', 'FDUSD', 'BNB', 'ETH', 'USDC'] as string[],
-		icon: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Binance_Logo.svg/768px-Binance_Logo.svg.png', // Accessing actual logo `apple-touch-icon` is blocked,
+		icon: 'https://www.google.com/s2/favicons?domain=binance.com&sz=128',
 		p2pLink: 'https://p2p.binance.com/en'
 	},
 	okx: {
 		name: 'OKX',
 		tokensList: ['USDT', 'USDC', 'BTC', 'ETH'] as string[],
-		icon: 'https://www.okx.com/cdn/assets/imgs/253/59830BB78B18A776.png',
+		icon: 'https://www.google.com/s2/favicons?domain=okx.com&sz=128',
 		p2pLink: 'https://www.okx.com/p2p-markets'
 	},
 	bybit: {
 		name: 'Bybit',
 		tokensList: ['USDT', 'BTC', 'ETH', 'USDC'] as string[],
-		icon: 'https://cdn.bybit.com/favicon.ico',
+		icon: 'https://www.google.com/s2/favicons?domain=bybit.com&sz=128',
 		p2pLink: 'https://www.bybit.com/fiat/trade/otc'
 	},
 	mexc: {
 		name: 'MEXC',
 		tokensList: ['USDT', 'BTC', 'ETH', 'USDC', 'TRX', 'DOGE', 'SOL', 'TON'] as string[],
-		icon: 'https://static.mocortech.com/image-host/web/web-app-icon-v2.8970dcc55ed4.png',
+		icon: 'https://www.google.com/s2/favicons?domain=mexc.com&sz=128',
 		p2pLink: 'https://www.mexc.co/buy-crypto/p2p'
 	},
 	bitget: {
 		name: 'Bitget',
 		tokensList: ['USDT', 'USDC', 'BTC', 'ETH', 'BGB', 'DAI'] as string[],
-		icon: 'https://www.bitget.com/baseasset/favicon4.png',
+		icon: 'https://www.google.com/s2/favicons?domain=bitget.com&sz=128',
 		p2pLink: 'https://www.bitget.com/p2p-trade'
 	},
 	kucoin: {
 		name: 'KuCoin',
 		tokensList: ['USDT', 'BTC', 'ETH', 'KCS', 'USDC'] as string[],
-		icon: 'https://assets.staticimg.com/cms/media/3g12bgqVCEJ4yVw9EIfYg7w2bBvE2rRihD1EaZk5s.png',
+		icon: 'https://www.google.com/s2/favicons?domain=kucoin.com&sz=128',
 		p2pLink: 'https://www.kucoin.com/p2p'
 	},
 	htx: {
 		name: 'HTX',
 		tokensList: ['USDT', 'BTC', 'ETH', 'HT', 'USDC'] as string[],
-		icon: 'https://www.htx.com/favicon.ico',
+		icon: 'https://www.google.com/s2/favicons?domain=htx.com&sz=128',
 		p2pLink: 'https://www.htx.com/en-us/fiat-crypto/trade/buy-usdt-usd'
 	},
 	bingx: {
 		name: 'BingX',
 		tokensList: ['USDT', 'BTC', 'ETH', 'USDC'] as string[],
-		icon: 'https://bingx.com/favicon.ico',
+		icon: 'https://www.google.com/s2/favicons?domain=bingx.com&sz=128',
 		p2pLink: 'https://bingx.com/en-us/p2p/'
 	},
 	gateio: {
 		name: 'Gate.io',
 		tokensList: ['USDT', 'BTC', 'ETH', 'DOGE'] as string[],
-		icon: 'https://www.gate.io/favicon.ico',
+		icon: 'https://www.google.com/s2/favicons?domain=gate.io&sz=128',
 		p2pLink: 'https://www.gate.io/p2p'
 	}
 } as const;
@@ -99,7 +99,7 @@ export type ExchangeP2PAd = {
 		positiveRate: number;
 	};
 	terms?: string;
-	isRestricted?: boolean;
+	isNewUserOnly?: boolean;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -181,19 +181,22 @@ export const extractTerms = (item: any): string => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const checkIsRestricted = (item: any): boolean => {
+export const checkIsNewUserOnly = (item: any): boolean => {
 	if (!item || typeof item !== 'object') return false;
 
-	// Check explicit tradable flags from APIs that return false if restricted
+	// Check known flags for "New User Only" ads
 	if (
-		item.isTradable === false || item.tradable === false || 
-		item.canTrade === false || item.allowTrade === false || 
-		item.adv?.isTradable === false || item.adv?.tradable === false
+		item.isNewUserTrade === true ||
+		item.newbieOnly === true ||
+		item.isNewUserOnly === true ||
+		item.newBuyerOnly === true ||
+		item.adv?.isNewUserTrade === true ||
+		(Array.isArray(item.adv?.classifies) && item.adv.classifies.includes('new_user')) ||
+		(Array.isArray(item.classifies) && item.classifies.includes('new_user')) ||
+		item.adv?.buyerCompleteOrdersLimit === 0 || 
+		item.buyerCompleteOrdersLimit === 0
 	) return true;
 
-	// Check for specific requirement limits commonly found in Binance, OKX, etc.
-	if (item.adv?.buyerRegDaysLimit > 0 || item.adv?.buyerBtcPositionLimit > 0) return true;
-	if (item.minRegisterDays > 0 || item.countryLimit || item.adv?.countryLimit) return true;
 	
 	return false;
 };
