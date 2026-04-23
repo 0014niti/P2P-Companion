@@ -100,26 +100,51 @@
 					<div>
 						<h3 class="text-sm font-bold text-zinc-900 leading-tight">P2P Scanner Terminal</h3>
 						<p class="text-[11px] text-zinc-500 font-medium">Live market data aggregation (Current)</p>
-					</div>
-				</li>
-				<li class="group flex items-center gap-3 p-2.5 rounded-xl border border-transparent hover:bg-white/50 hover:border-white/40 transition-colors cursor-default">
-					<div class="h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></div>
-					<div>
-						<h3 class="text-sm font-bold text-zinc-900 leading-tight">Premium Arbitrage Intel</h3>
-						<p class="text-[11px] text-zinc-500 font-medium">Curated signals & guided trading pairs (Next)</p>
-					</div>
-				</li>
-				<li class="group flex items-center gap-3 p-2.5 rounded-xl border border-transparent hover:bg-white/50 hover:border-white/40 transition-colors cursor-default opacity-60 hover:opacity-100">
-					<div class="h-2 w-2 rounded-full bg-zinc-300"></div>
-					<div>
-						<h3 class="text-sm font-bold text-zinc-900 leading-tight">Volatility Alerts</h3>
-						<p class="text-[11px] text-zinc-500 font-medium">Real-time Telegram/WebSocket notifications</p>
-					</div>
-				</li>
-			</ul>
-		</div>
+				<div class="md:col-span-6 rounded-[32px] border border-indigo-100/50 bg-indigo-50/30 backdrop-blur-2xl p-8 shadow-xl shadow-indigo-100/20 flex flex-col relative overflow-hidden group">
+			<div class="absolute -top-20 -right-20 w-40 h-40 bg-indigo-400/20 rounded-full blur-3xl transition-transform group-hover:scale-150 duration-700"></div>
 
-	</div>
+			<div class="flex items-center justify-between mb-6 relative z-10">
+				<div>
+					<h2 class="text-2xl font-black tracking-tight text-zinc-950">Terminal Roadmap</h2>
+					<p class="text-xs font-semibold text-indigo-600/80 uppercase tracking-widest mt-1">Help shape the future</p>
+				</div>
+				<span class="rounded-lg bg-indigo-100 border border-indigo-200 text-indigo-800 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+					<span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span></span>
+					Building
+				</span>
+			</div>
+			
+			<ul class="space-y-4 flex-grow relative z-10 border-l-2 border-indigo-200/50 ml-2 pl-5">
+				
+				<li class="relative group cursor-default">
+					<div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-green-500 ring-4 ring-green-500/20"></div>
+					<div class="p-3.5 rounded-xl bg-white/70 border border-white/60 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-white">
+						<h3 class="text-sm font-bold text-zinc-900 leading-tight">V1: P2P Aggregation Engine</h3>
+						<p class="text-[11px] text-zinc-500 font-medium mt-1">Live market data & basic spread calculator (Current)</p>
+					</div>
+				</li>
+
+				<li class="relative group cursor-default">
+					<div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-indigo-500 ring-4 ring-indigo-500/20 animate-[pulse_2s_ease-in-out_infinite]"></div>
+					<div class="p-3.5 rounded-xl border border-indigo-200/60 bg-gradient-to-br from-white/80 to-indigo-50/50 shadow-sm transition-all duration-300 transform group-hover:translate-x-1 group-hover:shadow-md group-hover:border-indigo-300">
+						<div class="flex justify-between items-start mb-1">
+							<h3 class="text-sm font-bold text-indigo-950 leading-tight">V2: Premium Arbitrage Intel</h3>
+							<span class="text-[9px] font-black text-indigo-700 uppercase bg-indigo-100/80 border border-indigo-200 px-1.5 py-0.5 rounded">Up Next</span>
+						</div>
+						<p class="text-[11px] text-zinc-600 font-medium">Curated signals, API endpoints, & guided trading pairs.</p>
+					</div>
+				</li>
+
+			</ul>
+
+			<div class="mt-6 pt-5 border-t border-indigo-200/60 relative z-10">
+				<p class="text-[11px] font-bold text-zinc-500 uppercase tracking-wider mb-3 text-center">Missing a specific exchange?</p>
+				<a href="mailto:your-email@example.com?subject=P2P Companion Feature Request" class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600/10 border border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-600/20 text-indigo-700 px-4 py-3 text-sm font-bold transition-all duration-300 active:scale-95 group">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform group-hover:-translate-y-0.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+					Request a Feature / Contact Dev
+				</a>
+			</div>
+		</div>
 </main>
 
 <style>
