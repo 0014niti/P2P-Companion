@@ -204,14 +204,8 @@
 			</div>
 		{/if}
 	</div>
-{:else}
-			<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }}>
-				<ComparisonTable orders={$p2pOrderStore.orders} isLoading={$p2pOrderStore.isLoading} />
-			</div>
-		{/if}
-	</div>
 
-	<article class="mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-6 md:p-8 shadow-sm">
+<article class="mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-6 md:p-8 shadow-sm">
 		<h2 class="text-2xl font-black tracking-tight text-zinc-900 mb-4">Global Crypto P2P Arbitrage Scanner</h2>
 		<p class="text-zinc-700 mb-6 leading-relaxed">
 			Welcome to the premier global arbitrage terminal designed for cryptocurrency traders. Our tool aggregates real-time Peer-to-Peer (P2P) data across major centralized exchanges, allowing you to instantly compare USDT prices and identify lucrative arbitrage opportunities across different fiat currencies.
@@ -228,10 +222,4 @@
 		</p>
 	</article>
 
-</div> ```
-
-### Why this specific text works for the algorithm:
-1.  **`<article>` tag:** Wraps the text in an HTML5 semantic element that tells Google "this is the core written content of the page."
-2.  **Keyword Proximity:** It naturally includes high-value terms like "P2P Arbitrage," "Compare USDT prices," "Binance," "OKX," "fiat off-ramp," and "stablecoins."
-3.  **TF-IDF Score:** It provides enough context (about 200 words) for the algorithm to confidently classify your dynamic application as a financial comparison tool, rather than a blank page with a javascript table.
 </div>
