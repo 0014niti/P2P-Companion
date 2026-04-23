@@ -88,19 +88,7 @@
 			</div>
 		</article>
 
-		<div class="md:col-span-6 rounded-[32px] border border-indigo-100/50 bg-indigo-50/30 backdrop-blur-2xl p-8 shadow-xl shadow-indigo-100/20 flex flex-col">
-			<div class="flex items-center justify-between mb-4">
-				<h2 class="text-2xl font-black tracking-tight text-zinc-950">Terminal Roadmap</h2>
-				<span class="rounded-lg bg-indigo-100 border border-indigo-200 text-indigo-800 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">Vision</span>
-			</div>
-			
-			<ul class="space-y-2 flex-grow">
-				<li class="group flex items-center gap-3 p-2.5 rounded-xl bg-white/60 border border-white/40 hover:bg-white transition-colors cursor-default">
-					<div class="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-					<div>
-						<h3 class="text-sm font-bold text-zinc-900 leading-tight">P2P Scanner Terminal</h3>
-						<p class="text-[11px] text-zinc-500 font-medium">Live market data aggregation (Current)</p>
-				<div class="md:col-span-6 rounded-[32px] border border-indigo-100/50 bg-indigo-50/30 backdrop-blur-2xl p-8 shadow-xl shadow-indigo-100/20 flex flex-col relative overflow-hidden group">
+		<div class="md:col-span-6 rounded-[32px] border border-indigo-100/50 bg-indigo-50/30 backdrop-blur-2xl p-8 shadow-xl shadow-indigo-100/20 flex flex-col relative overflow-hidden group">
 			<div class="absolute -top-20 -right-20 w-40 h-40 bg-indigo-400/20 rounded-full blur-3xl transition-transform group-hover:scale-150 duration-700"></div>
 
 			<div class="flex items-center justify-between mb-6 relative z-10">
@@ -131,7 +119,29 @@
 							<h3 class="text-sm font-bold text-indigo-950 leading-tight">V2: Premium Arbitrage Intel</h3>
 							<span class="text-[9px] font-black text-indigo-700 uppercase bg-indigo-100/80 border border-indigo-200 px-1.5 py-0.5 rounded">Up Next</span>
 						</div>
-						<p class="text-[11px] text-zinc-600 font-medium">Curated signals, API endpoints, & guided trading pairs.</p>
+						<p class="text-[11px] text-zinc-600 font-medium mt-1">Curated signals, API endpoints, & guided trading pairs.</p>
+					</div>
+				</li>
+
+				<li class="relative group cursor-default">
+					<div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-300 ring-4 ring-zinc-300/20"></div>
+					<div class="p-3.5 rounded-xl border border-white/50 bg-white/40 shadow-sm transition-all duration-300 opacity-70 group-hover:opacity-100 group-hover:bg-white/60">
+						<div class="flex justify-between items-start mb-1">
+							<h3 class="text-sm font-bold text-zinc-800 leading-tight">V3: Volatility Alerts & APIs</h3>
+							<span class="text-[9px] font-bold text-zinc-500 uppercase bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded">Planned</span>
+						</div>
+						<p class="text-[11px] text-zinc-500 font-medium mt-1">Real-time Telegram/WebSocket notifications and developer API access.</p>
+					</div>
+				</li>
+
+				<li class="relative group cursor-default">
+					<div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-300 ring-4 ring-zinc-300/20"></div>
+					<div class="p-3.5 rounded-xl border border-white/50 bg-white/40 shadow-sm transition-all duration-300 opacity-70 group-hover:opacity-100 group-hover:bg-white/60">
+						<div class="flex justify-between items-start mb-1">
+							<h3 class="text-sm font-bold text-zinc-800 leading-tight">V4: One-Click Execution</h3>
+							<span class="text-[9px] font-bold text-zinc-500 uppercase bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded">Vision</span>
+						</div>
+						<p class="text-[11px] text-zinc-500 font-medium mt-1">Automated trade execution across multiple exchanges directly from the terminal.</p>
 					</div>
 				</li>
 
@@ -145,6 +155,8 @@
 				</a>
 			</div>
 		</div>
+
+	</div>
 </main>
 
 <style>
