@@ -39,7 +39,7 @@
 		}
 	</script>`}
 
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client==ca-pub-5684719528000331" crossorigin="anonymous"></script>
 </svelte:head>
 
 <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-50">
