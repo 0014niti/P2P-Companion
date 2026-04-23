@@ -10,6 +10,7 @@
 	import { Settings2, RefreshCw, Activity } from 'lucide-svelte';
 	import { slide, fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { onMount } from 'svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
 	const currentFilters = $derived(filterState.current);
@@ -41,12 +42,26 @@
 			return acc;
 		}, new Map<string, P2POrder[]>());
 	});
+
+	// Initialize Google AdSense banner after the component mounts
+	onMount(() => {
+		try {
+			// @ts-ignore
+			(window.adsbygoogle = window.adsbygoogle || []).push({});
+		} catch (err) {
+			console.error('AdSense initialization error:', err);
+		}
+	});
 </script>
 
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+	<!-- Google AdSense Global Script (Handles Auto Ads & Popups) -->
+	<!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your actual Publisher ID -->
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 </svelte:head>
 
 <style>
@@ -84,6 +99,19 @@
 
 <div class="mx-auto max-w-screen-2xl px-3 py-4 md:py-8 sm:px-6 lg:px-8 space-y-6 md:space-y-8">
 	
+	<!-- Responsive Header Banner Ad -->
+	<div class="w-full relative flex items-center justify-center bg-white/60 backdrop-blur-xl border border-zinc-200/60 rounded-2xl p-2 md:p-3 shadow-sm min-h-[100px] overflow-hidden">
+		<span class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest absolute z-0">Advertisement</span>
+		
+		<!-- Replace data-ad-client and data-ad-slot with your actual Ad IDs -->
+		<ins class="adsbygoogle relative z-10"
+			style="display:block; width:100%; max-height:120px;"
+			data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+			data-ad-slot="YYYYYYYYYYYY"
+			data-ad-format="horizontal"
+			data-full-width-responsive="true"></ins>
+	</div>
+
 	<!-- Dashboard Console Header -->
 	<div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
 		<div class="space-y-4">
@@ -158,9 +186,9 @@
 
 	<div class="pt-2">
 		{#if viewMode === 'cards'}
-			<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:overflow-visible md:snap-none md:pb-0 hide-scrollbar">
+			<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} class="flex w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth gap-4 pb-6 pt-2 px-2 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:overflow-visible md:snap-none md:pb-0 md:pt-0 md:px-0 hide-scrollbar">
 				{#each filterExchangesArr(filterStateSelectedToken) as exchange (exchange.key)}
-					<div class="w-[85vw] max-w-[340px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink">
+					<div class="w-[90vw] max-w-[360px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink transition-transform duration-300">
 						<ExchangeCards
 							{exchange}
 							ads={ordersByExchange.get(exchange.name) ?? []}

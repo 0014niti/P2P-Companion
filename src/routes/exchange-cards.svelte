@@ -74,10 +74,10 @@
 				<p class="text-xs">{error.message || 'Error loading data'}</p>
 			</div>
 		{:else if ads.length > 0}
-			<div class="divide-y max-h-[60vh] md:max-h-[400px] overflow-y-auto hide-scrollbar">
+			<div class="divide-y divide-zinc-100/80 max-h-[65vh] md:max-h-[400px] overflow-y-auto overscroll-contain hide-scrollbar">
 				{#each ads as ad (ad.id)}
 					<div
-						class="p-3 md:p-4 hover:bg-zinc-50/80 border-b border-zinc-200/50 last:border-0 cursor-pointer transition-all duration-300 ease-out active:bg-zinc-100/60"
+						class="p-4 hover:bg-zinc-50/80 border-b border-zinc-100 last:border-0 cursor-pointer transition-all duration-300 ease-out active:bg-zinc-100/80 group"
 						role="button"
 						tabindex="0"
 						onclick={() => toggleExpand(ad.id)}
@@ -85,11 +85,11 @@
 					>
 						<!-- Ultra Compact 2-Line Header -->
 						<div class="flex justify-between items-start">
-							<div class="flex flex-col gap-0.5">
-								<div class="font-black text-zinc-900 text-[18px] tracking-tight leading-none flex items-center gap-1.5">
+							<div class="flex flex-col gap-1">
+								<div class="font-black text-zinc-900 text-[17px] md:text-[18px] tracking-tight leading-none flex items-center gap-1.5">
 									{Number(ad.price).toLocaleString(undefined, { minimumFractionDigits: 2 })} <span class="text-[10px] font-bold text-zinc-400 mt-1 uppercase">{ad.fiat}</span>
 									{#if ad.isNewUserOnly}
-										<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border border-blue-200 bg-blue-50 text-blue-600 leading-none uppercase tracking-wider shadow-sm">New User</span>
+										<span class="text-[8px] font-bold px-1.5 py-0.5 rounded border border-blue-200 bg-blue-50 text-blue-600 leading-none uppercase tracking-wider shadow-sm">New User</span>
 									{/if}
 								</div>
 								{#if $p2pOrderStore.marketRate}
@@ -98,8 +98,8 @@
 										{diff > 0 ? '+' : ''}{diff.toFixed(2)}% vs market
 									</div>
 								{/if}
-								<div class="text-[11px] font-bold text-zinc-400 flex items-center gap-1.5 mt-1">
-									<span class="truncate max-w-[150px]" title={ad.merchantName}>{ad.merchantName}</span>
+								<div class="text-[11px] font-bold text-zinc-500 flex items-center gap-1.5">
+									<span class="truncate max-w-[140px]" title={ad.merchantName}>{ad.merchantName}</span>
 									{#if ad.merchantStats}
 										<span class="text-emerald-600 font-bold">
 											{(ad.merchantStats.positiveRate * 100).toFixed(0)}%
@@ -111,15 +111,14 @@
 								<div class="text-[11px] font-bold text-zinc-600 tracking-tight bg-zinc-100 px-2 py-0.5 rounded-md border border-zinc-200/50">
 									{new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.minLimit)} - {new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.maxLimit)}
 								</div>
-								<ChevronDown class={cn('size-4 mt-1 text-zinc-400 transition-transform duration-300 ease-out', { 'rotate-180 text-zinc-900': expandedAds.has(ad.id) })} />
+								<ChevronDown class={cn('size-4 mt-1.5 text-zinc-400 group-hover:text-zinc-600 transition-all duration-300 ease-out', { 'rotate-180 text-zinc-900': expandedAds.has(ad.id) })} />
 							</div>
 						</div>
 
-						<!-- Always-visible Terms snippet -->
-						<div class="mt-3 text-[10px] text-zinc-400 font-medium line-clamp-1 italic">
+						<!-- Always-visible Terms snippet (Clickable) -->
+						<div class="mt-2.5 text-[10px] text-zinc-400 font-medium line-clamp-1 italic group-hover:text-zinc-500 transition-colors">
 							{ad.terms?.trim() ? ad.terms.replace(/\n/g, ' ').trim() : 'No terms specified'}
 						</div>
-
 						<!-- Expandable Details -->
 						{#if expandedAds.has(ad.id)}
 							<div transition:slide={{ duration: 300, easing: cubicOut }} class="mt-4 pt-4 border-t border-zinc-100 text-[11px] space-y-2.5">

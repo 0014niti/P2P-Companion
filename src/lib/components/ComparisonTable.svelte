@@ -2,6 +2,7 @@
 	// This component expects an array of fetched P2P order data.
 	import type { P2POrder } from '$lib/types';
 	import { p2pOrderStore } from '$lib/p2p-orders';
+	import { cn } from '$lib/utils';
 
 	let {
 		orders = [],
@@ -10,6 +11,17 @@
 		orders?: P2POrder[];
 		isLoading?: boolean;
 	} = $props();
+
+	// State to track which order terms are currently expanded
+	let expandedTerms = $state<Set<string>>(new Set());
+
+	const toggleTerms = (orderId: string) => {
+		expandedTerms = new Set(
+			expandedTerms.has(orderId)
+				? [...expandedTerms].filter(id => id !== orderId)
+				: [...expandedTerms, orderId]
+		);
+	};
 </script>
 
 <div class="overflow-x-auto rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl shadow-sm">
@@ -46,8 +58,18 @@
 						<td class="px-4 py-3 md:px-8 md:py-5">
 							<div class="font-black text-zinc-900 text-[15px]">{order.exchange}</div>
 							<div class="text-xs font-bold text-zinc-500 mt-0.5">{order.merchantName}</div>
-							<div class="mt-2 max-w-[220px] truncate text-[11px] italic text-zinc-400 cursor-help" title={order.terms?.trim() || 'No terms specified'}>
-								{order.terms?.trim() ? order.terms.replace(/\n/g, ' ').trim() : 'No terms specified'}
+							<div 
+								class={cn(
+									"mt-2 max-w-[220px] md:max-w-[300px] text-[11px] italic text-zinc-400 cursor-pointer hover:text-zinc-600 transition-all duration-200", 
+									expandedTerms.has(order.id) ? "whitespace-pre-wrap break-words" : "truncate"
+								)} 
+								title="Click to expand/collapse terms"
+								role="button"
+								tabindex="0"
+								onclick={() => toggleTerms(order.id)}
+								onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleTerms(order.id); }}
+							>
+								{order.terms?.trim() ? (expandedTerms.has(order.id) ? order.terms.trim() : order.terms.replace(/\n/g, ' ').trim()) : 'No terms specified'}
 							</div>
 						</td>
 						<td class="px-4 py-3 md:px-8 md:py-5">
