@@ -2,7 +2,35 @@
 	<title>Premium Crypto P2P Arbitrage Scanner | Live USDT Spreads</title>
 	<meta name="description" content="A 100% free, no-login crypto arbitrage terminal. Experience a premium UI while comparing real-time P2P USDT prices across Binance, OKX, and Bybit." />
 	<meta name="keywords" content="free crypto arbitrage, no login P2P scanner, premium crypto UI, USDT arbitrage scanner, Binance P2P, OKX P2P, fiat off-ramp" />
+	<svelte:head>
+	<title>Premium Crypto P2P Arbitrage Scanner | Live USDT Spreads</title>
+	<meta name="description" content="A 100% free, no-login crypto arbitrage terminal. Experience a premium UI while comparing real-time P2P USDT prices across Binance, OKX, and Bybit." />
+	<meta name="keywords" content="free crypto arbitrage, no login P2P scanner, premium crypto UI, USDT arbitrage scanner, Binance P2P, OKX P2P, fiat off-ramp" />
 	
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "WebApplication",
+			"name": "P2P Companion",
+			"url": "https://p2pcompanion.vercel.app/",
+			"description": "Global crypto arbitrage terminal to compare real-time P2P stablecoin prices across major centralized exchanges.",
+			"applicationCategory": "FinanceApplication",
+			"genre": "Cryptocurrency Arbitrage Scanner",
+			"operatingSystem": "WebBrowser",
+			"offers": {
+				"@type": "Offer",
+				"price": "0.00",
+				"priceCurrency": "USD"
+			},
+			"creator": {
+				"@type": "Organization",
+				"name": "P2P Companion"
+			}
+		}
+	</script>
+
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+</svelte:head>
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 </svelte:head>
 
