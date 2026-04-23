@@ -110,8 +110,8 @@
 		<span class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest absolute z-0">Advertisement</span>
 		<ins class="adsbygoogle relative z-10"
 			style="display:block; width:100%; max-height:120px;"
-			data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-			data-ad-slot="YYYYYYYYYYYY"
+			data-ad-client="ca-pub-5684719528000331"
+			data-ad-slot="9054339491"
 			data-ad-format="horizontal"
 			data-full-width-responsive="true"></ins>
 	</div>
