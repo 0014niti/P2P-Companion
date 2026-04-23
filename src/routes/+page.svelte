@@ -3,6 +3,7 @@
 	// Initialize Google AdSense banner after the component mounts
 	onMount(() => {
 		try {
+			// @ts-ignore
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
 		} catch (err) {
 			console.error('AdSense initialization error:', err);
@@ -39,17 +40,6 @@
 
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 </svelte:head>
-<script>
-	import { onMount } from 'svelte';
-	// Initialize Google AdSense banner after the component mounts
-	onMount(() => {
-		try {
-			(window.adsbygoogle = window.adsbygoogle || []).push({});
-		} catch (err) {
-			console.error('AdSense initialization error:', err);
-		}
-	});
-</script>
 
 <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-50">
 	<div class="absolute -top-[10%] -left-[10%] h-[60%] w-[50%] rounded-full bg-blue-300/20 blur-[120px]"></div>
@@ -136,7 +126,6 @@
 			</div>
 			
 			<ul class="space-y-4 flex-grow relative z-10 border-l-2 border-indigo-200/50 ml-2 pl-5">
-				
 				<li class="relative group cursor-default">
 					<div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-green-500 ring-4 ring-green-500/20"></div>
 					<div class="p-3.5 rounded-xl bg-white/70 border border-white/60 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-white">
@@ -177,7 +166,6 @@
 						<p class="text-[11px] text-zinc-500 font-medium mt-1">Automated trade execution across multiple exchanges directly from the terminal.</p>
 					</div>
 				</li>
-
 			</ul>
 
 			<div class="mt-6 pt-5 border-t border-indigo-200/60 relative z-10">
