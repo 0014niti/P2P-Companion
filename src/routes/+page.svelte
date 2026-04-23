@@ -1,8 +1,16 @@
+<script>
+	import { onMount } from 'svelte';
+	// Initialize Google AdSense banner after the component mounts
+	onMount(() => {
+		try {
+			(window.adsbygoogle = window.adsbygoogle || []).push({});
+		} catch (err) {
+			console.error('AdSense initialization error:', err);
+		}
+	});
+</script>
+
 <svelte:head>
-	<title>Premium Crypto P2P Arbitrage Scanner | Live USDT Spreads</title>
-	<meta name="description" content="A 100% free, no-login crypto arbitrage terminal. Experience a premium UI while comparing real-time P2P USDT prices across Binance, OKX, and Bybit." />
-	<meta name="keywords" content="free crypto arbitrage, no login P2P scanner, premium crypto UI, USDT arbitrage scanner, Binance P2P, OKX P2P, fiat off-ramp" />
-	<svelte:head>
 	<title>Premium Crypto P2P Arbitrage Scanner | Live USDT Spreads</title>
 	<meta name="description" content="A 100% free, no-login crypto arbitrage terminal. Experience a premium UI while comparing real-time P2P USDT prices across Binance, OKX, and Bybit." />
 	<meta name="keywords" content="free crypto arbitrage, no login P2P scanner, premium crypto UI, USDT arbitrage scanner, Binance P2P, OKX P2P, fiat off-ramp" />
@@ -31,9 +39,6 @@
 
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 </svelte:head>
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
-</svelte:head>
-
 <script>
 	import { onMount } from 'svelte';
 	// Initialize Google AdSense banner after the component mounts
