@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
+	
 	// Initialize Google AdSense banner after the component mounts
 	onMount(() => {
 		try {
@@ -16,7 +17,7 @@
 	<meta name="description" content="A 100% free, no-login crypto arbitrage terminal. Experience a premium UI while comparing real-time P2P USDT prices across Binance, OKX, and Bybit." />
 	<meta name="keywords" content="free crypto arbitrage, no login P2P scanner, premium crypto UI, USDT arbitrage scanner, Binance P2P, OKX P2P, fiat off-ramp" />
 	
-	<script type="application/ld+json">
+	{@html `<script type="application/ld+json">
 		{
 			"@context": "https://schema.org",
 			"@type": "WebApplication",
@@ -36,7 +37,7 @@
 				"name": "P2P Companion"
 			}
 		}
-	</script>
+	</script>`}
 
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 </svelte:head>
