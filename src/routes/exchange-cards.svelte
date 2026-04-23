@@ -38,12 +38,12 @@
 </script>
 
 <Card class="hover:shadow-xl transition-all duration-500 ease-out overflow-hidden flex flex-col h-full bg-white/80 backdrop-blur-xl border border-zinc-200/60 shadow-sm rounded-2xl">
-	<CardHeader class="p-4 md:p-5 border-b border-zinc-200/50 flex flex-row items-center justify-between space-y-0 bg-white/30">
+	<CardHeader class="p-5 border-b border-zinc-200/50 flex flex-row items-center justify-between space-y-0 bg-white/30">
 		<CardTitle class="flex items-center gap-2">
 			<img
 				src={exchange.icon}
 				alt={exchange.name}
-				class="size-6 md:size-7 rounded-xl border border-zinc-200/60 bg-white p-1 shadow-sm"
+				class="size-7 rounded-xl border border-zinc-200/60 bg-white p-1 shadow-sm"
 			/>
 			<span class="font-black text-base truncate tracking-tight text-zinc-900">{exchange.name}</span>
 		</CardTitle>
@@ -51,7 +51,7 @@
 			href={exchange.p2pLink}
 			target="_blank"
 			rel="noopener noreferrer"
-			class="text-[11px] font-bold text-blue-700 flex items-center gap-1 bg-blue-50 border border-blue-100 px-3 py-1 md:px-3.5 md:py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:bg-blue-100 active:scale-95"
+			class="text-[11px] font-bold text-blue-700 flex items-center gap-1 bg-blue-50 border border-blue-100 px-3.5 py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:bg-blue-100 active:scale-95"
 			title={`Trade on ${exchange.name}`}
 		>
 			Trade <span class="text-[12px] leading-none">↗</span>
@@ -62,7 +62,7 @@
 		{#if isLoading && ads.length === 0}
 			<div class="divide-y divide-zinc-100">
 				{#each Array(5) as _}
-					<div class="p-3 md:p-4 space-y-2">
+					<div class="p-4 space-y-2">
 						<div class="flex justify-between items-center"><div class="h-4 bg-zinc-200/60 rounded w-1/3 animate-pulse"></div><div class="h-3 bg-zinc-200/60 rounded w-1/4 animate-pulse"></div></div>
 						<div class="h-3 bg-zinc-100/60 rounded w-1/2 animate-pulse"></div>
 					</div>
@@ -74,10 +74,10 @@
 				<p class="text-xs">{error.message || 'Error loading data'}</p>
 			</div>
 		{:else if ads.length > 0}
-			<div class="divide-y divide-zinc-100/80 max-h-[65vh] md:max-h-[400px] overflow-y-auto overscroll-contain hide-scrollbar">
+			<div class="divide-y divide-zinc-100/80 max-h-[60vh] md:max-h-[400px] overflow-y-auto hide-scrollbar">
 				{#each ads as ad (ad.id)}
 					<div
-						class="p-4 hover:bg-zinc-50/80 border-b border-zinc-100 last:border-0 cursor-pointer transition-all duration-300 ease-out active:bg-zinc-100/80 group"
+						class="p-4 hover:bg-zinc-50/80 border-b border-zinc-100 last:border-0 cursor-pointer transition-all duration-300 ease-out active:bg-zinc-100/60 group"
 						role="button"
 						tabindex="0"
 						onclick={() => toggleExpand(ad.id)}
@@ -86,10 +86,10 @@
 						<!-- Ultra Compact 2-Line Header -->
 						<div class="flex justify-between items-start">
 							<div class="flex flex-col gap-1">
-								<div class="font-black text-zinc-900 text-[17px] md:text-[18px] tracking-tight leading-none flex items-center gap-1.5">
+								<div class="font-black text-zinc-900 text-[18px] tracking-tight leading-none flex items-center gap-1.5">
 									{Number(ad.price).toLocaleString(undefined, { minimumFractionDigits: 2 })} <span class="text-[10px] font-bold text-zinc-400 mt-1 uppercase">{ad.fiat}</span>
 									{#if ad.isNewUserOnly}
-										<span class="text-[8px] font-bold px-1.5 py-0.5 rounded border border-blue-200 bg-blue-50 text-blue-600 leading-none uppercase tracking-wider shadow-sm">New User</span>
+										<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border border-blue-200 bg-blue-50 text-blue-600 leading-none uppercase tracking-wider shadow-sm">New User</span>
 									{/if}
 								</div>
 								{#if $p2pOrderStore.marketRate}
@@ -99,7 +99,7 @@
 									</div>
 								{/if}
 								<div class="text-[11px] font-bold text-zinc-500 flex items-center gap-1.5">
-									<span class="truncate max-w-[140px]" title={ad.merchantName}>{ad.merchantName}</span>
+									<span class="truncate max-w-[150px]" title={ad.merchantName}>{ad.merchantName}</span>
 									{#if ad.merchantStats}
 										<span class="text-emerald-600 font-bold">
 											{(ad.merchantStats.positiveRate * 100).toFixed(0)}%
@@ -111,12 +111,12 @@
 								<div class="text-[11px] font-bold text-zinc-600 tracking-tight bg-zinc-100 px-2 py-0.5 rounded-md border border-zinc-200/50">
 									{new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.minLimit)} - {new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.maxLimit)}
 								</div>
-								<ChevronDown class={cn('size-4 mt-1.5 text-zinc-400 group-hover:text-zinc-600 transition-all duration-300 ease-out', { 'rotate-180 text-zinc-900': expandedAds.has(ad.id) })} />
+								<ChevronDown class={cn('size-4 mt-1 text-zinc-400 group-hover:text-zinc-600 transition-all duration-300 ease-out', { 'rotate-180 text-zinc-900': expandedAds.has(ad.id) })} />
 							</div>
 						</div>
 
 						<!-- Always-visible Terms snippet (Clickable) -->
-						<div class="mt-2.5 text-[10px] text-zinc-400 font-medium line-clamp-1 italic group-hover:text-zinc-500 transition-colors">
+						<div class="mt-3 text-[10px] text-zinc-400 font-medium line-clamp-1 italic group-hover:text-zinc-500 transition-colors">
 							{ad.terms?.trim() ? ad.terms.replace(/\n/g, ' ').trim() : 'No terms specified'}
 						</div>
 						<!-- Expandable Details -->
