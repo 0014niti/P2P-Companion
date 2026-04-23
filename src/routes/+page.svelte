@@ -95,8 +95,8 @@
 					style="display:block; text-align:center; width:100%; height:100%;"
 					data-ad-layout="in-article"
 					data-ad-format="fluid"
-					data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-					data-ad-slot="YOUR_AD_SLOT_ID"></ins>
+					data-ad-client="ca-pub-5684719528000331"
+					data-ad-slot="9284297997"></ins>
 			</div>
 		</div>
 
