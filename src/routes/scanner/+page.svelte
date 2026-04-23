@@ -7,7 +7,8 @@
 	import ComparisonTable from '$lib/components/ComparisonTable.svelte';
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import type { P2POrder } from '$lib/types';
-	import { Settings2, RefreshCw, Activity } from 'lucide-svelte';
+	// IMPORT UPDATED: Added Heart, Copy, Check, X
+	import { Settings2, RefreshCw, Activity, Heart, Copy, Check, X } from 'lucide-svelte';
 	import { slide, fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
@@ -18,6 +19,18 @@
 	// State to toggle between Card view and Table view
 	let viewMode: 'cards' | 'table' = $state('cards');
 	let showFilters = $state(false);
+	
+	// NEW: State for Donation Modal
+	let showDonation = $state(false);
+	let copiedCoin = $state('');
+
+	// NEW: Copy to clipboard function
+	function copyAddress(address: string, coin: string) {
+		navigator.clipboard.writeText(address);
+		copiedCoin = coin;
+		// Reset checkmark after 2 seconds
+		setTimeout(() => { copiedCoin = ''; }, 2000);
+	}
 
 	// Reactive effect to fetch data whenever filters change
 	$effect(() => {
@@ -59,8 +72,6 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 
-	<!-- Google AdSense Global Script (Handles Auto Ads & Popups) -->
-	<!-- Replace ca-pub-XXXXXXXXXXXXXXXX with your actual Publisher ID -->
 	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 </svelte:head>
 
@@ -86,24 +97,19 @@
 	}
 </style>
 
-<!-- Premium Glassy Mesh Background -->
 <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-50">
-	<!-- Soft Glowing Orbs -->
 	<div class="absolute -top-[20%] -left-[10%] h-[70%] w-[60%] rounded-full bg-blue-400/10 blur-[120px]"></div>
 	<div class="absolute top-[20%] -right-[10%] h-[60%] w-[50%] rounded-full bg-indigo-400/10 blur-[120px]"></div>
 	<div class="absolute -bottom-[20%] left-[10%] h-[60%] w-[60%] rounded-full bg-sky-300/10 blur-[120px]"></div>
 	
-	<!-- Subtle Structural Grid Overlay -->
 	<div class="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
 </div>
 
 <div class="mx-auto max-w-screen-2xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
 	
-	<!-- Responsive Header Banner Ad -->
 	<div class="w-full relative flex items-center justify-center bg-white/60 backdrop-blur-xl border border-zinc-200/60 rounded-2xl p-2 md:p-3 shadow-sm min-h-[100px] overflow-hidden">
 		<span class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest absolute z-0">Advertisement</span>
 		
-		<!-- Replace data-ad-client and data-ad-slot with your actual Ad IDs -->
 		<ins class="adsbygoogle relative z-10"
 			style="display:block; width:100%; max-height:120px;"
 			data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
@@ -112,7 +118,6 @@
 			data-full-width-responsive="true"></ins>
 	</div>
 
-	<!-- Dashboard Console Header -->
 	<div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
 		<div class="space-y-4">
 			<div class="flex items-center gap-3">
@@ -122,7 +127,6 @@
 				{/if}
 			</div>
 			
-			<!-- Premium Market Rates Pills -->
 			{#if $p2pOrderStore.marketRate || $p2pOrderStore.usdRate}
 				<div class="flex flex-wrap items-center gap-3">
 					<div class="flex items-center gap-1.5 text-sm font-bold text-zinc-500 mr-1">
@@ -146,8 +150,16 @@
 			{/if}
 		</div>
 
-		<!-- Action Controls -->
 		<div class="flex flex-wrap items-center gap-3">
+			
+			<button
+				class="flex h-10 items-center justify-center gap-2 rounded-xl border border-rose-200/60 bg-white/80 backdrop-blur-md px-4 font-bold text-rose-600 shadow-sm transition-all duration-300 ease-out hover:bg-rose-50 hover:border-rose-300 active:scale-95"
+				onclick={() => (showDonation = true)}
+			>
+				<Heart class="size-4" />
+				<span class="hidden sm:inline">Support Dev</span>
+			</button>
+
 			<button
 				class={cn("flex h-10 items-center justify-center gap-2 rounded-xl border px-5 font-bold shadow-sm transition-all duration-300 ease-out active:scale-95", showFilters ? "bg-zinc-900 text-white border-zinc-900 shadow-zinc-900/10" : "bg-white/80 backdrop-blur-md border-zinc-200/60 text-zinc-700 hover:bg-white")}
 				onclick={() => (showFilters = !showFilters)}
@@ -177,7 +189,6 @@
 		</div>
 	</div>
 
-	<!-- Filters Expansion -->
 	{#if showFilters}
 		<div transition:slide={{ duration: 300, easing: cubicOut }} class="rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-5 shadow-lg shadow-zinc-200/20">
 			<FilterContainer />
@@ -205,7 +216,7 @@
 		{/if}
 	</div>
 
-<article class="mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-6 md:p-8 shadow-sm">
+	<article class="mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-6 md:p-8 shadow-sm">
 		<h2 class="text-2xl font-black tracking-tight text-zinc-900 mb-4">Global Crypto P2P Arbitrage Scanner</h2>
 		<p class="text-zinc-700 mb-6 leading-relaxed">
 			Welcome to the premier global arbitrage terminal designed for cryptocurrency traders. Our tool aggregates real-time Peer-to-Peer (P2P) data across major centralized exchanges, allowing you to instantly compare USDT prices and identify lucrative arbitrage opportunities across different fiat currencies.
@@ -223,3 +234,64 @@
 	</article>
 
 </div>
+
+{#if showDonation}
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4" onclick={(e) => { if (e.target === e.currentTarget) showDonation = false; }} transition:fade={{ duration: 200 }}>
+        <div class="w-full max-w-md rounded-[24px] border border-white/60 bg-white/90 backdrop-blur-2xl p-6 shadow-2xl" transition:fly={{ y: 20, duration: 300, easing: cubicOut }}>
+            
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2 text-rose-600">
+                    <Heart class="size-5 fill-current" />
+                    <h3 class="text-xl font-black text-zinc-900">Support the Dev</h3>
+                </div>
+                <button class="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition-colors" onclick={() => (showDonation = false)}>
+                    <X class="size-5" />
+                </button>
+            </div>
+            
+            <p class="text-sm text-zinc-600 mb-6 font-medium leading-relaxed">
+                If this terminal helped you capture a profitable spread, consider supporting the server costs to keep it 100% free and ad-light.
+            </p>
+
+            <div class="space-y-3">
+                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-blue-300">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">USDT (TRC20 Network)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_USDT_TRC20_ADDRESS</code>
+                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_USDT_TRC20_ADDRESS', 'USDT')}>
+                            {#if copiedCoin === 'USDT'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-orange-300">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">Bitcoin (BTC)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_BTC_ADDRESS</code>
+                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_BTC_ADDRESS', 'BTC')}>
+                            {#if copiedCoin === 'BTC'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
+                        </button>
+                    </div>
+                </div>
+
+                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-zinc-400">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">Ripple (XRP)</span>
+                        <span class="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">Include Memo if required</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_XRP_ADDRESS</code>
+                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_XRP_ADDRESS', 'XRP')}>
+                            {#if copiedCoin === 'XRP'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+{/if}
