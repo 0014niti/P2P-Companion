@@ -38,12 +38,12 @@
 </script>
 
 <Card class="hover:shadow-xl transition-all duration-500 ease-out overflow-hidden flex flex-col h-full bg-white/80 backdrop-blur-xl border border-zinc-200/60 shadow-sm rounded-2xl">
-	<CardHeader class="p-5 border-b border-zinc-200/50 flex flex-row items-center justify-between space-y-0 bg-white/30">
+	<CardHeader class="p-4 md:p-5 border-b border-zinc-200/50 flex flex-row items-center justify-between space-y-0 bg-white/30">
 		<CardTitle class="flex items-center gap-2">
 			<img
 				src={exchange.icon}
 				alt={exchange.name}
-				class="size-7 rounded-xl border border-zinc-200/60 bg-white p-1 shadow-sm"
+				class="size-6 md:size-7 rounded-xl border border-zinc-200/60 bg-white p-1 shadow-sm"
 			/>
 			<span class="font-black text-base truncate tracking-tight text-zinc-900">{exchange.name}</span>
 		</CardTitle>
@@ -51,7 +51,7 @@
 			href={exchange.p2pLink}
 			target="_blank"
 			rel="noopener noreferrer"
-			class="text-[11px] font-bold text-blue-700 flex items-center gap-1 bg-blue-50 border border-blue-100 px-3.5 py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:bg-blue-100 active:scale-95"
+			class="text-[11px] font-bold text-blue-700 flex items-center gap-1 bg-blue-50 border border-blue-100 px-3 py-1 md:px-3.5 md:py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:bg-blue-100 active:scale-95"
 			title={`Trade on ${exchange.name}`}
 		>
 			Trade <span class="text-[12px] leading-none">↗</span>
@@ -62,7 +62,7 @@
 		{#if isLoading && ads.length === 0}
 			<div class="divide-y divide-zinc-100">
 				{#each Array(5) as _}
-					<div class="p-3 space-y-2">
+					<div class="p-3 md:p-4 space-y-2">
 						<div class="flex justify-between items-center"><div class="h-4 bg-zinc-200/60 rounded w-1/3 animate-pulse"></div><div class="h-3 bg-zinc-200/60 rounded w-1/4 animate-pulse"></div></div>
 						<div class="h-3 bg-zinc-100/60 rounded w-1/2 animate-pulse"></div>
 					</div>
@@ -77,7 +77,7 @@
 			<div class="divide-y max-h-[60vh] md:max-h-[400px] overflow-y-auto hide-scrollbar">
 				{#each ads as ad (ad.id)}
 					<div
-						class="p-4 hover:bg-zinc-50/80 border-b border-zinc-200/50 last:border-0 cursor-pointer transition-all duration-300 ease-out active:bg-zinc-100/60"
+						class="p-3 md:p-4 hover:bg-zinc-50/80 border-b border-zinc-200/50 last:border-0 cursor-pointer transition-all duration-300 ease-out active:bg-zinc-100/60"
 						role="button"
 						tabindex="0"
 						onclick={() => toggleExpand(ad.id)}
