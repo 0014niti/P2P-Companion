@@ -1,14 +1,43 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	
+	let deferredPrompt: any = null;
+	let showInstallButton = false;
+
 	onMount(() => {
+		// 1. Initialize AdSense
 		try {
 			// @ts-ignore
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
 		} catch (err) {
 			console.error('AdSense initialization error:', err);
 		}
+
+		// 2. Capture the PWA Install Event for Android/Chrome
+		window.addEventListener('beforeinstallprompt', (e) => {
+			// Prevent Chrome's default mini-infobar from appearing
+			e.preventDefault();
+			// Save the event so we can trigger it from our custom button
+			deferredPrompt = e;
+			// Show our custom UI
+			showInstallButton = true;
+		});
 	});
+
+	async function installPWA() {
+		if (deferredPrompt) {
+			// Show the native install prompt
+			deferredPrompt.prompt();
+			// Wait for the user to respond to the prompt
+			const { outcome } = await deferredPrompt.userChoice;
+			// If they installed it, hide the button
+			if (outcome === 'accepted') {
+				showInstallButton = false;
+			}
+			// Clear the saved prompt since it can't be used again
+			deferredPrompt = null;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -174,6 +203,16 @@
 			Global Data Coverage: Instantly compare P2P rates for NGN (Naira), TRY (Lira), ARS (Peso), PHP (Peso), VND (Dong), and 50+ regional fiat currencies.
 		</p>
 	</section>
+
+	{#if showInstallButton}
+		<button 
+			on:click={installPWA} 
+			class="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-2xl shadow-zinc-900/40 transition-all hover:scale-105 active:scale-95 duration-500"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+			Install App
+		</button>
+	{/if}
 
 </main>
 
