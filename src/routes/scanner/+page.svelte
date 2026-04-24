@@ -17,9 +17,12 @@
 
 	let viewMode: 'cards' | 'table' = $state('cards');
 	let showFilters = $state(false);
-	
 	let showDonation = $state(false);
 	let copiedCoin = $state('');
+
+	// --- PWA Install State ---
+	let deferredPrompt: any = null;
+	let showInstallButton = $state(false);
 
 	function copyAddress(address: string, coin: string) {
 		navigator.clipboard.writeText(address);
@@ -50,20 +53,40 @@
 	});
 
 	onMount(() => {
+		// 1. Initialize AdSense
 		try {
 			// @ts-ignore
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
 		} catch (err) {
 			console.error('AdSense initialization error:', err);
 		}
+
+		// 2. Capture the PWA Install Event for Android/Chrome
+		window.addEventListener('beforeinstallprompt', (e) => {
+			e.preventDefault();
+			deferredPrompt = e;
+			showInstallButton = true;
+		});
 	});
+
+	// --- PWA Install Function ---
+	async function installPWA() {
+		if (deferredPrompt) {
+			deferredPrompt.prompt();
+			const { outcome } = await deferredPrompt.userChoice;
+			if (outcome === 'accepted') {
+				showInstallButton = false;
+			}
+			deferredPrompt = null;
+		}
+	}
 </script>
 
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5684719528000331" crossorigin="anonymous"></script>
 </svelte:head>
 
 <style>
@@ -92,7 +115,7 @@
 		display: none;
 	}
 	.hide-scrollbar {
-		-ms-overflow-style: none;  /* IE and Edge */
+		-ms-overflow-style: none; /* IE and Edge */
 		scrollbar-width: none;  /* Firefox */
 	}
 </style>
@@ -263,7 +286,7 @@
                     </div>
                     <div class="flex items-center gap-2">
                         <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YTR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9</code>
-                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9', 'USDT')}>
+                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YTR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9', 'USDT')}>
                             {#if copiedCoin === 'USDT'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
                         </button>
                     </div>
@@ -297,4 +320,14 @@
             
         </div>
     </div>
+{/if}
+
+{#if showInstallButton}
+	<button 
+		onclick={installPWA} 
+		class="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-2xl shadow-zinc-900/40 transition-all hover:scale-105 active:scale-95 duration-500"
+	>
+		<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+		Install App
+	</button>
 {/if}
