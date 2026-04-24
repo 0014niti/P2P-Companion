@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	
-	// Initialize Google AdSense banner after the component mounts
 	onMount(() => {
 		try {
 			// @ts-ignore
@@ -13,9 +12,10 @@
 </script>
 
 <svelte:head>
-	<title>Premium Crypto P2P Arbitrage Scanner | Live USDT Spreads</title>
-	<meta name="description" content="A 100% free, no-login crypto arbitrage terminal. Experience a premium UI while comparing real-time P2P USDT prices across Binance, OKX, and Bybit." />
-	<meta name="keywords" content="free crypto arbitrage, no login P2P scanner, premium crypto UI, USDT arbitrage scanner, Binance P2P, OKX P2P, fiat off-ramp" />
+	<title>P2P Companion | Live Crypto Price Comparison & USDT Spreads</title>
+	<meta name="description" content="A 100% free, unbiased P2P comparison tool. Experience premium data analytics while comparing real-time USDT rates across Binance, OKX, and Bybit." />
+	
+	<meta name="keywords" content="compare P2P crypto prices, best USDT P2P rate, Binance vs OKX spread, live P2P fiat calculator, USDT comparison NGN TRY ARS PHP" />
 	
 	{@html `<script type="application/ld+json">
 		{
@@ -23,9 +23,9 @@
 			"@type": "WebApplication",
 			"name": "P2P Companion",
 			"url": "https://p2pcompanion.vercel.app/",
-			"description": "Global crypto arbitrage terminal to compare real-time P2P stablecoin prices across major centralized exchanges.",
+			"description": "Global crypto data terminal to analyze real-time P2P stablecoin spreads across major centralized exchanges.",
 			"applicationCategory": "FinanceApplication",
-			"genre": "Cryptocurrency Arbitrage Scanner",
+			"genre": "Financial Data Analytics",
 			"operatingSystem": "WebBrowser",
 			"offers": {
 				"@type": "Offer",
@@ -39,7 +39,7 @@
 		}
 	</script>`}
 
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client==ca-pub-5684719528000331" crossorigin="anonymous"></script>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5684719528000331" crossorigin="anonymous"></script>
 </svelte:head>
 
 <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-50">
@@ -61,7 +61,7 @@
 		<a href="/scanner" class="relative inline-flex items-center justify-center rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 group overflow-hidden">
 			<span class="absolute inset-0 -translate-x-full animate-[sweep_4s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
 			<span class="relative z-10 flex items-center gap-2">
-				Open P2P Comparison Tool <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+				Open Price Comparison Tool <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
 			</span>
 		</a>
 	</div>
@@ -80,11 +80,11 @@
 				Live Market Data
 			</span>
 			<h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-zinc-950 leading-[1.05] mb-4">
-				Maximize Every <br/>
-				<span class="text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-indigo-700">Crypto Spread.</span>
+				Compare Every <br/>
+				<span class="text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-indigo-700">Crypto Price Spread.</span>
 			</h1>
 			<p class="text-zinc-700 text-base sm:text-lg font-medium max-w-lg">
-				Instantly compare real-time USDT prices across top global exchanges. Automate your fiat off-ramp discovery.
+				Instantly compare real-time USDT order books across top global exchanges. Find the best P2P rates and uncover fiat inefficiencies with premium data.
 			</p>
 		</div>
 
@@ -101,13 +101,13 @@
 		</div>
 
 		<article class="md:col-span-6 rounded-[32px] border border-white/40 bg-white/40 backdrop-blur-2xl p-8 shadow-xl shadow-slate-200/30 flex flex-col justify-center space-y-4">
-			<h2 class="text-2xl font-black tracking-tight text-zinc-950">Frictionless Arbitrage</h2>
+			<h2 class="text-2xl font-black tracking-tight text-zinc-950">Aggregated Market Comparison</h2>
 			<div class="space-y-3">
 				<p class="text-zinc-700 text-sm leading-relaxed">
-					Cryptocurrency liquidity is heavily fragmented. Depending on regional demand, stablecoins like USDT fluctuate independently across major centralized exchanges like Binance, OKX, and Bybit. 
+					Cryptocurrency prices fluctuate independently. Depending on regional demand, stablecoins like USDT vary significantly across centralized exchanges such as Binance, OKX, and Bybit.
 				</p>
 				<p class="text-zinc-700 text-sm leading-relaxed">
-					Our <strong>100% free-to-use</strong> terminal aggregates global order books into a sleek, premium interface with <strong>no login or account required</strong>. We instantly calculate optimal maker and taker spreads, ensuring maximum capital efficiency without manual searching.
+					Our <strong>100% free-to-use</strong> comparison terminal aggregates global order books into a sleek, unbiased interface with <strong>no login or account required</strong>. We instantly calculate optimal maker and taker rates, providing complete transparency into the P2P markets.
 				</p>
 			</div>
 		</article>
@@ -131,7 +131,7 @@
 					<div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-green-500 ring-4 ring-green-500/20"></div>
 					<div class="p-3.5 rounded-xl bg-white/70 border border-white/60 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-white">
 						<h3 class="text-sm font-bold text-zinc-900 leading-tight">V1: P2P Aggregation Engine</h3>
-						<p class="text-[11px] text-zinc-500 font-medium mt-1">Live market data & basic spread calculator (Current)</p>
+						<p class="text-[11px] text-zinc-500 font-medium mt-1">Live market data & basic rate comparison (Current)</p>
 					</div>
 				</li>
 
@@ -139,10 +139,10 @@
 					<div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-indigo-500 ring-4 ring-indigo-500/20 animate-[pulse_2s_ease-in-out_infinite]"></div>
 					<div class="p-3.5 rounded-xl border border-indigo-200/60 bg-gradient-to-br from-white/80 to-indigo-50/50 shadow-sm transition-all duration-300 transform group-hover:translate-x-1 group-hover:shadow-md group-hover:border-indigo-300">
 						<div class="flex justify-between items-start mb-1">
-							<h3 class="text-sm font-bold text-indigo-950 leading-tight">V2: Premium Arbitrage Intel</h3>
+							<h3 class="text-sm font-bold text-indigo-950 leading-tight">V2: Premium Spread Analytics</h3>
 							<span class="text-[9px] font-black text-indigo-700 uppercase bg-indigo-100/80 border border-indigo-200 px-1.5 py-0.5 rounded">Up Next</span>
 						</div>
-						<p class="text-[11px] text-zinc-600 font-medium mt-1">Curated signals, API endpoints, & guided trading pairs.</p>
+						<p class="text-[11px] text-zinc-600 font-medium mt-1">Curated data signals, historical charts, & guided trading pairs.</p>
 					</div>
 				</li>
 
@@ -153,18 +153,7 @@
 							<h3 class="text-sm font-bold text-zinc-800 leading-tight">V3: Volatility Alerts & APIs</h3>
 							<span class="text-[9px] font-bold text-zinc-500 uppercase bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded">Planned</span>
 						</div>
-						<p class="text-[11px] text-zinc-500 font-medium mt-1">Real-time Telegram/WebSocket notifications and developer API access.</p>
-					</div>
-				</li>
-
-				<li class="relative group cursor-default">
-					<div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-300 ring-4 ring-zinc-300/20"></div>
-					<div class="p-3.5 rounded-xl border border-white/50 bg-white/40 shadow-sm transition-all duration-300 opacity-70 group-hover:opacity-100 group-hover:bg-white/60">
-						<div class="flex justify-between items-start mb-1">
-							<h3 class="text-sm font-bold text-zinc-800 leading-tight">V4: One-Click Execution</h3>
-							<span class="text-[9px] font-bold text-zinc-500 uppercase bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded">Vision</span>
-						</div>
-						<p class="text-[11px] text-zinc-500 font-medium mt-1">Automated trade execution across multiple exchanges directly from the terminal.</p>
+						<p class="text-[11px] text-zinc-500 font-medium mt-1">Real-time Webhook notifications and developer API access.</p>
 					</div>
 				</li>
 			</ul>
@@ -179,6 +168,13 @@
 		</div>
 
 	</div>
+
+	<section class="mt-12 text-center opacity-60">
+		<p class="text-xs text-zinc-500 font-medium">
+			Global Data Coverage: Instantly compare P2P rates for NGN (Naira), TRY (Lira), ARS (Peso), PHP (Peso), VND (Dong), and 50+ regional fiat currencies.
+		</p>
+	</section>
+
 </main>
 
 <style>
