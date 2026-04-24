@@ -1,12 +1,10 @@
-# compare-p2p-trading
 
-Compare P2P prices from different exchages in real-time.
-
-## Current Exchanges Supported
+Current Exchanges Supported
 
 - Binance
+- Bitget
+- Bybit
 - OKX
 - MEXC
-
-## Development
+- kucoin
 
