@@ -220,19 +220,19 @@
 	</div>
 
 	<article class="mt-8 sm:mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-5 sm:p-8 shadow-sm">
-		<h2 class="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 mb-3 sm:mb-4">Global Crypto P2P Arbitrage Scanner</h2>
+		<h2 class="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 mb-3 sm:mb-4">Global P2P Market Intelligence & Price Comparison</h2>
 		<p class="text-sm sm:text-base text-zinc-700 mb-5 sm:mb-6 leading-relaxed">
-			Welcome to the premier global arbitrage terminal designed for cryptocurrency traders. Our tool aggregates real-time Peer-to-Peer (P2P) data across major centralized exchanges, allowing you to instantly compare USDT prices and identify lucrative arbitrage opportunities across different fiat currencies.
+			Welcome to the premier data terminal designed for everyday traders and analysts. Our infrastructure aggregates real-time Peer-to-Peer (P2P) order books across major centralized exchanges, allowing you to instantly compare USDT pricing dynamics and identify the best available rates across different fiat currencies.
 		</p>
 
-		<h3 class="text-lg sm:text-xl font-bold text-zinc-800 mb-2 sm:mb-3">How P2P Arbitrage Works</h3>
+		<h3 class="text-lg sm:text-xl font-bold text-zinc-800 mb-2 sm:mb-3">Understanding P2P Price Differences</h3>
 		<p class="text-sm sm:text-base text-zinc-700 mb-5 sm:mb-6 leading-relaxed">
-			Cryptocurrency prices are not universally fixed. Depending on regional demand, local payment methods, and exchange liquidity, the price of stablecoins like USDT can vary significantly between platforms such as Binance, OKX, Bybit, and KuCoin. By buying digital assets on an exchange where the fiat price is low and selling them on an exchange where the demand drives the price higher, traders can capture the price spread.
+			Cryptocurrency valuations are not universally fixed. Depending on regional demand, local payment gateways, and exchange-specific liquidity, the price of stablecoins like USDT can vary significantly between platforms such as Binance, OKX, and Bybit. By tracking the variance between platforms where fiat demand is low versus where it is high, users can map precise market spreads.
 		</p>
 
 		<h3 class="text-lg sm:text-xl font-bold text-zinc-800 mb-2 sm:mb-3">Why Compare USDT Prices Globally?</h3>
 		<p class="text-sm sm:text-base text-zinc-700 leading-relaxed">
-			Manually monitoring order books across multiple exchanges is time-consuming and often results in missed opportunities due to market volatility. This scanner automates the discovery process, providing a unified, live view of the best available maker and taker prices. Whether you are executing high-volume arbitrage trades or looking for the most efficient fiat off-ramp, comparing global rates ensures maximum capital efficiency.
+			Manually auditing order books across multiple fragmented exchanges is inefficient and prone to data latency. This terminal automates the comparison process, providing a unified, live stream of the most competitive maker and taker rates. Whether looking for the highest fiat off-ramp rate or analyzing global liquidity, unbiased data ensures optimal capital efficiency.
 		</p>
 	</article>
 
