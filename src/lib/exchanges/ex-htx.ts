@@ -1,12 +1,7 @@
 import { extractTerms, checkIsNewUserOnly, type ExchangeP2PAd } from '.';
 
 const HTX_COINS: Record<string, string> = {
-	USDT: '2',
-	BTC: '1',
-	ETH: '3',
-	HT: '4',
-	USDC: '69',
-	TRX: '11'
+	USDT: '2', BTC: '1', ETH: '3', HT: '4', USDC: '69', TRX: '11'
 };
 
 const HTX_FIATS: Record<string, string> = {
@@ -24,39 +19,23 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
 	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}`;
 
-	// Array of GET proxies for maximum redundancy
-	const proxies = [
-		(url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-	];
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: { code?: number; data?: Record<string, any>[] } | null = null;
 
-	// Proxy Rotation Loop
-	for (const proxyFactory of proxies) {
-		try {
-			const proxyUrl = proxyFactory(targetUrl);
-			const res = await fetch(proxyUrl, {
-				headers: { 'Accept': 'application/json' }
-			});
-			
-			if (res.ok) {
-				const text = await res.text();
-				try {
-					data = JSON.parse(text);
-					if (data && data.code === 200) break; // Success! Exit loop
-				} catch (e) { /* Ignore HTML proxy errors */ }
-			}
-		} catch (e) {
-			console.warn('HTX proxy failed, rotating to backup...');
+	try {
+        // USE YOUR PRIVATE CLOUDFLARE PROXY
+		const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
+		const res = await fetch(proxyUrl);
+		
+		if (res.ok) {
+			const text = await res.text();
+			try { data = JSON.parse(text); } catch (e) { /* Safely ignore */ }
 		}
+	} catch (e) {
+		console.error('HTX private proxy failed:', e);
 	}
 
-	if (!data || data.code !== 200 || !data.data) {
-		return [];
-	}
+	if (!data || data.code !== 200 || !data.data) return [];
 
 	return data.data.map((item) => {
 		const priceStr = item.price !== undefined ? item.price.toString() : '0';
@@ -78,7 +57,6 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 			fiatSymbol: props.fiat.toUpperCase(),
 			minSingleTransAmount: minStr,
 			maxSingleTransAmount: maxStr,
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			paymentMethods: item.payMethods ? item.payMethods.map((method: any) => ({
 				type: method.name || 'Bank',
 				identifier: method.payMethodId?.toString() || 'unknown',
