@@ -12,45 +12,29 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		limit: 10
 	});
 
-	// Array of proxies that support POST JSON requests
-	const proxies = [
-		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-	];
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-	// Proxy Rotation Loop
-	for (const proxyFactory of proxies) {
-		try {
-			const proxyUrl = proxyFactory(targetUrl);
-			const res = await fetch(proxyUrl, {
-				method: 'POST',
-				headers: {
-					'accept': 'application/json',
-					'content-type': 'application/json'
-				},
-				body: bodyPayload
-			});
-			
-			if (res.ok) {
-				const text = await res.text();
-				try { 
-					data = JSON.parse(text); 
-					if (data) break; // Success! Exit the loop immediately
-				} catch (e) { /* Ignore parsing errors and try next proxy */ }
-			}
-		} catch (e) {
-			console.warn('BingX proxy failed, rotating to next backup...');
+	try {
+        // USE YOUR PRIVATE CLOUDFLARE PROXY
+		const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
+		const res = await fetch(proxyUrl, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: bodyPayload
+		});
+		
+		if (res.ok) {
+			const text = await res.text();
+			try { data = JSON.parse(text); } catch (e) { /* Safely ignore */ }
 		}
+	} catch (e) {
+		console.error('BingX private proxy failed:', e);
 	}
 
 	const rawList = Array.isArray(data?.data) ? data.data : (data?.data?.list || data?.data?.advList || data?.list || []);
 
-	if (!Array.isArray(rawList) || rawList.length === 0) {
-		return [];
-	}
+	if (!Array.isArray(rawList) || rawList.length === 0) return [];
 
 	return rawList.map((item) => ({
 		advNo: item.advId?.toString() || Math.random().toString(),
@@ -63,7 +47,6 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		fiatSymbol: props.fiat.toUpperCase(),
 		minSingleTransAmount: item.minAmount || '0',
 		maxSingleTransAmount: item.maxAmount || '0',
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		paymentMethods: item.payMethods ? item.payMethods.map((method: any) => ({
 			type: method.methodName || 'Bank',
 			identifier: method.methodId?.toString() || 'unknown',
