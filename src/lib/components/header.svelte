@@ -10,7 +10,7 @@
 				</div>
 				<div class="flex flex-col mt-0.5">
 					<h1 class="text-xl font-black tracking-tight text-zinc-900 leading-none">P2P <span class="font-medium text-zinc-500">Companion</span></h1>
-					<p class="text-[9px] font-bold tracking-widest text-zinc-400 uppercase mt-1.5">Global Arbitrage Terminal</p>
+					<p class="text-[9px] font-bold tracking-widest text-zinc-400 uppercase mt-1.5">Global P2P Scanner</p>
 				</div>
 			</div>
 		</div>
