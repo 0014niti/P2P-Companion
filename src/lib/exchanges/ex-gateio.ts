@@ -13,42 +13,26 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		page: '1'
 	}).toString();
 
-	// Array of proxies that support POST requests
-	const proxies = [
-		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-	];
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-	// Proxy Rotation Loop
-	for (const proxyFactory of proxies) {
-		try {
-			const proxyUrl = proxyFactory(targetUrl);
-			const res = await fetch(proxyUrl, {
-				method: 'POST',
-				headers: {
-					'accept': 'application/json',
-					'content-type': 'application/x-www-form-urlencoded'
-				},
-				body: bodyPayload
-			});
+	try {
+        // USE YOUR PRIVATE CLOUDFLARE PROXY
+		const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
+		const res = await fetch(proxyUrl, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: bodyPayload
+		});
 
-			if (res.ok) {
-				const text = await res.text();
-				try { 
-					data = JSON.parse(text); 
-					if (data) break; // Success! Exit the loop immediately
-				} catch (e) { /* Ignore HTML Cloudflare blocks and try next proxy */ }
-			}
-		} catch (e) {
-			console.warn('Gate.io proxy failed, rotating to next backup...');
+		if (res.ok) {
+			const text = await res.text();
+			try { data = JSON.parse(text); } catch (e) { /* Safely ignore */ }
 		}
+	} catch (e) {
+		console.error('Gate.io private proxy failed:', e);
 	}
 
-	// Deep array extraction (Kept exactly as your original logic)
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let rawList: any[] = [];
 	if (Array.isArray(data?.data)) rawList = data.data;
 	else if (Array.isArray(data?.data?.list)) rawList = data.data.list;
@@ -59,9 +43,7 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		if (found) rawList = found;
 	}
 
-	if (!Array.isArray(rawList) || rawList.length === 0) {
-		return [];
-	}
+	if (!Array.isArray(rawList) || rawList.length === 0) return [];
 
 	return rawList.map((item) => ({
 		advNo: item.adv_id?.toString() || item.id?.toString() || Math.random().toString(),
@@ -74,7 +56,6 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		fiatSymbol: props.fiat.toUpperCase(),
 		minSingleTransAmount: item.min_amount || item.min_order_amount || '0',
 		maxSingleTransAmount: item.max_amount || item.max_order_amount || '0',
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		paymentMethods: (item.pay_methods || item.payments || []).map((method: any) => ({
 			type: method.name || method.type || 'Bank',
 			identifier: method.id?.toString() || 'unknown',
