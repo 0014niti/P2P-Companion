@@ -86,7 +86,6 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5684719528000331" crossorigin="anonymous"></script>
 </svelte:head>
 
 <style>
@@ -285,8 +284,8 @@
                         <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">USDT (TRC20 Network)</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YTR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9</code>
-                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YTR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9', 'USDT')}>
+                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9</code>
+                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9', 'USDT')}>
                             {#if copiedCoin === 'USDT'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
                         </button>
                     </div>
