@@ -39,15 +39,25 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	let data: { code?: number; data?: Record<string, any>[] } | null = null;
 
 	try {
-		// Make a request to YOUR OWN Vercel server API proxy we just created
-		const proxyUrl = `/api/htx?target=${encodeURIComponent(targetUrl)}`;
-		const res = await fetch(proxyUrl);
+		// 1. Wrap the HTX target URL in a public CORS proxy to bypass browser restrictions
+		// 2. This completely offloads the bandwidth to the client, saving Vercel costs
+		const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+		
+		const res = await fetch(proxyUrl, {
+			headers: {
+				'Accept': 'application/json'
+			}
+		});
 		
 		if (res.ok) {
+			// Safely attempt to parse JSON. Prevents crashes if the proxy returns an HTML error page.
 			data = await res.json();
+		} else {
+			console.warn(`HTX Proxy returned status ${res.status}`);
 		}
 	} catch (e) {
-		console.error('HTX Internal Proxy fetch failed:', e);
+		console.error('HTX Client-Side Proxy fetch failed:', e);
+		return []; // Fail gracefully without breaking the rest of the scanner
 	}
 
 	if (!data || data.code !== 200 || !data.data) {
