@@ -1,10 +1,9 @@
 import { extractTerms, checkIsNewUserOnly, type ExchangeP2PAd } from '.';
 
 export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
-	// BingX uses 'SELL' ads to fulfill a user's 'buy' request
 	const tradeType = props.type === 'buy' ? 'SELL' : 'BUY';
-	
 	const targetUrl = 'https://bingx.com/api/v3/p2p/adv/search';
+	
 	const bodyPayload = JSON.stringify({
 		fiat: props.fiat.toUpperCase(),
 		asset: props.token.toUpperCase(),
@@ -13,55 +12,37 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		limit: 10
 	});
 
+	// Array of proxies that support POST JSON requests
+	const proxies = [
+		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+	];
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-	try {
-		// Method 1: Direct fetch
-		const res = await fetch(targetUrl, {
-			headers: {
-				'accept': 'application/json, text/plain, */*',
-				'accept-language': 'en-US,en;q=0.9',
-				'content-type': 'application/json',
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-				'Origin': 'https://bingx.com',
-				'Referer': 'https://bingx.com/en-us/p2p/',
-				'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-				'Sec-Ch-Ua-Mobile': '?0',
-				'Sec-Ch-Ua-Platform': '"Windows"',
-				'Sec-Fetch-Dest': 'empty',
-				'Sec-Fetch-Mode': 'cors',
-				'Sec-Fetch-Site': 'same-origin'
-			},
-			body: bodyPayload,
-			method: 'POST'
-		});
-
-		if (res.ok) {
-			data = await res.json();
-		}
-	} catch (e) {
-		console.error('BingX direct fetch failed:', e);
-	}
-
-	// Method 2: POST-compatible proxy fallback
-	if (!data || (!data.data && !data.list)) {
+	// Proxy Rotation Loop
+	for (const proxyFactory of proxies) {
 		try {
-			const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`;
-			const proxyRes = await fetch(proxyUrl, {
+			const proxyUrl = proxyFactory(targetUrl);
+			const res = await fetch(proxyUrl, {
+				method: 'POST',
 				headers: {
-					'content-type': 'application/json',
-					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+					'accept': 'application/json',
+					'content-type': 'application/json'
 				},
-				body: bodyPayload,
-				method: 'POST'
+				body: bodyPayload
 			});
 			
-			if (proxyRes.ok) {
-				data = await proxyRes.json();
+			if (res.ok) {
+				const text = await res.text();
+				try { 
+					data = JSON.parse(text); 
+					if (data) break; // Success! Exit the loop immediately
+				} catch (e) { /* Ignore parsing errors and try next proxy */ }
 			}
 		} catch (e) {
-			console.error('BingX proxy fetch failed:', e);
+			console.warn('BingX proxy failed, rotating to next backup...');
 		}
 	}
 
