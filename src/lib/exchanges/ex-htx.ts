@@ -41,7 +41,7 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	try {
 		// 1. Wrap the HTX target URL in a public CORS proxy to bypass browser restrictions
 		// 2. This completely offloads the bandwidth to the client, saving Vercel costs
-		const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+		const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
 		
 		const res = await fetch(proxyUrl, {
 			headers: {
