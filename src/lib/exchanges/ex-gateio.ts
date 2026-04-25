@@ -1,10 +1,9 @@
 import { extractTerms, checkIsNewUserOnly, type ExchangeP2PAd } from '.';
 
 export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
-	// Gate.io uses 'sell' ads to fulfill a user's 'buy' request
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
-	
 	const targetUrl = 'https://www.gate.io/json_cmp/c2c/pushTradeAds';
+	
 	const bodyPayload = new URLSearchParams({
 		fiat: props.fiat.toUpperCase(),
 		coin: props.token.toUpperCase(),
@@ -14,63 +13,42 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		page: '1'
 	}).toString();
 
+	// Array of proxies that support POST requests
+	const proxies = [
+		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+	];
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-	try {
-		// Method 1: Direct fetch with the crucial 'X-Requested-With' AJAX header
-		const res = await fetch(targetUrl, {
-			headers: {
-				'accept': 'application/json, text/plain, */*',
-				'accept-language': 'en-US,en;q=0.9',
-				'content-type': 'application/x-www-form-urlencoded',
-				'X-Requested-With': 'XMLHttpRequest',
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-				'Origin': 'https://www.gate.io',
-				'Referer': 'https://www.gate.io/p2p',
-				'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-				'Sec-Ch-Ua-Mobile': '?0',
-				'Sec-Ch-Ua-Platform': '"Windows"',
-				'Sec-Fetch-Dest': 'empty',
-				'Sec-Fetch-Mode': 'cors',
-				'Sec-Fetch-Site': 'same-origin'
-			},
-			body: bodyPayload,
-			method: 'POST'
-		});
-
-		if (res.ok) {
-			const text = await res.text();
-			try { data = JSON.parse(text); } catch (e) { /* Ignore HTML Cloudflare blocks */ }
-		}
-	} catch (e) {
-		console.error('Gate.io direct fetch failed:', e);
-	}
-
-	// Method 2: Proxy fallback using api.codetabs.com
-	if (!data || (!data.data && !data.list)) {
+	// Proxy Rotation Loop
+	for (const proxyFactory of proxies) {
 		try {
-			const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`;
-			const proxyRes = await fetch(proxyUrl, {
+			const proxyUrl = proxyFactory(targetUrl);
+			const res = await fetch(proxyUrl, {
+				method: 'POST',
 				headers: {
-					'content-type': 'application/x-www-form-urlencoded',
-					'X-Requested-With': 'XMLHttpRequest',
-					'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+					'accept': 'application/json',
+					'content-type': 'application/x-www-form-urlencoded'
 				},
-				body: bodyPayload,
-				method: 'POST'
+				body: bodyPayload
 			});
-			
-			if (proxyRes.ok) {
-				const text = await proxyRes.text();
-				try { data = JSON.parse(text); } catch (e) { /* Ignore HTML Cloudflare blocks */ }
+
+			if (res.ok) {
+				const text = await res.text();
+				try { 
+					data = JSON.parse(text); 
+					if (data) break; // Success! Exit the loop immediately
+				} catch (e) { /* Ignore HTML Cloudflare blocks and try next proxy */ }
 			}
 		} catch (e) {
-			console.error('Gate.io proxy fetch failed:', e);
+			console.warn('Gate.io proxy failed, rotating to next backup...');
 		}
 	}
 
-	// Deep array extraction: Find the first array in the response object regardless of the key name
+	// Deep array extraction (Kept exactly as your original logic)
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let rawList: any[] = [];
 	if (Array.isArray(data?.data)) rawList = data.data;
 	else if (Array.isArray(data?.data?.list)) rawList = data.data.list;
