@@ -9,29 +9,35 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		fiat: props.fiat.toUpperCase(),
 		asset: props.token.toUpperCase(),
 		tradeType: tradeType,
-		page: 1,
-		limit: 10,
-		timestamp: currentTimestamp
+		page: 1, limit: 10, timestamp: currentTimestamp
 	});
 
-    // RESTORED TO CLOUDFLARE (Your browser in India will ping this!)
-	const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
+    // Fresh Proxy Rotation (Removed the burned Cloudflare worker)
+	const proxies = [
+		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+		(url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
+		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+	];
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-    try {
-        const res = await fetch(proxyUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: bodyPayload
-        });
-        if (res.ok) {
-            const text = await res.text();
-            try { data = JSON.parse(text); } catch (e) { console.warn("BingX Error:", text.substring(0,100)); }
-        }
-    } catch (e) {
-        console.error('BingX proxy failed:', e);
-    }
+	for (const proxyFactory of proxies) {
+		try {
+			const res = await fetch(proxyFactory(targetUrl), {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: bodyPayload
+			});
+			if (res.ok) {
+				const text = await res.text();
+				try { 
+					data = JSON.parse(text); 
+					if (data && data.code === 0) break;
+				} catch (e) { /* rotate */ }
+			}
+		} catch (e) { console.warn('BingX proxy failed, rotating...'); }
+	}
 
 	const rawList = Array.isArray(data?.data) ? data.data : (data?.data?.list || data?.data?.advList || data?.list || []);
 	if (!Array.isArray(rawList) || rawList.length === 0) return [];
@@ -47,6 +53,7 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		fiatSymbol: props.fiat.toUpperCase(),
 		minSingleTransAmount: item.minAmount || '0',
 		maxSingleTransAmount: item.maxAmount || '0',
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		paymentMethods: item.payMethods ? item.payMethods.map((method: any) => ({
 			type: method.methodName || 'Bank',
 			identifier: method.methodId?.toString() || 'unknown',
