@@ -5,7 +5,6 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 	const currentTimestamp = Date.now();
 	
 	const targetUrl = `https://bingx.com/api/v3/p2p/adv/search?timestamp=${currentTimestamp}&t=${currentTimestamp}`;
-	
 	const bodyPayload = JSON.stringify({
 		fiat: props.fiat.toUpperCase(),
 		asset: props.token.toUpperCase(),
@@ -15,28 +14,26 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		timestamp: currentTimestamp
 	});
 
-    // USING THE GOOGLE APPS SCRIPT PROXY
-	const gasProxyUrl = `https://script.google.com/macros/s/AKfycbw-7r2WzIt0NCrtnKtcEizu_16-vJ8rX9xCFL-5HpvckL7Rab3ojYuAit8jkivrxAEW/exec?url=${encodeURIComponent(targetUrl)}&contentType=application/json&body=${encodeURIComponent(bodyPayload)}`;
+    // RESTORED TO CLOUDFLARE (Your browser in India will ping this!)
+	const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
     try {
-        const res = await fetch(gasProxyUrl);
+        const res = await fetch(proxyUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: bodyPayload
+        });
         if (res.ok) {
             const text = await res.text();
-            try { 
-                data = JSON.parse(text); 
-            } catch (e) { 
-                console.warn(`BingX Proxy Blocked:`, text.substring(0, 100)); 
-            }
+            try { data = JSON.parse(text); } catch (e) { console.warn("BingX Error:", text.substring(0,100)); }
         }
     } catch (e) {
-        console.error('BingX Google proxy failed:', e);
+        console.error('BingX proxy failed:', e);
     }
 
 	const rawList = Array.isArray(data?.data) ? data.data : (data?.data?.list || data?.data?.advList || data?.list || []);
-
 	if (!Array.isArray(rawList) || rawList.length === 0) return [];
 
 	return rawList.map((item) => ({
@@ -50,7 +47,6 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		fiatSymbol: props.fiat.toUpperCase(),
 		minSingleTransAmount: item.minAmount || '0',
 		maxSingleTransAmount: item.maxAmount || '0',
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		paymentMethods: item.payMethods ? item.payMethods.map((method: any) => ({
 			type: method.methodName || 'Bank',
 			identifier: method.methodId?.toString() || 'unknown',
