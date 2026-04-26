@@ -1,9 +1,6 @@
 import { writable } from 'svelte/store';
 import { filterExchangesArr, type ExchangeKey } from '$lib/exchanges';
 import { fetchUrlBuilder } from '$lib/exchanges/url-builder'; 
-import { fetchHtx } from '$lib/exchanges/ex-htx.js'; 
-import { fetchBingx } from '$lib/exchanges/ex-bingx.js'; // IMPORT BINGX
-import { fetchGateio } from '$lib/exchanges/ex-gateio.js'; // IMPORT GATEIO
 import type { ExchangeP2PAd, P2POrder } from '$lib/types';
 
 type P2PState = {
@@ -18,13 +15,7 @@ type P2PState = {
 
 function createP2POrderStore() {
 	const { subscribe, set, update } = writable<P2PState>({
-		orders: [],
-		isLoading: false,
-		errors: {},
-		marketRate: null,
-		usdRate: null,
-		token: null,
-		fiat: null
+		orders: [], isLoading: false, errors: {}, marketRate: null, usdRate: null, token: null, fiat: null
 	});
 
 	async function fetchOrders(filters: { type: 'buy' | 'sell'; token: string; fiat: string }) {
@@ -53,27 +44,13 @@ function createP2POrderStore() {
 
 		const allFetchesPromise = exchangesToFetch.map(async (exchange) => {
 			try {
-				let responsesArray: ExchangeP2PAd[] = [];
-
-				// --- THE PROPER CLIENT-SIDE OVERRIDE ---
-				if (exchange.key === 'htx') {
-					responsesArray = (await fetchHtx({ type: filters.type, token: filters.token, fiat: filters.fiat })) || [];
-				} 
-				else if (exchange.key === 'bingx') {
-					responsesArray = (await fetchBingx({ type: filters.type, token: filters.token, fiat: filters.fiat })) || [];
-				}
-				else if (exchange.key === 'gateio') {
-					responsesArray = (await fetchGateio({ type: filters.type, token: filters.token, fiat: filters.fiat })) || [];
-				}
-				// --- STANDARD VERCEL API FETCH ---
-				else {
-					const url = fetchUrlBuilder({ ...filters }, exchange.key);
-					const res = await fetch(url);
-					if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
-					const data = await res.json();
-					responsesArray = Array.isArray(data?.responses) ? data.responses : [];
-				}
-
+				// ALL TRAFFIC DIRECTED TO TOKYO VERCEL SERVER
+				const url = fetchUrlBuilder({ ...filters }, exchange.key);
+				const res = await fetch(url);
+				if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
+				const data = await res.json();
+				
+				const responsesArray = Array.isArray(data?.responses) ? data.responses : [];
 				const validAds = responsesArray.filter((ad): ad is ExchangeP2PAd => !!(ad && ad.advertiser));
 
 				const newOrders: P2POrder[] = validAds.map((ad) => ({
