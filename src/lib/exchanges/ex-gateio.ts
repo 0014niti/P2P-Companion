@@ -13,26 +13,40 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		page: '1'
 	}).toString();
 
+	// The Triple-Threat Proxy Rotation
+	const proxies = [
+		(url: string) => `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(url)}`,
+		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+	];
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-	try {
-        // USE YOUR PRIVATE CLOUDFLARE PROXY
-		const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
-		const res = await fetch(proxyUrl, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: bodyPayload
-		});
+	for (const proxyFactory of proxies) {
+		try {
+			const proxyUrl = proxyFactory(targetUrl);
+			const res = await fetch(proxyUrl, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: bodyPayload
+			});
 
-		if (res.ok) {
-			const text = await res.text();
-			try { data = JSON.parse(text); } catch (e) { /* Safely ignore */ }
+			if (res.ok) {
+				const text = await res.text();
+				try { 
+					data = JSON.parse(text); 
+					if (data) break; // Success! Break the loop
+				} catch (e) { 
+					console.warn(`Gate.io Proxy Blocked. Response preview:`, text.substring(0, 150)); 
+				}
+			}
+		} catch (e) {
+			console.warn('Gate.io proxy failed, rotating...');
 		}
-	} catch (e) {
-		console.error('Gate.io private proxy failed:', e);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let rawList: any[] = [];
 	if (Array.isArray(data?.data)) rawList = data.data;
 	else if (Array.isArray(data?.data?.list)) rawList = data.data.list;
@@ -56,6 +70,7 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		fiatSymbol: props.fiat.toUpperCase(),
 		minSingleTransAmount: item.min_amount || item.min_order_amount || '0',
 		maxSingleTransAmount: item.max_amount || item.max_order_amount || '0',
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		paymentMethods: (item.pay_methods || item.payments || []).map((method: any) => ({
 			type: method.name || method.type || 'Bank',
 			identifier: method.id?.toString() || 'unknown',
