@@ -1,7 +1,9 @@
 import { writable } from 'svelte/store';
 import { filterExchangesArr, type ExchangeKey } from '$lib/exchanges';
 import { fetchUrlBuilder } from '$lib/exchanges/url-builder'; 
-import { fetchHtx } from '$lib/exchanges/ex-htx.js'; // Bypass Vercel: Import local fetcher
+import { fetchHtx } from '$lib/exchanges/ex-htx.js'; 
+import { fetchBingx } from '$lib/exchanges/ex-bingx.js'; // IMPORT BINGX
+import { fetchGateio } from '$lib/exchanges/ex-gateio.js'; // IMPORT GATE.IO
 import type { ExchangeP2PAd, P2POrder } from '$lib/types';
 
 type P2PState = {
@@ -56,12 +58,21 @@ function createP2POrderStore() {
 			try {
 				let responsesArray: ExchangeP2PAd[] = [];
 
-				// --- CLIENT-SIDE OVERRIDE FOR HTX ---
+				// --- THE ULTIMATE CLIENT-SIDE OVERRIDE ---
+				// Bypass US-based Vercel servers entirely for geo-blocked exchanges
 				if (exchange.key === 'htx') {
 					const htxData = await fetchHtx({ type: filters.type, token: filters.token, fiat: filters.fiat });
 					responsesArray = htxData || [];
 				} 
-				// --- STANDARD VERCEL API FETCH ---
+				else if (exchange.key === 'bingx') {
+					const bingxData = await fetchBingx({ type: filters.type, token: filters.token, fiat: filters.fiat });
+					responsesArray = bingxData || [];
+				}
+				else if (exchange.key === 'gateio') {
+					const gateioData = await fetchGateio({ type: filters.type, token: filters.token, fiat: filters.fiat });
+					responsesArray = gateioData || [];
+				}
+				// --- STANDARD VERCEL API FETCH (For Binance, Bybit, OKX, etc.) ---
 				else {
 					const url = fetchUrlBuilder({ ...filters }, exchange.key);
 					const res = await fetch(url);
