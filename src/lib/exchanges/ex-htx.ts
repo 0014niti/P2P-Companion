@@ -11,28 +11,21 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
 	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}&nocache=${Math.random()}`;
 
-	// Fresh Proxy Rotation (Removed the burned allorigins proxy)
-	const proxies = [
-		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-		(url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
-		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-	];
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: { code?: number; data?: Record<string, any>[] } | null = null;
 
-	for (const proxyFactory of proxies) {
-		try {
-			const res = await fetch(proxyFactory(targetUrl), { headers: { 'Accept': 'application/json' } });
-			if (res.ok) {
-				const text = await res.text();
-				try {
-					data = JSON.parse(text);
-					if (data && data.code === 200) break; 
-				} catch (e) { /* rotate */ }
+	try {
+		const res = await fetch(targetUrl, {
+			headers: { 
+				'Accept': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 			}
-		} catch (e) { console.warn('HTX proxy failed, rotating to backup...'); }
-	}
+		});
+		if (res.ok) {
+			const text = await res.text();
+			try { data = JSON.parse(text); } catch (e) { /* quiet ignore */ }
+		}
+	} catch (e) { console.warn('HTX direct fetch failed:', e); }
 
 	if (!data || data.code !== 200 || !data.data) return [];
 
