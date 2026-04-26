@@ -4,7 +4,6 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
 	const currentTimestamp = Date.now().toString();
 	
-	// FIX: Inject live timestamp into URL
 	const targetUrl = `https://www.gate.io/json_cmp/c2c/pushTradeAds?t=${currentTimestamp}`;
 	
 	const bodyPayload = new URLSearchParams({
@@ -14,41 +13,28 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		amount: '',
 		pay_type: '',
 		page: '1',
-		t: currentTimestamp // FIX: Inject live timestamp into form data
+		t: currentTimestamp
 	}).toString();
 
-	// Restored Triple-Threat Proxy Rotation
-	const proxies = [
-		(url: string) => `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(url)}`,
-		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-	];
+    // USING THE GOOGLE APPS SCRIPT PROXY
+	const gasProxyUrl = `https://script.google.com/macros/s/AKfycbw-7r2WzIt0NCrtnKtcEizu_16-vJ8rX9xCFL-5HpvckL7Rab3ojYuAit8jkivrxAEW/exec?url=${encodeURIComponent(targetUrl)}&contentType=application/x-www-form-urlencoded&body=${encodeURIComponent(bodyPayload)}`;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-	for (const proxyFactory of proxies) {
-		try {
-			const proxyUrl = proxyFactory(targetUrl);
-			const res = await fetch(proxyUrl, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				body: bodyPayload
-			});
-
-			if (res.ok) {
-				const text = await res.text();
-				try { 
-					data = JSON.parse(text); 
-					if (data) break; // Success! Break the loop
-				} catch (e) { 
-					console.warn(`Gate.io Proxy Blocked:`, text.substring(0, 100)); 
-				}
-			}
-		} catch (e) {
-			console.warn('Gate.io proxy failed, rotating...');
-		}
-	}
+    try {
+        const res = await fetch(gasProxyUrl);
+        if (res.ok) {
+            const text = await res.text();
+            try { 
+                data = JSON.parse(text); 
+            } catch (e) { 
+                console.warn(`Gate.io Proxy Blocked:`, text.substring(0, 100)); 
+            }
+        }
+    } catch (e) {
+        console.error('Gate.io Google proxy failed:', e);
+    }
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let rawList: any[] = [];
