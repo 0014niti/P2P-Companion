@@ -17,22 +17,40 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	if (!coinId || !currencyId) return [];
 
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
-	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}`;
+    
+    // We add a highly randomized string to the end to aggressively bypass proxy caching
+	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}&nocache=${Math.random()}`;
+
+	// Public Proxy Rotation (Aggressive Fallbacks)
+    // We explicitly avoid your private Cloudflare worker here to bypass HTX's datacenter block
+	const proxies = [
+		(url: string) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`
+	];
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: { code?: number; data?: Record<string, any>[] } | null = null;
 
-	try {
-        // USE YOUR PRIVATE CLOUDFLARE PROXY
-		const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
-		const res = await fetch(proxyUrl);
-		
-		if (res.ok) {
-			const text = await res.text();
-			try { data = JSON.parse(text); } catch (e) { /* Safely ignore */ }
+	// Proxy Rotation Loop
+	for (const proxyFactory of proxies) {
+		try {
+			const proxyUrl = proxyFactory(targetUrl);
+			const res = await fetch(proxyUrl, {
+				headers: { 'Accept': 'application/json' }
+			});
+			
+			if (res.ok) {
+				const text = await res.text();
+				try {
+					data = JSON.parse(text);
+					// If we get a valid code 200 from HTX, break the loop immediately
+					if (data && data.code === 200) break; 
+				} catch (e) { /* Ignore HTML proxy errors and try next proxy */ }
+			}
+		} catch (e) {
+			console.warn('HTX proxy failed, rotating to backup...');
 		}
-	} catch (e) {
-		console.error('HTX private proxy failed:', e);
 	}
 
 	if (!data || data.code !== 200 || !data.data) return [];
@@ -57,6 +75,7 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 			fiatSymbol: props.fiat.toUpperCase(),
 			minSingleTransAmount: minStr,
 			maxSingleTransAmount: maxStr,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			paymentMethods: item.payMethods ? item.payMethods.map((method: any) => ({
 				type: method.name || 'Bank',
 				identifier: method.payMethodId?.toString() || 'unknown',
