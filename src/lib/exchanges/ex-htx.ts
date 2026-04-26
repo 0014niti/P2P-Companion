@@ -13,8 +13,10 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: { code?: number; data?: Record<string, any>[] } | null = null;
+	let marketRate = 0;
 
 	try {
+		// 1. Fetch HTX Data via Vercel Edge
 		const res = await fetch(targetUrl, {
 			headers: { 
 				'Accept': 'application/json, text/plain, */*',
@@ -31,24 +33,43 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 			const text = await res.text();
 			try { data = JSON.parse(text); } catch (e) { /* quiet ignore */ }
 		}
+
+		// 2. Fetch Real-World Oracle Rate from Coinbase to catch scammers
+		const rateRes = await fetch('https://api.coinbase.com/v2/exchange-rates?currency=USD');
+		if (rateRes.ok) {
+			const rateData = await rateRes.json();
+			const fiatRate = parseFloat(rateData.data.rates[props.fiat.toUpperCase()]);
+			const tokenRate = parseFloat(rateData.data.rates[props.token.toUpperCase()] || '1');
+			
+			if (['USDT', 'USDC', 'FDUSD', 'DAI'].includes(props.token.toUpperCase())) {
+				marketRate = fiatRate;
+			} else {
+				marketRate = fiatRate / tokenRate;
+			}
+		}
 	} catch (e) { console.warn('HTX direct fetch failed:', e); }
 
 	if (!data || data.code !== 200 || !data.data) return [];
 
 	let parsedAds = data.data;
 
-	// FILTER STEP 1: Destroy dummy accounts with less than 5 trades
+	// FILTER STEP 1: Destroy dummy accounts (scammers usually have 0-5 trades)
 	parsedAds = parsedAds.filter(item => parseInt(item.tradeMonthTimes || '0', 10) > 5);
 
-	// FILTER STEP 2: The Mathematical Median Filter (Destroys Wash Traders)
-	if (parsedAds.length > 2) {
-		const prices = parsedAds.map(ad => parseFloat(ad.price || '0')).sort((a, b) => a - b);
-		const medianPrice = prices[Math.floor(prices.length / 2)];
-
-		// Destroy any ad that is more than 10% away from the median consensus market price
+	// FILTER STEP 2: The Bulletproof Oracle Filter
+	if (marketRate > 0) {
+		// Destroy any ad that is more than 15% away from the REAL global exchange rate
 		parsedAds = parsedAds.filter(ad => {
 			const p = parseFloat(ad.price || '0');
-			return Math.abs(p - medianPrice) / medianPrice <= 0.10; 
+			return Math.abs(p - marketRate) / marketRate <= 0.15; 
+		});
+	} else if (parsedAds.length > 2) {
+		// Fallback to median if Coinbase fails for some reason
+		const prices = parsedAds.map(ad => parseFloat(ad.price || '0')).sort((a, b) => a - b);
+		const medianPrice = prices[Math.floor(prices.length / 2)];
+		parsedAds = parsedAds.filter(ad => {
+			const p = parseFloat(ad.price || '0');
+			return Math.abs(p - medianPrice) / medianPrice <= 0.15; 
 		});
 	}
 
