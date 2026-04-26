@@ -9,7 +9,7 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	if (!coinId || !currencyId) return [];
 
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
-	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}&nocache=${Math.random()}`;
+    const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=fast&isMerchant=1&online=1&range=0&amount=&t=${Date.now()}`;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: { code?: number; data?: Record<string, any>[] } | null = null;
