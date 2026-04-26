@@ -3,7 +3,7 @@ import { filterExchangesArr, type ExchangeKey } from '$lib/exchanges';
 import { fetchUrlBuilder } from '$lib/exchanges/url-builder'; 
 import { fetchHtx } from '$lib/exchanges/ex-htx.js'; 
 import { fetchBingx } from '$lib/exchanges/ex-bingx.js'; // IMPORT BINGX
-import { fetchGateio } from '$lib/exchanges/ex-gateio.js'; // IMPORT GATE.IO
+import { fetchGateio } from '$lib/exchanges/ex-gateio.js'; // IMPORT GATEIO
 import type { ExchangeP2PAd, P2POrder } from '$lib/types';
 
 type P2PState = {
@@ -35,10 +35,8 @@ function createP2POrderStore() {
 			.then(json => {
 				const rates = json?.data?.rates;
 				if (!rates) return;
-
 				const fiatRate = Number(rates[filters.fiat.toUpperCase()]);
 				const tokenRate = Number(rates[filters.token.toUpperCase()]);
-				
 				if (fiatRate) {
 					let mRate = null;
 					const tokenUp = filters.token.toUpperCase();
@@ -49,8 +47,7 @@ function createP2POrderStore() {
 					}
 					update(s => ({ ...s, usdRate: fiatRate, marketRate: mRate }));
 				}
-			})
-			.catch(err => console.error('Failed to fetch market rates:', err));
+			}).catch(err => console.error('Failed to fetch market rates:', err));
 
 		const exchangesToFetch = filterExchangesArr(filters.token);
 
@@ -58,34 +55,23 @@ function createP2POrderStore() {
 			try {
 				let responsesArray: ExchangeP2PAd[] = [];
 
-				// --- THE ULTIMATE CLIENT-SIDE OVERRIDE ---
-				// Bypass US-based Vercel servers entirely for geo-blocked exchanges
+				// --- THE PROPER CLIENT-SIDE OVERRIDE ---
 				if (exchange.key === 'htx') {
-					const htxData = await fetchHtx({ type: filters.type, token: filters.token, fiat: filters.fiat });
-					responsesArray = htxData || [];
+					responsesArray = (await fetchHtx({ type: filters.type, token: filters.token, fiat: filters.fiat })) || [];
 				} 
 				else if (exchange.key === 'bingx') {
-					const bingxData = await fetchBingx({ type: filters.type, token: filters.token, fiat: filters.fiat });
-					responsesArray = bingxData || [];
+					responsesArray = (await fetchBingx({ type: filters.type, token: filters.token, fiat: filters.fiat })) || [];
 				}
 				else if (exchange.key === 'gateio') {
-					const gateioData = await fetchGateio({ type: filters.type, token: filters.token, fiat: filters.fiat });
-					responsesArray = gateioData || [];
+					responsesArray = (await fetchGateio({ type: filters.type, token: filters.token, fiat: filters.fiat })) || [];
 				}
-				// --- STANDARD VERCEL API FETCH (For Binance, Bybit, OKX, etc.) ---
+				// --- STANDARD VERCEL API FETCH ---
 				else {
 					const url = fetchUrlBuilder({ ...filters }, exchange.key);
 					const res = await fetch(url);
-					if (!res.ok) {
-						throw new Error(`Request failed with status ${res.status}`);
-					}
+					if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
 					const data = await res.json();
-
-					if (!data || (data.responses !== null && !Array.isArray(data.responses))) {
-						console.warn(`Received invalid data structure from ${exchange.name}.`);
-						return;
-					}
-					responsesArray = Array.isArray(data.responses) ? data.responses : [];
+					responsesArray = Array.isArray(data?.responses) ? data.responses : [];
 				}
 
 				const validAds = responsesArray.filter((ad): ad is ExchangeP2PAd => !!(ad && ad.advertiser));
@@ -114,7 +100,6 @@ function createP2POrderStore() {
 				});
 			} catch (error) {
 				const fetchError = error instanceof Error ? error : new Error(String(error));
-				console.error(`Error processing ${exchange.key}:`, fetchError);
 				update((s) => ({ ...s, errors: { ...s.errors, [exchange.key]: fetchError } }));
 			}
 		});
@@ -123,10 +108,7 @@ function createP2POrderStore() {
 		update((s) => ({ ...s, isLoading: false }));
 	}
 
-	return {
-		subscribe,
-		fetchOrders
-	};
+	return { subscribe, fetchOrders };
 }
 
 export const p2pOrderStore = createP2POrderStore();
