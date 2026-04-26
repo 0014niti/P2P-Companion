@@ -2,7 +2,10 @@ import { extractTerms, checkIsNewUserOnly, type ExchangeP2PAd } from '.';
 
 export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
-	const targetUrl = 'https://www.gate.io/json_cmp/c2c/pushTradeAds';
+	const currentTimestamp = Date.now().toString();
+	
+	// FIX: Inject live timestamp into URL
+	const targetUrl = `https://www.gate.io/json_cmp/c2c/pushTradeAds?t=${currentTimestamp}`;
 	
 	const bodyPayload = new URLSearchParams({
 		fiat: props.fiat.toUpperCase(),
@@ -10,10 +13,11 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		type: tradeType,
 		amount: '',
 		pay_type: '',
-		page: '1'
+		page: '1',
+		t: currentTimestamp // FIX: Inject live timestamp into form data
 	}).toString();
 
-	// The Triple-Threat Proxy Rotation
+	// Restored Triple-Threat Proxy Rotation
 	const proxies = [
 		(url: string) => `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(url)}`,
 		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
@@ -38,7 +42,7 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 					data = JSON.parse(text); 
 					if (data) break; // Success! Break the loop
 				} catch (e) { 
-					console.warn(`Gate.io Proxy Blocked. Response preview:`, text.substring(0, 150)); 
+					console.warn(`Gate.io Proxy Blocked:`, text.substring(0, 100)); 
 				}
 			}
 		} catch (e) {
