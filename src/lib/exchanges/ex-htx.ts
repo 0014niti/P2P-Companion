@@ -9,7 +9,6 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	if (!coinId || !currencyId) return [];
 
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
-    // Reverted back to general, but with the Vercel Edge Chrome headers
 	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}`;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,16 +35,24 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 
 	if (!data || data.code !== 200 || !data.data) return [];
 
-    // --- THE SOFTWARE FILTER ---
-    // Destroy the fake prices posted by manipulators
-    const verifiedRealAds = data.data.filter(item => {
-        const monthOrders = parseInt(item.tradeMonthTimes || '0', 10);
-        const compRate = parseFloat(item.orderCompleteRate || '0');
-        // Merchant MUST have at least 10 trades this month and 80%+ completion rate
-        return monthOrders >= 10 && compRate >= 80;
-    });
+	let parsedAds = data.data;
 
-	return verifiedRealAds.map((item) => {
+	// FILTER STEP 1: Destroy dummy accounts with less than 5 trades
+	parsedAds = parsedAds.filter(item => parseInt(item.tradeMonthTimes || '0', 10) > 5);
+
+	// FILTER STEP 2: The Mathematical Median Filter (Destroys Wash Traders)
+	if (parsedAds.length > 2) {
+		const prices = parsedAds.map(ad => parseFloat(ad.price || '0')).sort((a, b) => a - b);
+		const medianPrice = prices[Math.floor(prices.length / 2)];
+
+		// Destroy any ad that is more than 10% away from the median consensus market price
+		parsedAds = parsedAds.filter(ad => {
+			const p = parseFloat(ad.price || '0');
+			return Math.abs(p - medianPrice) / medianPrice <= 0.10; 
+		});
+	}
+
+	return parsedAds.map((item) => {
 		const priceStr = item.price !== undefined ? item.price.toString() : '0';
 		const surplusStr = item.tradeCount !== undefined ? item.tradeCount.toString() : '0';
 		let positiveRate = parseFloat(item.orderCompleteRate || '0');
