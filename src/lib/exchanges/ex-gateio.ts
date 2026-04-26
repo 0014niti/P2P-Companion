@@ -5,7 +5,6 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 	const currentTimestamp = Date.now().toString();
 	
 	const targetUrl = `https://www.gate.io/json_cmp/c2c/pushTradeAds?t=${currentTimestamp}`;
-	
 	const bodyPayload = new URLSearchParams({
 		fiat: props.fiat.toUpperCase(),
 		coin: props.token.toUpperCase(),
@@ -16,27 +15,25 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		t: currentTimestamp
 	}).toString();
 
-    // USING THE GOOGLE APPS SCRIPT PROXY
-	const gasProxyUrl = `https://script.google.com/macros/s/AKfycbw-7r2WzIt0NCrtnKtcEizu_16-vJ8rX9xCFL-5HpvckL7Rab3ojYuAit8jkivrxAEW/exec?url=${encodeURIComponent(targetUrl)}&contentType=application/x-www-form-urlencoded&body=${encodeURIComponent(bodyPayload)}`;
+    // RESTORED TO CLOUDFLARE (Your browser in India will ping this!)
+	const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
     try {
-        const res = await fetch(gasProxyUrl);
+        const res = await fetch(proxyUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: bodyPayload
+        });
         if (res.ok) {
             const text = await res.text();
-            try { 
-                data = JSON.parse(text); 
-            } catch (e) { 
-                console.warn(`Gate.io Proxy Blocked:`, text.substring(0, 100)); 
-            }
+            try { data = JSON.parse(text); } catch (e) { console.warn("Gate.io Error:", text.substring(0,100)); }
         }
     } catch (e) {
-        console.error('Gate.io Google proxy failed:', e);
+        console.error('Gate.io proxy failed:', e);
     }
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let rawList: any[] = [];
 	if (Array.isArray(data?.data)) rawList = data.data;
 	else if (Array.isArray(data?.data?.list)) rawList = data.data.list;
@@ -60,7 +57,6 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		fiatSymbol: props.fiat.toUpperCase(),
 		minSingleTransAmount: item.min_amount || item.min_order_amount || '0',
 		maxSingleTransAmount: item.max_amount || item.max_order_amount || '0',
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		paymentMethods: (item.pay_methods || item.payments || []).map((method: any) => ({
 			type: method.name || method.type || 'Bank',
 			identifier: method.id?.toString() || 'unknown',
