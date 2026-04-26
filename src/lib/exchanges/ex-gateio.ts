@@ -12,32 +12,24 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		amount: '', pay_type: '', page: '1', t: currentTimestamp
 	}).toString();
 
-	// Fresh Proxy Rotation (Removed the burned Cloudflare worker)
-	const proxies = [
-		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-		(url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
-		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-	];
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-	for (const proxyFactory of proxies) {
-		try {
-			const res = await fetch(proxyFactory(targetUrl), {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				body: bodyPayload
-			});
-			if (res.ok) {
-				const text = await res.text();
-				try { 
-					data = JSON.parse(text); 
-					if (data) break;
-				} catch (e) { /* rotate */ }
-			}
-		} catch (e) { console.warn('Gate.io proxy failed, rotating...'); }
-	}
+	try {
+		const res = await fetch(targetUrl, {
+			method: 'POST',
+			headers: { 
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			body: bodyPayload
+		});
+		if (res.ok) {
+			const text = await res.text();
+			try { data = JSON.parse(text); } catch (e) { /* quiet ignore */ }
+		}
+	} catch (e) { console.error('Gate.io direct fetch failed:', e); }
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let rawList: any[] = [];
