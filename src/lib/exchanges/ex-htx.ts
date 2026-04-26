@@ -9,7 +9,8 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 	if (!coinId || !currencyId) return [];
 
 	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
-    const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=fast&isMerchant=1&online=1&range=0&amount=&t=${Date.now()}`;
+    // Reverted back to general, but with the Vercel Edge Chrome headers
+	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}`;
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: { code?: number; data?: Record<string, any>[] } | null = null;
@@ -22,9 +23,6 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 				'Accept-Language': 'en-US,en;q=0.9',
 				'Origin': 'https://www.htx.com',
 				'Referer': 'https://www.htx.com/en-us/fiat-crypto/trade/buy-usdt-usd/',
-				'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-				'Sec-Ch-Ua-Mobile': '?0',
-				'Sec-Ch-Ua-Platform': '"Windows"',
 				'Sec-Fetch-Dest': 'empty',
 				'Sec-Fetch-Mode': 'cors',
 				'Sec-Fetch-Site': 'same-origin'
@@ -38,7 +36,16 @@ export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fia
 
 	if (!data || data.code !== 200 || !data.data) return [];
 
-	return data.data.map((item) => {
+    // --- THE SOFTWARE FILTER ---
+    // Destroy the fake prices posted by manipulators
+    const verifiedRealAds = data.data.filter(item => {
+        const monthOrders = parseInt(item.tradeMonthTimes || '0', 10);
+        const compRate = parseFloat(item.orderCompleteRate || '0');
+        // Merchant MUST have at least 10 trades this month and 80%+ completion rate
+        return monthOrders >= 10 && compRate >= 80;
+    });
+
+	return verifiedRealAds.map((item) => {
 		const priceStr = item.price !== undefined ? item.price.toString() : '0';
 		const surplusStr = item.tradeCount !== undefined ? item.tradeCount.toString() : '0';
 		let positiveRate = parseFloat(item.orderCompleteRate || '0');
