@@ -1,15 +1,20 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
+// THE FIX: Force Vercel to use Edge computing to spoof browser TLS handshakes
+export const config = {
+	runtime: 'edge'
+};
+
 import { fetchBinance } from '$lib/exchanges/ex-binance';
 import { fetchBybit } from '$lib/exchanges/ex-bybit';
 import { fetchOkx } from '$lib/exchanges/ex-okx';
 import { fetchKucoin } from '$lib/exchanges/ex-kucoin';
 import { fetchBitget } from '$lib/exchanges/ex-bitget';
 import { fetchMexc } from '$lib/exchanges/ex-mexc';
-import { fetchBingx } from '$lib/exchanges/ex-bingx';   // ADDED
-import { fetchGateio } from '$lib/exchanges/ex-gateio'; // ADDED
-import { fetchHtx } from '$lib/exchanges/ex-htx';       // ADDED
+import { fetchBingx } from '$lib/exchanges/ex-bingx';
+import { fetchGateio } from '$lib/exchanges/ex-gateio';
+import { fetchHtx } from '$lib/exchanges/ex-htx';
 
 export const GET: RequestHandler = async ({ url }) => {
 	const exchange = url.searchParams.get('exchange');
@@ -34,9 +39,9 @@ export const GET: RequestHandler = async ({ url }) => {
 			case 'kucoin': data = await fetchKucoin(props); break;
 			case 'bitget': data = await fetchBitget(props); break;
 			case 'mexc': data = await fetchMexc(props); break;
-			case 'bingx': data = await fetchBingx(props); break;   // ADDED
-			case 'gateio': data = await fetchGateio(props); break; // ADDED
-			case 'htx': data = await fetchHtx(props); break;       // ADDED
+			case 'bingx': data = await fetchBingx(props); break;
+			case 'gateio': data = await fetchGateio(props); break;
+			case 'htx': data = await fetchHtx(props); break;
 			default:
 				return json({ error: 'Unknown exchange' }, { status: 400 });
 		}
