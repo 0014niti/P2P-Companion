@@ -9,31 +9,37 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		fiat: props.fiat.toUpperCase(),
 		coin: props.token.toUpperCase(),
 		type: tradeType,
-		amount: '',
-		pay_type: '',
-		page: '1',
-		t: currentTimestamp
+		amount: '', pay_type: '', page: '1', t: currentTimestamp
 	}).toString();
 
-    // RESTORED TO CLOUDFLARE (Your browser in India will ping this!)
-	const proxyUrl = `https://p2p-proxy.bossbuzy0.workers.dev/?url=${encodeURIComponent(targetUrl)}`;
+	// Fresh Proxy Rotation (Removed the burned Cloudflare worker)
+	const proxies = [
+		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+		(url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
+		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+	];
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-    try {
-        const res = await fetch(proxyUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: bodyPayload
-        });
-        if (res.ok) {
-            const text = await res.text();
-            try { data = JSON.parse(text); } catch (e) { console.warn("Gate.io Error:", text.substring(0,100)); }
-        }
-    } catch (e) {
-        console.error('Gate.io proxy failed:', e);
-    }
+	for (const proxyFactory of proxies) {
+		try {
+			const res = await fetch(proxyFactory(targetUrl), {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: bodyPayload
+			});
+			if (res.ok) {
+				const text = await res.text();
+				try { 
+					data = JSON.parse(text); 
+					if (data) break;
+				} catch (e) { /* rotate */ }
+			}
+		} catch (e) { console.warn('Gate.io proxy failed, rotating...'); }
+	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let rawList: any[] = [];
 	if (Array.isArray(data?.data)) rawList = data.data;
 	else if (Array.isArray(data?.data?.list)) rawList = data.data.list;
@@ -57,6 +63,7 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		fiatSymbol: props.fiat.toUpperCase(),
 		minSingleTransAmount: item.min_amount || item.min_order_amount || '0',
 		maxSingleTransAmount: item.max_amount || item.max_order_amount || '0',
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		paymentMethods: (item.pay_methods || item.payments || []).map((method: any) => ({
 			type: method.name || method.type || 'Bank',
 			identifier: method.id?.toString() || 'unknown',
