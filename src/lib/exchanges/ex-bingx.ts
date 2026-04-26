@@ -20,13 +20,23 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 			method: 'POST',
 			headers: { 
 				'Content-Type': 'application/json',
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+				'Accept': 'application/json, text/plain, */*',
+				'Accept-Language': 'en-US,en;q=0.9',
+				'Origin': 'https://bingx.com',
+				'Referer': 'https://bingx.com/en-us/p2p/',
+				'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+				'Sec-Ch-Ua-Mobile': '?0',
+				'Sec-Ch-Ua-Platform': '"Windows"',
+				'Sec-Fetch-Dest': 'empty',
+				'Sec-Fetch-Mode': 'cors',
+				'Sec-Fetch-Site': 'same-origin'
 			},
 			body: bodyPayload
 		});
 		if (res.ok) {
 			const text = await res.text();
-			try { data = JSON.parse(text); } catch (e) { /* quiet ignore */ }
+			try { data = JSON.parse(text); } catch (e) { /* silent catch */ }
 		}
 	} catch (e) { console.error('BingX direct fetch failed:', e); }
 
