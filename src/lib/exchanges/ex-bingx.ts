@@ -12,32 +12,23 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		page: 1, limit: 10, timestamp: currentTimestamp
 	});
 
-    // Fresh Proxy Rotation (Removed the burned Cloudflare worker)
-	const proxies = [
-		(url: string) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-		(url: string) => `https://thingproxy.freeboard.io/fetch/${url}`,
-		(url: string) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
-	];
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let data: Record<string, any> | null = null;
 
-	for (const proxyFactory of proxies) {
-		try {
-			const res = await fetch(proxyFactory(targetUrl), {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: bodyPayload
-			});
-			if (res.ok) {
-				const text = await res.text();
-				try { 
-					data = JSON.parse(text); 
-					if (data && data.code === 0) break;
-				} catch (e) { /* rotate */ }
-			}
-		} catch (e) { console.warn('BingX proxy failed, rotating...'); }
-	}
+	try {
+		const res = await fetch(targetUrl, {
+			method: 'POST',
+			headers: { 
+				'Content-Type': 'application/json',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+			},
+			body: bodyPayload
+		});
+		if (res.ok) {
+			const text = await res.text();
+			try { data = JSON.parse(text); } catch (e) { /* quiet ignore */ }
+		}
+	} catch (e) { console.error('BingX direct fetch failed:', e); }
 
 	const rawList = Array.isArray(data?.data) ? data.data : (data?.data?.list || data?.data?.advList || data?.list || []);
 	if (!Array.isArray(rawList) || rawList.length === 0) return [];
