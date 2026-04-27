@@ -85,12 +85,16 @@
 			<span class="font-black tracking-tight text-zinc-900 hidden sm:block">Companion</span>
 		</div>
 		
-		<a href="/scanner" class="relative inline-flex items-center justify-center rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 group overflow-hidden">
-			<span class="absolute inset-0 -translate-x-full animate-[sweep_4s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
-			<span class="relative z-10 flex items-center gap-2">
-				Open Price Comparison Tool <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
-			</span>
-		</a>
+		<a 
+	href="/scanner" 
+	data-sveltekit-reload
+	class="relative inline-flex items-center justify-center rounded-xl bg-zinc-950 px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:bg-zinc-800 hover:scale-[1.02] active:scale-95 group overflow-hidden"
+>
+	<span class="pointer-events-none absolute inset-0 -translate-x-full animate-[sweep_4s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></span>
+	<span class="pointer-events-none relative z-10 flex items-center gap-2">
+		Open Price Comparison Tool <span class="transition-transform group-hover:translate-x-1">&rarr;</span>
+	</span>
+</a>
 	</div>
 </header>
 
