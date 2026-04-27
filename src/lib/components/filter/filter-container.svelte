@@ -6,7 +6,7 @@
 		SelectItem,
 		SelectTrigger
 	} from '$lib/components/ui/select';
-	import fiatList from '$lib/data/binance-fiat-list.json';
+	import fiatList from '$lib/data/fiat-list';
 	import { actionTypes, availableTokensList } from '$lib/exchanges';
 	import {
 		CheckIcon,

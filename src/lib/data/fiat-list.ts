@@ -1,4 +1,4 @@
-[
+export const fiatList = [
   {"currencyCode": "USD", "currencySymbol": "$", "currencyScale": 2, "countryCode": "US"},
   {"currencyCode": "EUR", "currencySymbol": "€", "currencyScale": 2, "countryCode": "EU"},
   {"currencyCode": "GBP", "currencySymbol": "£", "currencyScale": 2, "countryCode": "GB"},
@@ -77,4 +77,4 @@
   {"currencyCode": "UYU", "currencySymbol": "$U", "currencyScale": 2, "countryCode": "UY"},
   {"currencyCode": "PYG", "currencySymbol": "₲", "currencyScale": 0, "countryCode": "PY"},
   {"currencyCode": "MMK", "currencySymbol": "K", "currencyScale": 2, "countryCode": "MM"}
-]
+];
