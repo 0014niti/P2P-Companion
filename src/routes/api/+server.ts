@@ -1,54 +1,58 @@
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import { fetchBinance } from '$lib/exchanges/ex-binance';
+import { fetchBitget } from '$lib/exchanges/ex-bitget.js';
+import { fetchMexc } from '$lib/exchanges/ex-mexc.js';
+import { fetchOkx } from '$lib/exchanges/ex-okx.js';
+import { fetchBybit } from '$lib/exchanges/ex-bybit.js';
+import { fetchKucoin } from '$lib/exchanges/ex-kucoin.js';
+import type { ExchangeP2PAd } from '$lib/exchanges/index.js';
 
-// THE FIX: Force Vercel to use Edge computing to spoof browser TLS handshakes
+// NOTE: If you are using the Vercel Edge runtime we discussed earlier, 
+// make sure to keep `export const config = { runtime: 'edge' };` here!
 export const config = {
 	runtime: 'edge'
 };
+export async function GET({ request }) {
+	const querys = new URL(request.url).searchParams;
 
-import { fetchBinance } from '$lib/exchanges/ex-binance';
-import { fetchBybit } from '$lib/exchanges/ex-bybit';
-import { fetchOkx } from '$lib/exchanges/ex-okx';
-import { fetchKucoin } from '$lib/exchanges/ex-kucoin';
-import { fetchBitget } from '$lib/exchanges/ex-bitget';
-import { fetchMexc } from '$lib/exchanges/ex-mexc';
-import { fetchBingx } from '$lib/exchanges/ex-bingx';
-import { fetchGateio } from '$lib/exchanges/ex-gateio';
-import { fetchHtx } from '$lib/exchanges/ex-htx';
+	const type = querys.get('type') || 'buy';
+	const token = querys.get('token') || 'USDT';
+	const fiat = querys.get('fiat') || 'USD';
+	const exchange = querys.get('exchange') || 'binance';
 
-export const GET: RequestHandler = async ({ url }) => {
-	const exchange = url.searchParams.get('exchange');
-	const type = url.searchParams.get('type') as 'buy' | 'sell';
-	const token = url.searchParams.get('token');
-	const fiat = url.searchParams.get('fiat');
+	let response: ExchangeP2PAd[] | null = null;
 
-	if (!exchange || !type || !token || !fiat) {
-		return json({ error: 'Missing required parameters' }, { status: 400 });
+	switch (exchange) {
+		case 'binance':
+			response = await fetchBinance({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		case 'okx':
+			response = await fetchOkx({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		case 'mexc':
+			response = await fetchMexc({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		case 'bitget':
+			response = await fetchBitget({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		case 'bybit':
+			response = await fetchBybit({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		case 'kucoin':
+			response = await fetchKucoin({ type: type as 'buy' | 'sell', token, fiat });
+			break;
+		// Future exchanges can be added here
+		default:
+			break;
 	}
 
-	const props = { type, token, fiat };
-
-	try {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		let data: any[] = [];
-
-		switch (exchange) {
-			case 'binance': data = await fetchBinance(props); break;
-			case 'bybit': data = await fetchBybit(props); break;
-			case 'okx': data = await fetchOkx(props); break;
-			case 'kucoin': data = await fetchKucoin(props); break;
-			case 'bitget': data = await fetchBitget(props); break;
-			case 'mexc': data = await fetchMexc(props); break;
-			case 'bingx': data = await fetchBingx(props); break;
-			case 'gateio': data = await fetchGateio(props); break;
-			case 'htx': data = await fetchHtx(props); break;
-			default:
-				return json({ error: 'Unknown exchange' }, { status: 400 });
+	return new Response(
+		JSON.stringify({
+			responses: response
+		}),
+		{
+			headers: {
+				'Content-Type': 'application/json'
+			}
 		}
-
-		return json({ responses: data });
-	} catch (error) {
-		console.error(`API Error fetching ${exchange}:`, error);
-		return json({ error: 'Internal server error', responses: [] }, { status: 500 });
-	}
-};
+	);
+}
