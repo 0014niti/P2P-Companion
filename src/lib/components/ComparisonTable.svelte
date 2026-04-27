@@ -1,137 +1,116 @@
 <script lang="ts">
-	import { Badge } from '$lib/components/ui/badge';
-	import { Button } from '$lib/components/ui/button';
-	import { AlertCircle, ArrowUpRight, TrendingDown, TrendingUp } from 'lucide-svelte';
+	// This component expects an array of fetched P2P order data.
+	import type { P2POrder } from '$lib/types';
 	import { p2pOrderStore } from '$lib/p2p-orders';
-	
-	// CRITICAL FIX: Re-synced the state import
-	import { filterState } from '$lib/components/filter/stateFilter.svelte.ts';
+	import { cn } from '$lib/utils';
 
-	let orders = $derived($p2pOrderStore.orders || []);
-	let isLoading = $derived($p2pOrderStore.isLoading);
-	let errors = $derived($p2pOrderStore.errors || {});
-	let marketRate = $derived($p2pOrderStore.marketRate);
-	
-	function formatPrice(price: number, fiat: string) {
-		return new Intl.NumberFormat('en-US', {
-			style: 'currency',
-			currency: fiat,
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2
-		}).format(price);
-	}
+	let {
+		orders = [],
+		isLoading = false
+	}: {
+		orders?: P2POrder[];
+		isLoading?: boolean;
+	} = $props();
 
-	function getSpread(price: number, market: number) {
-		if (!market) return 0;
-		return ((price - market) / market) * 100;
-	}
+	// State to track which order terms are currently expanded
+	let expandedTerms = $state<Set<string>>(new Set());
 
-	function getExchangeColor(exchange: string) {
-		switch (exchange.toLowerCase()) {
-			case 'binance': return 'bg-yellow-500/10 text-yellow-700 border-yellow-200';
-			case 'okx': return 'bg-neutral-900/10 text-neutral-900 border-neutral-200';
-			case 'bybit': return 'bg-amber-500/10 text-amber-700 border-amber-200';
-			case 'bitget': return 'bg-cyan-500/10 text-cyan-700 border-cyan-200';
-			case 'mexc': return 'bg-blue-600/10 text-blue-700 border-blue-200';
-			case 'kucoin': return 'bg-emerald-500/10 text-emerald-700 border-emerald-200';
-			case 'remitano': return 'bg-purple-600/10 text-purple-700 border-purple-200';
-			default: return 'bg-slate-100 text-slate-700 border-slate-200';
-		}
-	}
+	const toggleTerms = (orderId: string) => {
+		expandedTerms = new Set(
+			expandedTerms.has(orderId)
+				? [...expandedTerms].filter(id => id !== orderId)
+				: [...expandedTerms, orderId]
+		);
+	};
 </script>
 
-<div class="rounded-xl border bg-white shadow-sm overflow-hidden">
-	{#if Object.keys(errors).length > 0}
-		<div class="bg-red-50/50 p-3 border-b border-red-100">
-			<div class="flex items-center gap-2 text-red-600 text-xs font-medium">
-				<AlertCircle class="h-4 w-4" />
-				<span>Some exchanges failed to load. Results may be incomplete.</span>
-			</div>
-		</div>
-	{/if}
-
-	<div class="overflow-x-auto relative w-full">
-		<table class="w-full caption-bottom text-sm">
-			<thead class="[&_tr]:border-b">
-				<tr class="border-b transition-colors hover:bg-slate-50/50 bg-slate-50/50">
-					<th class="h-12 px-4 text-left align-middle font-semibold text-slate-600 w-[120px]">Exchange</th>
-					<th class="h-12 px-4 text-left align-middle font-semibold text-slate-600">Price</th>
-					<th class="h-12 px-4 text-left align-middle font-semibold text-slate-600">Merchant</th>
-					<th class="h-12 px-4 text-left align-middle font-semibold text-slate-600">Available</th>
-					<th class="h-12 px-4 align-middle font-semibold text-slate-600 text-right">Action</th>
+<div class="overflow-x-auto rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl shadow-sm">
+	<table class="min-w-full text-left text-sm whitespace-nowrap">
+		<thead class="bg-zinc-50/30 border-b border-zinc-200/60">
+			<tr class="text-[11px] font-bold uppercase tracking-widest text-zinc-500">
+				<th scope="col" class="px-8 py-6">Exchange & Merchant</th>
+				<th scope="col" class="px-8 py-6">Price</th>
+				<th scope="col" class="px-8 py-6">Available</th>
+				<th scope="col" class="px-8 py-6">Limits</th>
+				<th scope="col" class="px-8 py-6">Payment Methods</th>
+				<th scope="col" class="px-8 py-6 text-right">Action</th>
+			</tr>
+		</thead>
+		<tbody class="divide-y divide-zinc-100">
+			{#if isLoading}
+				<tr>
+					<td colspan="6" class="px-8 py-20 text-center">
+						<div class="flex flex-col items-center justify-center space-y-3">
+							<div class="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+							<p class="font-bold text-zinc-500 tracking-wide mt-2">Fetching Market Data...</p>
+						</div>
+					</td>
 				</tr>
-			</thead>
-			<tbody class="[&_tr:last-child]:border-0">
-				{#if isLoading}
-					{#each Array(5) as _}
-						<tr class="border-b transition-colors hover:bg-slate-50/50">
-							<td class="p-4 align-middle"><div class="h-6 w-20 animate-pulse rounded-md bg-slate-100"></div></td>
-							<td class="p-4 align-middle"><div class="h-6 w-24 animate-pulse rounded-md bg-slate-100"></div></td>
-							<td class="p-4 align-middle"><div class="h-6 w-32 animate-pulse rounded-md bg-slate-100"></div></td>
-							<td class="p-4 align-middle"><div class="h-6 w-24 animate-pulse rounded-md bg-slate-100"></div></td>
-							<td class="p-4 align-middle"><div class="flex justify-end"><div class="h-8 w-20 animate-pulse rounded-lg bg-slate-100"></div></div></td>
-						</tr>
-					{/each}
-				{:else if orders.length === 0}
-					<tr class="border-b transition-colors">
-						<td colspan="5" class="p-4 align-middle h-32 text-center text-slate-500">
-							No active orders found for this combination.
+			{:else if orders.length === 0}
+				<tr>
+					<td colspan="6" class="px-8 py-20 text-center text-zinc-500 font-medium">
+						No market offers match the current criteria.
+					</td>
+				</tr>
+			{:else}
+				{#each orders as order (order.id)}
+					<tr class="transition-all duration-300 ease-out hover:bg-white/50 hover:backdrop-blur-xl group cursor-default">
+						<td class="px-8 py-5">
+							<div class="font-black text-zinc-900 text-[15px]">{order.exchange}</div>
+							<div class="text-xs font-bold text-zinc-500 mt-0.5">{order.merchantName}</div>
+							<div 
+								class={cn(
+									"mt-2 max-w-[220px] text-[11px] italic text-zinc-400 cursor-pointer hover:text-zinc-600 transition-all duration-200", 
+									expandedTerms.has(order.id) ? "whitespace-pre-wrap break-words" : "truncate"
+								)} 
+								title="Click to expand/collapse terms"
+								role="button"
+								tabindex="0"
+								onclick={() => toggleTerms(order.id)}
+								onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleTerms(order.id); }}
+							>
+								{order.terms?.trim() ? (expandedTerms.has(order.id) ? order.terms.trim() : order.terms.replace(/\n/g, ' ').trim()) : 'No terms specified'}
+							</div>
+						</td>
+						<td class="px-8 py-5">
+							<div class="text-[17px] font-black text-zinc-900 tracking-tight">
+								{order.price.toLocaleString(undefined, { minimumFractionDigits: 2 })} <span class="text-[11px] font-bold text-zinc-400 uppercase ml-0.5">{order.fiat}</span>
+							</div>
+							{#if $p2pOrderStore.marketRate}
+								{@const diff = ((order.price - $p2pOrderStore.marketRate) / $p2pOrderStore.marketRate) * 100}
+								<div class="mt-1 text-[10px] font-bold uppercase tracking-wider {diff > 0 ? 'text-blue-500' : 'text-emerald-500'}" title="Premium vs Official Market Rate">
+									{diff > 0 ? '+' : ''}{diff.toFixed(2)}% Spread
+								</div>
+							{/if}
+						</td>
+						<td class="px-8 py-5">
+							<div class="font-bold text-zinc-700">{order.available.toLocaleString()} <span class="text-[10px] font-bold text-zinc-400 ml-0.5">{order.token}</span></div>
+						</td>
+						<td class="px-8 py-5">
+							<div class="font-bold text-zinc-700">{new Intl.NumberFormat('en-US', { notation: 'compact' }).format(order.minLimit)} - {new Intl.NumberFormat('en-US', { notation: 'compact' }).format(order.maxLimit)} <span class="text-[10px] font-bold text-zinc-400 ml-0.5">{order.fiat}</span></div>
+						</td>
+						<td class="px-8 py-5">
+							<div class="flex flex-wrap gap-2 max-w-[250px]">
+								{#each order.paymentMethods as { name: method }}
+									<span class="inline-flex items-center rounded-md bg-zinc-100 px-2.5 py-1 text-[10px] font-bold text-zinc-600 border border-zinc-200/50">
+										{method}
+									</span>
+								{/each}
+							</div>
+						</td>
+						<td class="px-8 py-5 text-right">
+							<a
+								href={order.tradeUrl || '#'}
+								target="_blank"
+								rel="noreferrer"
+								class="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all duration-300 ease-out hover:bg-blue-700 hover:shadow-lg active:scale-95"
+							>
+								Trade ↗
+							</a>
 						</td>
 					</tr>
-				{:else}
-					{#each orders as order}
-						<tr class="group border-b transition-colors hover:bg-slate-50/80">
-							<td class="p-4 align-middle">
-								<Badge variant="outline" class="{getExchangeColor(order.exchange)} border whitespace-nowrap">
-									{order.exchange}
-								</Badge>
-							</td>
-							<td class="p-4 align-middle">
-								<div class="flex flex-col">
-									<span class="font-bold text-slate-900">{formatPrice(order.price, order.fiat)}</span>
-									{#if marketRate}
-										{@const spread = getSpread(order.price, marketRate)}
-										<span class="flex items-center gap-0.5 text-[10px] font-medium {spread > 0 ? 'text-red-500' : 'text-emerald-500'}">
-											{#if spread > 0}<TrendingUp class="h-3 w-3" />{:else}<TrendingDown class="h-3 w-3" />{/if}
-											{Math.abs(spread).toFixed(2)}% vs market
-										</span>
-									{/if}
-								</div>
-							</td>
-							<td class="p-4 align-middle">
-								<div class="flex flex-col">
-									<span class="font-medium text-slate-900 truncate max-w-[150px]">{order.merchantName}</span>
-									<span class="text-[11px] text-slate-500">
-										{order.merchantStats.monthOrderCount} orders • {(order.merchantStats.positiveRate * 100).toFixed(0)}%
-									</span>
-								</div>
-							</td>
-							<td class="p-4 align-middle">
-								<div class="flex flex-col">
-									<span class="font-medium text-slate-700">{order.available.toLocaleString()} {order.token}</span>
-									<span class="text-[11px] text-slate-400">
-										Limit: {order.minLimit.toLocaleString()} - {order.maxLimit.toLocaleString()} {order.fiat}
-									</span>
-								</div>
-							</td>
-							<td class="p-4 align-middle text-right">
-								<Button 
-									variant="default" 
-									size="sm" 
-									class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-									href={order.tradeUrl}
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									<span class="hidden sm:inline">{filterState.type === 'buy' ? 'Buy' : 'Sell'} {order.token}</span>
-									<span class="sm:hidden">{filterState.type === 'buy' ? 'Buy' : 'Sell'}</span>
-									<ArrowUpRight class="ml-1.5 h-3.5 w-3.5" />
-								</Button>
-							</td>
-						</tr>
-					{/each}
-				{/if}
-			</tbody>
-		</table>
-	</div>
-</div>
+				{/each}
+			{/if}
+		</tbody>
+	</table>
+</div> n

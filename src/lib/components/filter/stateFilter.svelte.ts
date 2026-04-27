@@ -1,38 +1,28 @@
-import { browser } from '$app/environment';
+import { persistedState } from 'svelte-persisted-state';
 
-export type P2PFilters = {
+export type UserPrefs = {
+	selectedToken: string;
 	type: 'buy' | 'sell';
-	token: string;
 	fiat: string;
-	amount: number | null;
+	viewMode: 'grid' | 'horizontal';
 };
 
-export const filterState = $state<P2PFilters>({
-	type: 'buy',
-	token: 'USDT',
-	fiat: 'USD',
-	amount: null
-});
-
-(function initFiat() {
-	if (!browser) return;
-	try {
-		const savedFiat = localStorage.getItem('user_fiat');
-		if (savedFiat) {
-			filterState.fiat = savedFiat;
-		} else {
-			fetch('https://ipapi.co/currency/')
-				.then((res) => res.text())
-				.then((currency) => {
-					const code = currency.trim().toUpperCase();
-					if (code.length === 3) {
-						filterState.fiat = code;
-						localStorage.setItem('user_fiat', code); 
-					}
-				})
-				.catch(() => console.warn('Failed to detect IP currency'));
+export const filterState = persistedState<UserPrefs>(
+	'user-prefs',
+	{
+		selectedToken: 'USDT',
+		type: 'buy',
+		fiat: 'USD',
+		viewMode: 'grid'
+	},
+	{
+		storage: 'local',
+		syncTabs: true,
+		beforeWrite: (value) => {
+			return value;
+		},
+		onWriteError: (error) => {
+			console.error('Error writing to persisted state:', error);
 		}
-	} catch (e) {
-		console.warn('Local storage access denied');
 	}
-})();
+);
