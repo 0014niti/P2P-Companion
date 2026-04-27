@@ -34,24 +34,6 @@ export const exchanges = {
 		tokensList: ['USDT', 'BTC', 'ETH', 'KCS', 'USDC'] as string[],
 		icon: 'https://www.google.com/s2/favicons?domain=kucoin.com&sz=128',
 		p2pLink: 'https://www.kucoin.com/p2p'
-	},
-	htx: {
-		name: 'HTX',
-		tokensList: ['USDT', 'BTC', 'ETH', 'HT', 'USDC'] as string[],
-		icon: 'https://www.google.com/s2/favicons?domain=htx.com&sz=128',
-		p2pLink: 'https://www.htx.com/en-us/fiat-crypto/trade/buy-usdt-usd'
-	},
-	bingx: {
-		name: 'BingX',
-		tokensList: ['USDT', 'BTC', 'ETH', 'USDC'] as string[],
-		icon: 'https://www.google.com/s2/favicons?domain=bingx.com&sz=128',
-		p2pLink: 'https://bingx.com/en-us/p2p/'
-	},
-	gateio: {
-		name: 'Gate.io',
-		tokensList: ['USDT', 'BTC', 'ETH', 'DOGE'] as string[],
-		icon: 'https://www.google.com/s2/favicons?domain=gate.io&sz=128',
-		p2pLink: 'https://www.gate.io/p2p'
 	}
 } as const;
 
