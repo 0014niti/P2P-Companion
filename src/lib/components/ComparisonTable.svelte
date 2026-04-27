@@ -1,25 +1,17 @@
 <script lang="ts">
-	import {
-		Table,
-		TableBody,
-		TableCell,
-		TableHead,
-		TableHeader,
-		TableRow
-	} from '$lib/components/ui/table';
+	// I have completely removed the bad ui/table imports that broke your build!
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { AlertCircle, ArrowUpRight, TrendingDown, TrendingUp } from 'lucide-svelte';
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import { filterStore } from '$lib/components/filter/stateFilter.svelte';
 
-	// THE FIX: Directly subscribe to the Svelte store using the $ prefix
+	// Safely auto-subscribing to your Edge-routed stores
 	let orders = $derived($p2pOrderStore.orders || []);
 	let isLoading = $derived($p2pOrderStore.isLoading);
 	let errors = $derived($p2pOrderStore.errors || {});
 	let marketRate = $derived($p2pOrderStore.marketRate);
 	
-	// Safely watch the filter store
 	let filters = $derived(filterStore.filters);
 
 	function formatPrice(price: number, fiat: string) {
@@ -60,43 +52,43 @@
 		</div>
 	{/if}
 
-	<div class="overflow-x-auto">
-		<Table>
-			<TableHeader>
-				<TableRow class="bg-slate-50/50 hover:bg-slate-50/50">
-					<TableHead class="w-[120px] font-semibold text-slate-600">Exchange</TableHead>
-					<TableHead class="font-semibold text-slate-600">Price</TableHead>
-					<TableHead class="font-semibold text-slate-600">Merchant</TableHead>
-					<TableHead class="font-semibold text-slate-600">Available</TableHead>
-					<TableHead class="text-right font-semibold text-slate-600">Action</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
+	<div class="overflow-x-auto relative w-full">
+		<table class="w-full caption-bottom text-sm">
+			<thead class="[&_tr]:border-b">
+				<tr class="border-b transition-colors hover:bg-slate-50/50 bg-slate-50/50">
+					<th class="h-12 px-4 text-left align-middle font-semibold text-slate-600 w-[120px]">Exchange</th>
+					<th class="h-12 px-4 text-left align-middle font-semibold text-slate-600">Price</th>
+					<th class="h-12 px-4 text-left align-middle font-semibold text-slate-600">Merchant</th>
+					<th class="h-12 px-4 text-left align-middle font-semibold text-slate-600">Available</th>
+					<th class="h-12 px-4 align-middle font-semibold text-slate-600 text-right">Action</th>
+				</tr>
+			</thead>
+			<tbody class="[&_tr:last-child]:border-0">
 				{#if isLoading}
 					{#each Array(5) as _}
-						<TableRow>
-							<TableCell><div class="h-6 w-20 animate-pulse rounded-md bg-slate-100"></div></TableCell>
-							<TableCell><div class="h-6 w-24 animate-pulse rounded-md bg-slate-100"></div></TableCell>
-							<TableCell><div class="h-6 w-32 animate-pulse rounded-md bg-slate-100"></div></TableCell>
-							<TableCell><div class="h-6 w-24 animate-pulse rounded-md bg-slate-100"></div></TableCell>
-							<TableCell><div class="flex justify-end"><div class="h-8 w-20 animate-pulse rounded-lg bg-slate-100"></div></div></TableCell>
-						</TableRow>
+						<tr class="border-b transition-colors hover:bg-slate-50/50">
+							<td class="p-4 align-middle"><div class="h-6 w-20 animate-pulse rounded-md bg-slate-100"></div></td>
+							<td class="p-4 align-middle"><div class="h-6 w-24 animate-pulse rounded-md bg-slate-100"></div></td>
+							<td class="p-4 align-middle"><div class="h-6 w-32 animate-pulse rounded-md bg-slate-100"></div></td>
+							<td class="p-4 align-middle"><div class="h-6 w-24 animate-pulse rounded-md bg-slate-100"></div></td>
+							<td class="p-4 align-middle"><div class="flex justify-end"><div class="h-8 w-20 animate-pulse rounded-lg bg-slate-100"></div></div></td>
+						</tr>
 					{/each}
 				{:else if orders.length === 0}
-					<TableRow>
-						<TableCell colspan="5" class="h-32 text-center text-slate-500">
+					<tr class="border-b transition-colors">
+						<td colspan="5" class="p-4 align-middle h-32 text-center text-slate-500">
 							No active orders found for this combination.
-						</TableCell>
-					</TableRow>
+						</td>
+					</tr>
 				{:else}
 					{#each orders as order}
-						<TableRow class="group hover:bg-slate-50/80 transition-colors">
-							<TableCell>
+						<tr class="group border-b transition-colors hover:bg-slate-50/80">
+							<td class="p-4 align-middle">
 								<Badge variant="outline" class="{getExchangeColor(order.exchange)} border whitespace-nowrap">
 									{order.exchange}
 								</Badge>
-							</TableCell>
-							<TableCell>
+							</td>
+							<td class="p-4 align-middle">
 								<div class="flex flex-col">
 									<span class="font-bold text-slate-900">{formatPrice(order.price, order.fiat)}</span>
 									{#if marketRate}
@@ -107,24 +99,24 @@
 										</span>
 									{/if}
 								</div>
-							</TableCell>
-							<TableCell>
+							</td>
+							<td class="p-4 align-middle">
 								<div class="flex flex-col">
 									<span class="font-medium text-slate-900 truncate max-w-[150px]">{order.merchantName}</span>
 									<span class="text-[11px] text-slate-500">
 										{order.merchantStats.monthOrderCount} orders • {(order.merchantStats.positiveRate * 100).toFixed(0)}%
 									</span>
 								</div>
-							</TableCell>
-							<TableCell>
+							</td>
+							<td class="p-4 align-middle">
 								<div class="flex flex-col">
 									<span class="font-medium text-slate-700">{order.available.toLocaleString()} {order.token}</span>
 									<span class="text-[11px] text-slate-400">
 										Limit: {order.minLimit.toLocaleString()} - {order.maxLimit.toLocaleString()} {order.fiat}
 									</span>
 								</div>
-							</TableCell>
-							<TableCell class="text-right">
+							</td>
+							<td class="p-4 align-middle text-right">
 								<Button 
 									variant="default" 
 									size="sm" 
@@ -137,11 +129,11 @@
 									<span class="sm:hidden">{filters.type === 'buy' ? 'Buy' : 'Sell'}</span>
 									<ArrowUpRight class="ml-1.5 h-3.5 w-3.5" />
 								</Button>
-							</TableCell>
-						</TableRow>
+							</td>
+						</tr>
 					{/each}
 				{/if}
-			</TableBody>
-		</Table>
+			</tbody>
+		</table>
 	</div>
 </div>
