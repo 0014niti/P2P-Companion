@@ -13,12 +13,11 @@
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import { filterStore } from '$lib/components/filter/stateFilter.svelte';
 
-	// Safe reactive references to the store
-	let state = $state(p2pOrderStore);
-	let orders = $derived($state.orders || []);
-	let isLoading = $derived($state.isLoading);
-	let errors = $derived($state.errors || {});
-	let marketRate = $derived($state.marketRate);
+	// THE FIX: Directly subscribe to the Svelte store using the $ prefix
+	let orders = $derived($p2pOrderStore.orders || []);
+	let isLoading = $derived($p2pOrderStore.isLoading);
+	let errors = $derived($p2pOrderStore.errors || {});
+	let marketRate = $derived($p2pOrderStore.marketRate);
 	
 	// Safely watch the filter store
 	let filters = $derived(filterStore.filters);
