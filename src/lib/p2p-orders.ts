@@ -13,15 +13,36 @@ type P2PState = {
 	fiat: string | null;
 };
 
+// FEATURE: Dynamic Deep Link Generator
+function buildDeepLink(exchange: string, type: string, token: string, fiat: string, defaultLink: string): string {
+	const t = type.toLowerCase();
+	const T = type.toUpperCase();
+	const tok = token.toUpperCase();
+	const f = fiat.toUpperCase();
+
+	switch (exchange.toLowerCase()) {
+		case 'binance': 
+			return `https://p2p.binance.com/en/trade/${t}/${tok}?fiat=${f}`;
+		case 'okx': 
+			return `https://www.okx.com/p2p-markets/${f}/${t}-${tok.toLowerCase()}`;
+		case 'bybit': 
+			return `https://www.bybit.com/fiat/trade/otc/?actionType=${t === 'buy' ? 1 : 0}&token=${tok}&fiat=${f}`;
+		case 'bitget': 
+			return `https://www.bitget.com/p2p-trade?fiatName=${f}&coinName=${tok}&type=${t}`;
+		case 'mexc': 
+			return `https://otc.mexc.com/en-US/fastTrade?fiat=${f}&coin=${tok}&type=${T}`;
+		case 'kucoin': 
+			return `https://www.kucoin.com/p2p/${t}/${tok}-${f}`;
+		case 'remitano': 
+			return `https://remitano.com/p2p/${t}-${tok.toLowerCase()}-with-${f.toLowerCase()}`;
+		default: 
+			return defaultLink;
+	}
+}
+
 function createP2POrderStore() {
 	const { subscribe, set, update } = writable<P2PState>({
-		orders: [],
-		isLoading: false,
-		errors: {},
-		marketRate: null,
-		usdRate: null,
-		token: null,
-		fiat: null
+		orders: [], isLoading: false, errors: {}, marketRate: null, usdRate: null, token: null, fiat: null
 	});
 
 	async function fetchOrders(filters: { type: 'buy' | 'sell'; token: string; fiat: string }) {
@@ -50,18 +71,17 @@ function createP2POrderStore() {
 
 		const allFetchesPromise = exchangesToFetch.map(async (exchange) => {
 			try {
-				let responsesArray: ExchangeP2PAd[] = [];
-
-				// --- CLEAN UNIFIED FETCH ---
-				// All active exchanges now flow directly through your Vercel backend
 				const url = fetchUrlBuilder({ ...filters }, exchange.key);
 				const res = await fetch(url);
 				if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
 				
 				const data = await res.json();
-				responsesArray = Array.isArray(data?.responses) ? data.responses : [];
+				const responsesArray = Array.isArray(data?.responses) ? data.responses : [];
 
 				const validAds = responsesArray.filter((ad): ad is ExchangeP2PAd => !!(ad && ad.advertiser));
+
+				// Generate the specific deep link for this batch of orders
+				const specificTradeUrl = buildDeepLink(exchange.key, filters.type, filters.token, filters.fiat, exchange.p2pLink);
 
 				const newOrders: P2POrder[] = validAds.map((ad) => ({
 					id: `${exchange.key}-${ad.advNo}`,
@@ -76,7 +96,7 @@ function createP2POrderStore() {
 					maxLimit: Number(ad.maxSingleTransAmount) || 0,
 					paymentMethods: ad.paymentMethods || [],
 					terms: ad.terms || ad.remarks || ad.remark || '',
-					tradeUrl: exchange.p2pLink,
+					tradeUrl: specificTradeUrl, // <--- THE DYNAMIC LINK IS APPLIED HERE
 					isNewUserOnly: ad.isNewUserOnly ?? false
 				}));
 
