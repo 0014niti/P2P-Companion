@@ -15,7 +15,13 @@ type P2PState = {
 
 function createP2POrderStore() {
 	const { subscribe, set, update } = writable<P2PState>({
-		orders: [], isLoading: false, errors: {}, marketRate: null, usdRate: null, token: null, fiat: null
+		orders: [],
+		isLoading: false,
+		errors: {},
+		marketRate: null,
+		usdRate: null,
+		token: null,
+		fiat: null
 	});
 
 	async function fetchOrders(filters: { type: 'buy' | 'sell'; token: string; fiat: string }) {
@@ -44,13 +50,17 @@ function createP2POrderStore() {
 
 		const allFetchesPromise = exchangesToFetch.map(async (exchange) => {
 			try {
-				// ALL TRAFFIC DIRECTED TO TOKYO VERCEL SERVER
+				let responsesArray: ExchangeP2PAd[] = [];
+
+				// --- CLEAN UNIFIED FETCH ---
+				// All active exchanges now flow directly through your Vercel backend
 				const url = fetchUrlBuilder({ ...filters }, exchange.key);
 				const res = await fetch(url);
 				if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
-				const data = await res.json();
 				
-				const responsesArray = Array.isArray(data?.responses) ? data.responses : [];
+				const data = await res.json();
+				responsesArray = Array.isArray(data?.responses) ? data.responses : [];
+
 				const validAds = responsesArray.filter((ad): ad is ExchangeP2PAd => !!(ad && ad.advertiser));
 
 				const newOrders: P2POrder[] = validAds.map((ad) => ({
