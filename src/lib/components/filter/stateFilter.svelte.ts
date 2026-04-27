@@ -1,5 +1,4 @@
 import { browser } from '$app/environment';
-import { fiatList } from '$lib/data/fiat-list';
 
 export type P2PFilters = {
 	type: 'buy' | 'sell';
@@ -8,7 +7,6 @@ export type P2PFilters = {
 	amount: number | null;
 };
 
-// THE FIX: Added the "export" keyword right here
 export const filterState = $state<P2PFilters>({
 	type: 'buy',
 	token: 'USDT',
@@ -16,7 +14,6 @@ export const filterState = $state<P2PFilters>({
 	amount: null
 });
 
-// Wrapped in an IIFE to keep the bundler safe
 (function initFiat() {
 	if (!browser) return;
 	try {
@@ -39,14 +36,3 @@ export const filterState = $state<P2PFilters>({
 		console.warn('Local storage access denied');
 	}
 })();
-
-export const filterStore = {
-	get filters() { return filterState; },
-	setType(type: 'buy' | 'sell') { filterState.type = type; },
-	setToken(token: string) { filterState.token = token; },
-	setFiat(fiat: string) {
-		filterState.fiat = fiat;
-		if (browser) localStorage.setItem('user_fiat', fiat);
-	},
-	setAmount(amount: number | null) { filterState.amount = amount; }
-};

@@ -1,52 +1,32 @@
 <script lang="ts">
-	import {
-		Label,
-		Select,
-		SelectContent,
-		SelectItem,
-		SelectTrigger
-	} from '$lib/components/ui/select';
-	// FIX 1: Using named import for the new TypeScript array
+	import { browser } from '$app/environment';
+	import { Label, Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 	import { fiatList } from '$lib/data/fiat-list'; 
 	import { actionTypes, availableTokensList } from '$lib/exchanges';
-	import {
-		CheckIcon,
-		ChevronsUpDownIcon
-	} from 'lucide-svelte';
-	import { Button } from '../ui/button';
-	import {
-		Command,
-		CommandEmpty,
-		CommandGroup,
-		CommandInput,
-		CommandItem,
-		CommandList
-	} from '../ui/command';
-	import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-
+	import { CheckIcon, ChevronsUpDownIcon } from 'lucide-svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '$lib/components/ui/command';
+	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 	import { cn } from '$lib/utils';
-	import { filterState } from './stateFilter.svelte';
+	
+	// CRITICAL FIX: Explicit path to stop the 500 Error
+	import { filterState } from '$lib/components/filter/stateFilter.svelte.ts';
 
 	let openFiatList = $state(false);
 
-	// FIX 2 & 3: Removed .current and aligned property names with the state file
-	const filterStateType = $derived(filterState.type);
-	const filterStateToken = $derived(filterState.token);
-	const filterStateFiat = $derived(filterState.fiat);
+	let currentType = $derived(filterState.type);
+	let currentToken = $derived(filterState.token);
+	let currentFiat = $derived(filterState.fiat);
 </script>
 
-<div
-	class="flex flex-col gap-3 rounded-lg border px-4 py-3 md:flex-row md:items-center md:gap-2 bg-gradient-to-r from-secondary/50 to-secondary/30 backdrop-blur-sm hover:border-primary/50"
->
+<div class="flex flex-col gap-3 rounded-lg border px-4 py-3 md:flex-row md:items-center md:gap-2 bg-gradient-to-r from-secondary/50 to-secondary/30 backdrop-blur-sm hover:border-primary/50">
 	<div class="flex w-full flex-col items-start gap-2 md:flex-row md:items-center md:gap-2">
 		<div class="w-full space-y-0.5 md:w-auto">
 			<Label class="px-0 font-semibold text-xs">Type</Label>
-
 			<Select type="single" bind:value={filterState.type}>
 				<SelectTrigger class="w-full md:w-[85px] hover:border-primary/50 text-xs h-9">
-					{actionTypes[filterStateType]}
+					{actionTypes[currentType] || 'Buy'}
 				</SelectTrigger>
-
 				<SelectContent class="w-full md:w-[85px]">
 					<SelectItem value="buy">Buy</SelectItem>
 					<SelectItem value="sell">Sell</SelectItem>
@@ -56,12 +36,10 @@
 
 		<div class="w-full space-y-0.5 md:w-auto">
 			<Label class="px-0 font-semibold text-xs">Token</Label>
-
 			<Select type="single" bind:value={filterState.token}>
 				<SelectTrigger class="w-full md:w-[100px] hover:border-primary/50 text-xs h-9">
-					{filterStateToken}
+					{currentToken}
 				</SelectTrigger>
-
 				<SelectContent class="w-full md:w-[100px]">
 					{#each availableTokensList as token (token)}
 						<SelectItem value={token}>{token}</SelectItem>
@@ -72,22 +50,13 @@
 
 		<div class="w-full space-y-0.5 md:w-auto">
 			<Label class="px-0 font-semibold text-xs">Fiat</Label>
-
 			<Popover bind:open={openFiatList}>
 				<PopoverTrigger>
-					<Button
-						role="combobox"
-						aria-expanded={openFiatList}
-						variant="outline"
-						class="w-full justify-between md:w-[110px] hover:border-primary/50 text-xs h-9"
-					>
-						{filterStateFiat}
-						<ChevronsUpDownIcon class={cn('ml-1 size-3 shrink-0 opacity-50', {
-							'rotate-180': openFiatList
-						})} />
+					<Button role="combobox" aria-expanded={openFiatList} variant="outline" class="w-full justify-between md:w-[110px] hover:border-primary/50 text-xs h-9">
+						{currentFiat}
+						<ChevronsUpDownIcon class={cn('ml-1 size-3 shrink-0 opacity-50', {'rotate-180': openFiatList})} />
 					</Button>
 				</PopoverTrigger>
-
 				<PopoverContent class="w-[200px] p-0">
 					<Command>
 						<CommandInput placeholder="Search Fiats..." />
@@ -95,19 +64,12 @@
 							<CommandEmpty>No fiats found.</CommandEmpty>
 							<CommandGroup>
 								{#each fiatList as fiat (fiat.currencyCode)}
-									<CommandItem
-										value={fiat.currencyCode}
-										onSelect={() => {
-											// Fixed assignment below
-											filterState.fiat = fiat.currencyCode;
-											openFiatList = false;
-										}}
-									>
-										<CheckIcon
-											class={cn('mr-2 size-4', {
-												'text-transparent': filterStateFiat !== fiat.currencyCode
-											})}
-										/>
+									<CommandItem value={fiat.currencyCode} onSelect={() => {
+										filterState.fiat = fiat.currencyCode;
+										if (browser) localStorage.setItem('user_fiat', fiat.currencyCode);
+										openFiatList = false;
+									}}>
+										<CheckIcon class={cn('mr-2 size-4', {'text-transparent': currentFiat !== fiat.currencyCode})} />
 										{fiat.currencyCode}
 									</CommandItem>
 								{/each}

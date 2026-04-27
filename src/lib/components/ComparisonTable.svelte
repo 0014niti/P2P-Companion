@@ -1,19 +1,17 @@
 <script lang="ts">
-	// I have completely removed the bad ui/table imports that broke your build!
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { AlertCircle, ArrowUpRight, TrendingDown, TrendingUp } from 'lucide-svelte';
 	import { p2pOrderStore } from '$lib/p2p-orders';
-	import { filterStore } from '$lib/components/filter/stateFilter.svelte';
+	
+	// CRITICAL FIX: Re-synced the state import
+	import { filterState } from '$lib/components/filter/stateFilter.svelte.ts';
 
-	// Safely auto-subscribing to your Edge-routed stores
 	let orders = $derived($p2pOrderStore.orders || []);
 	let isLoading = $derived($p2pOrderStore.isLoading);
 	let errors = $derived($p2pOrderStore.errors || {});
 	let marketRate = $derived($p2pOrderStore.marketRate);
 	
-	let filters = $derived(filterStore.filters);
-
 	function formatPrice(price: number, fiat: string) {
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
@@ -125,8 +123,8 @@
 									target="_blank"
 									rel="noopener noreferrer"
 								>
-									<span class="hidden sm:inline">{filters.type === 'buy' ? 'Buy' : 'Sell'} {order.token}</span>
-									<span class="sm:hidden">{filters.type === 'buy' ? 'Buy' : 'Sell'}</span>
+									<span class="hidden sm:inline">{filterState.type === 'buy' ? 'Buy' : 'Sell'} {order.token}</span>
+									<span class="sm:hidden">{filterState.type === 'buy' ? 'Buy' : 'Sell'}</span>
 									<ArrowUpRight class="ml-1.5 h-3.5 w-3.5" />
 								</Button>
 							</td>
