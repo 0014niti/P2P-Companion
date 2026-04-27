@@ -1,10 +1,20 @@
 import { extractTerms, type ExchangeP2PAd } from '.';
 
+// Remitano maps regional order books by Country Code rather than just Fiat ID
+const fiatToCountry: Record<string, string> = {
+	USD: 'us', INR: 'in', NGN: 'ng', PHP: 'ph', VND: 'vn',
+	ZAR: 'za', KES: 'ke', GHS: 'gh', MYR: 'my', IDR: 'id',
+	THB: 'th', PKR: 'pk', AUD: 'au', CAD: 'ca', EUR: 'eu',
+	GBP: 'gb', BDT: 'bd', BRL: 'br', TRY: 'tr', RUB: 'ru'
+};
+
 export const fetchRemitano = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
 	// Remitano API logic: if a user wants to 'buy', we look for merchants offering to 'sell'
 	const offerType = props.type === 'buy' ? 'sell' : 'buy';
+	const countryCode = fiatToCountry[props.fiat.toUpperCase()] || props.fiat.toLowerCase();
 	
-	const targetUrl = `https://api.remitano.com/api/v1/offers/choose_offer_coins?coin=${props.token.toUpperCase()}&currency=${props.fiat.toUpperCase()}&offer_type=${offerType}`;
+	// THE FIX: Pointing strictly to the core /offers endpoint with the mapped country code
+	const targetUrl = `https://api.remitano.com/api/v1/offers?offer_type=${offerType}&coin_currency=${props.token.toLowerCase()}&country_code=${countryCode}`;
 
 	try {
 		const res = await fetch(targetUrl, {
@@ -41,7 +51,7 @@ export const fetchRemitano = async (props: { type: 'buy' | 'sell'; token: string
 				name: item.username || 'Unknown',
 				userId: item.user_id?.toString() || '',
 				monthOrderCount: item.seller_trades_count || item.buyer_trades_count || 10,
-				positiveRate: 1 // Remitano handles trust via escrow natively
+				positiveRate: 1 
 			},
 			terms: item.details || extractTerms(item),
 			isNewUserOnly: false
