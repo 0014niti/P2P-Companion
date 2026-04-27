@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { fiatList } from '$lib/data/fiat-list'; // <--- THE FIX IS HERE
+import { fiatList } from '$lib/data/fiat-list';
 
 export type P2PFilters = {
 	type: 'buy' | 'sell';
@@ -8,7 +8,8 @@ export type P2PFilters = {
 	amount: number | null;
 };
 
-const filterState = $state<P2PFilters>({
+// THE FIX: Added the "export" keyword right here
+export const filterState = $state<P2PFilters>({
 	type: 'buy',
 	token: 'USDT',
 	fiat: 'USD',
