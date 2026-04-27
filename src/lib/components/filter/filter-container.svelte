@@ -6,7 +6,8 @@
 		SelectItem,
 		SelectTrigger
 	} from '$lib/components/ui/select';
-	import fiatList from '$lib/data/fiat-list';
+	// FIX 1: Using named import for the new TypeScript array
+	import { fiatList } from '$lib/data/fiat-list'; 
 	import { actionTypes, availableTokensList } from '$lib/exchanges';
 	import {
 		CheckIcon,
@@ -28,9 +29,10 @@
 
 	let openFiatList = $state(false);
 
-	const filterStateType = $derived(filterState.current.type);
-	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
-	const filterStateFiat = $derived(filterState.current.fiat);
+	// FIX 2 & 3: Removed .current and aligned property names with the state file
+	const filterStateType = $derived(filterState.type);
+	const filterStateToken = $derived(filterState.token);
+	const filterStateFiat = $derived(filterState.fiat);
 </script>
 
 <div
@@ -40,7 +42,7 @@
 		<div class="w-full space-y-0.5 md:w-auto">
 			<Label class="px-0 font-semibold text-xs">Type</Label>
 
-			<Select type="single" bind:value={filterState.current.type}>
+			<Select type="single" bind:value={filterState.type}>
 				<SelectTrigger class="w-full md:w-[85px] hover:border-primary/50 text-xs h-9">
 					{actionTypes[filterStateType]}
 				</SelectTrigger>
@@ -55,9 +57,9 @@
 		<div class="w-full space-y-0.5 md:w-auto">
 			<Label class="px-0 font-semibold text-xs">Token</Label>
 
-			<Select type="single" bind:value={filterState.current.selectedToken}>
+			<Select type="single" bind:value={filterState.token}>
 				<SelectTrigger class="w-full md:w-[100px] hover:border-primary/50 text-xs h-9">
-					{filterStateSelectedToken}
+					{filterStateToken}
 				</SelectTrigger>
 
 				<SelectContent class="w-full md:w-[100px]">
@@ -71,7 +73,7 @@
 		<div class="w-full space-y-0.5 md:w-auto">
 			<Label class="px-0 font-semibold text-xs">Fiat</Label>
 
-			<Popover>
+			<Popover bind:open={openFiatList}>
 				<PopoverTrigger>
 					<Button
 						role="combobox"
@@ -96,7 +98,8 @@
 									<CommandItem
 										value={fiat.currencyCode}
 										onSelect={() => {
-											filterState.current.fiat = fiat.currencyCode;
+											// Fixed assignment below
+											filterState.fiat = fiat.currencyCode;
 											openFiatList = false;
 										}}
 									>
@@ -105,7 +108,6 @@
 												'text-transparent': filterStateFiat !== fiat.currencyCode
 											})}
 										/>
-
 										{fiat.currencyCode}
 									</CommandItem>
 								{/each}
