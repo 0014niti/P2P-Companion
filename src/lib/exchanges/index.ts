@@ -34,7 +34,19 @@ export const exchanges = {
 		tokensList: ['USDT', 'BTC', 'ETH', 'KCS', 'USDC'] as string[],
 		icon: 'https://www.google.com/s2/favicons?domain=kucoin.com&sz=128',
 		p2pLink: 'https://www.kucoin.com/p2p'
-	}
+	}, 
+	remitano: {
+				name: 'Remitano',
+						tokensList: ['USDT', 'BTC', 'ETH'] as string[],
+								icon: 'https://www.google.com/s2/favicons?domain=remitano.com&sz=128',
+										p2pLink: 'https://remitano.com/p2p'
+	},
+		paxful: {
+					name: 'Paxful',
+							tokensList: ['USDT', 'BTC', 'USDC', 'ETH'] as string[],
+									icon: 'https://www.google.com/s2/favicons?domain=paxful.com&sz=128',
+											p2pLink: 'https://paxful.com/buy'
+		}
 } as const;
 
 export const availableTokensList = Array.from(

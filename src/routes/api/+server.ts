@@ -4,6 +4,8 @@ import { fetchMexc } from '$lib/exchanges/ex-mexc.js';
 import { fetchOkx } from '$lib/exchanges/ex-okx.js';
 import { fetchBybit } from '$lib/exchanges/ex-bybit.js';
 import { fetchKucoin } from '$lib/exchanges/ex-kucoin.js';
+import { fetchRemitano } from '$lib/exchanges/ex-remitano.js'; // ADDED
+import { fetchPaxful } from '$lib/exchanges/ex-paxful.js';     // ADDED
 import type { ExchangeP2PAd } from '$lib/exchanges/index.js';
 
 // NOTE: If you are using the Vercel Edge runtime we discussed earlier, 
@@ -11,6 +13,7 @@ import type { ExchangeP2PAd } from '$lib/exchanges/index.js';
 export const config = {
 	runtime: 'edge'
 };
+
 export async function GET({ request }) {
 	const querys = new URL(request.url).searchParams;
 
@@ -40,14 +43,19 @@ export async function GET({ request }) {
 		case 'kucoin':
 			response = await fetchKucoin({ type: type as 'buy' | 'sell', token, fiat });
 			break;
-		// Future exchanges can be added here
+		case 'remitano':
+			response = await fetchRemitano({ type: type as 'buy' | 'sell', token, fiat }); // ADDED
+			break;
+		case 'paxful':
+			response = await fetchPaxful({ type: type as 'buy' | 'sell', token, fiat }); // ADDED
+			break;
 		default:
 			break;
 	}
 
 	return new Response(
 		JSON.stringify({
-			responses: response
+			responses: response || []
 		}),
 		{
 			headers: {
