@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { fiatList } from '$lib/data/fiat-list';
+import { fiatList } from '$lib/data/fiat-list'; // <--- THE FIX IS HERE
 
 export type P2PFilters = {
 	type: 'buy' | 'sell';
