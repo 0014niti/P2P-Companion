@@ -1,5 +1,4 @@
 import { browser } from '$app/environment';
-import fiatList from '$lib/data/binance-fiat-list.json';
 
 export type P2PFilters = {
 	type: 'buy' | 'sell';
@@ -12,32 +11,37 @@ export type P2PFilters = {
 const filterState = $state<P2PFilters>({
 	type: 'buy',
 	token: 'USDT',
-	fiat: 'USD', 
+	fiat: 'USD',
 	amount: null
 });
 
 // FEATURE: IP-Based Auto Detection & Local Storage
-if (browser) {
-	const savedFiat = localStorage.getItem('user_fiat');
-	
-	if (savedFiat && fiatList.some((f) => f.currencyCode === savedFiat)) {
-		// Load from memory if they visited before
-		filterState.fiat = savedFiat;
-	} else {
-		// First visit: Detect IP currency
-		fetch('https://ipapi.co/currency/')
-			.then((res) => res.text())
-			.then((currency) => {
-				const code = currency.trim().toUpperCase();
-				// Ensure the detected currency actually exists in our supported list
-				if (code.length === 3 && fiatList.some((f) => f.currencyCode === code)) {
-					filterState.fiat = code;
-					localStorage.setItem('user_fiat', code); // Save for next time
-				}
-			})
-			.catch((err) => console.warn('Failed to detect IP currency, defaulting to USD', err));
+// Wrapped in a self-executing function to protect Rollup's AST builder
+(function initFiat() {
+	if (!browser) return;
+	try {
+		const savedFiat = localStorage.getItem('user_fiat');
+		if (savedFiat) {
+			// Load from memory if they visited before
+			filterState.fiat = savedFiat;
+		} else {
+			// First visit: Detect IP currency
+			fetch('https://ipapi.co/currency/')
+				.then((res) => res.text())
+				.then((currency) => {
+					const code = currency.trim().toUpperCase();
+					// Safe assignment without complex JSON AST tracing
+					if (code.length === 3) {
+						filterState.fiat = code;
+						localStorage.setItem('user_fiat', code); 
+					}
+				})
+				.catch(() => console.warn('Failed to detect IP currency'));
+		}
+	} catch (e) {
+		console.warn('Local storage access denied');
 	}
-}
+})();
 
 export const filterStore = {
 	get filters() {
