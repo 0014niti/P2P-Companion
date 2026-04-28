@@ -1,187 +1,217 @@
 <script lang="ts">
-    import { BookOpen, Map, Info, X, CheckCircle2, ChevronRight, HeartHandshake, Mail, MessageSquare } from 'lucide-svelte';
-    import { fade, fly } from 'svelte/transition';
-    import { cubicOut, cubicIn } from 'svelte/easing';
+    import { BookOpen, Map, Info, X, CheckCircle2, ChevronRight, HeartHandshake, Mail, MessageSquare, Sparkles, Coffee, Wallet } from 'lucide-svelte';
+    import { fade, scale } from 'svelte/transition';
+    import { backOut, expoOut } from 'svelte/easing';
 
-    // Svelte 5 Runes
+    // This property allows the scanner page to pass down its donation modal trigger
+    let { onDonateClick } = $props();
+
     let isOpen = $state(false);
     let activeTab = $state<'notes' | 'roadmap' | 'support'>('notes');
 
     function togglePanel() {
         isOpen = !isOpen;
     }
+
+    // Function to close this guide and pop open the main donation modal
+    function handleDonate() {
+        isOpen = false;
+        if (onDonateClick) {
+            onDonateClick();
+        }
+    }
 </script>
 
 {#if !isOpen}
     <button 
         onclick={togglePanel}
-        class="fixed right-0 top-1/2 -translate-y-1/2 z-50 p-2.5 rounded-l-2xl flex flex-col items-center gap-2 group transition-all duration-500 ease-out
-               bg-background/40 backdrop-blur-md border border-r-0 border-white/20 dark:border-white/10 
-               shadow-[0_0_15px_rgba(0,0,0,0.1)] hover:shadow-[0_0_25px_rgba(var(--color-primary),0.3)] 
-               hover:bg-background/60 hover:pr-4"
-        in:fly={{ x: 50, duration: 500, delay: 200, easing: cubicOut }}
+        class="fixed right-6 bottom-6 z-50 w-14 h-14 rounded-full flex items-center justify-center group transition-all duration-300 ease-out
+               bg-gradient-to-tr from-primary to-primary/70 text-primary-foreground
+               shadow-[0_10px_20px_-10px_rgba(var(--color-primary),0.8),inset_0_-3px_5px_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.4)]
+               hover:scale-110 hover:-translate-y-2 border border-white/20"
+        in:scale={{ duration: 400, easing: backOut }}
+        out:scale={{ duration: 200, opacity: 0 }}
     >
-        <div class="relative flex flex-col items-center">
-            <div class="absolute top-0 w-6 h-6 bg-primary/40 rounded-full blur-md animate-pulse group-hover:bg-primary/60 transition-colors"></div>
-            
-            <Info class="w-5 h-5 text-foreground relative z-10 group-hover:scale-110 transition-transform duration-300" />
-            
-            <span class="text-[10px] text-foreground uppercase font-bold tracking-[0.2em] writing-vertical-lr rotate-180 pb-1 mt-2 opacity-80 group-hover:opacity-100 transition-opacity">
-                Guide
-            </span>
-        </div>
+        <Sparkles class="w-6 h-6 group-hover:rotate-12 transition-transform duration-500" />
     </button>
 {/if}
 
 {#if isOpen}
     <button
-        class="fixed inset-0 bg-background/40 backdrop-blur-sm z-[60] transition-opacity w-full h-full cursor-default"
+        class="fixed inset-0 bg-background/20 backdrop-blur-[2px] z-[60] w-full h-full cursor-default"
         onclick={togglePanel}
         aria-label="Close Panel"
-        in:fade={{ duration: 300, easing: cubicOut }}
-        out:fade={{ duration: 200, easing: cubicIn }}
+        in:fade={{ duration: 300, easing: expoOut }}
+        out:fade={{ duration: 200 }}
     ></button>
 
     <div 
-        class="fixed right-0 top-0 h-full w-full sm:w-[420px] z-[70] flex flex-col
-               bg-background/80 backdrop-blur-2xl border-l border-white/20 dark:border-white/10 shadow-2xl"
-        in:fly={{ x: '100%', duration: 400, opacity: 1, easing: cubicOut }}
-        out:fly={{ x: '100%', duration: 300, opacity: 1, easing: cubicIn }}
+        class="fixed right-4 sm:right-6 bottom-24 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[75vh] z-[70] flex flex-col rounded-3xl overflow-hidden
+               bg-background/60 backdrop-blur-3xl border border-white/20 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.3)]"
+        in:scale={{ start: 0.9, duration: 400, opacity: 0, easing: backOut }}
+        out:scale={{ start: 0.95, duration: 200, opacity: 0 }}
     >
-        <div class="flex items-center justify-between p-6 border-b border-white/10 bg-muted/20">
-            <h2 class="text-xl font-bold flex items-center gap-2 text-foreground">
+        <div class="flex items-center justify-between p-5 border-b border-white/10 bg-gradient-to-b from-white/5 to-transparent">
+            <h2 class="text-lg font-bold flex items-center gap-2 text-foreground">
                 <BookOpen class="w-5 h-5 text-primary" /> 
                 Companion Guide
             </h2>
             <button 
                 onclick={togglePanel}
-                class="p-2 bg-background/50 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground border border-transparent hover:border-white/10"
+                class="p-2 bg-background/50 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground hover:rotate-90 duration-300"
             >
-                <X class="w-5 h-5" />
+                <X class="w-4 h-4" />
             </button>
         </div>
 
-        <div class="flex p-3 gap-2 border-b border-white/10 bg-background/30 backdrop-blur-md">
-            <button 
-                onclick={() => activeTab = 'notes'}
-                class="flex-1 py-2 px-1 rounded-xl font-medium text-xs flex flex-col items-center gap-1 transition-all duration-300
-                {activeTab === 'notes' ? 'bg-primary/15 text-primary shadow-sm border border-primary/20' : 'hover:bg-muted/50 text-muted-foreground border border-transparent'}"
-            >
-                <Info class="w-4 h-4" /> Usage
-            </button>
+        <div class="p-3 bg-white/5">
+            <div class="flex p-1 bg-background/50 rounded-2xl border border-white/5 backdrop-blur-md">
+                <button 
+                    onclick={() => activeTab = 'notes'}
+                    class="flex-1 py-1.5 px-2 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 transition-all duration-300
+                    {activeTab === 'notes' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'}"
+                >
+                    <Info class="w-3.5 h-3.5" /> Usage
+                </button>
+                <button 
+                    onclick={() => activeTab = 'roadmap'}
+                    class="flex-1 py-1.5 px-2 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 transition-all duration-300
+                    {activeTab === 'roadmap' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'}"
+                >
+                    <Map class="w-3.5 h-3.5" /> Roadmap
+                </button>
+                <button 
+                    onclick={() => activeTab = 'support'}
+                    class="flex-1 py-1.5 px-2 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 transition-all duration-300
+                    {activeTab === 'support' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground'}"
+                >
+                    <HeartHandshake class="w-3.5 h-3.5" /> Support
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 scrollbar-none">
             
-            <button 
-                onclick={() => activeTab = 'roadmap'}
-                class="flex-1 py-2 px-1 rounded-xl font-medium text-xs flex flex-col items-center gap-1 transition-all duration-300
-                {activeTab === 'roadmap' ? 'bg-primary/15 text-primary shadow-sm border border-primary/20' : 'hover:bg-muted/50 text-muted-foreground border border-transparent'}"
-            >
-                <Map class="w-4 h-4" /> Roadmap
-            </button>
-
-            <button 
-                onclick={() => activeTab = 'support'}
-                class="flex-1 py-2 px-1 rounded-xl font-medium text-xs flex flex-col items-center gap-1 transition-all duration-300
-                {activeTab === 'support' ? 'bg-primary/15 text-primary shadow-sm border border-primary/20' : 'hover:bg-muted/50 text-muted-foreground border border-transparent'}"
-            >
-                <HeartHandshake class="w-4 h-4" /> Support
-            </button>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-6 scrollbar-thin">
             {#if activeTab === 'notes'}
-                <div in:fade={{ duration: 200, delay: 100 }} class="space-y-6">
+                <div in:fade={{ duration: 200 }} class="space-y-5">
                     <div>
-                        <h3 class="text-lg font-semibold mb-2 text-foreground">Mastering the Scanner</h3>
-                        <p class="text-muted-foreground text-sm mb-4">
+                        <h3 class="font-semibold text-foreground">How it works</h3>
+                        <p class="text-muted-foreground text-xs mt-1">
                             Find the best crypto arbitrage opportunities across multiple exchanges in real-time.
                         </p>
                     </div>
                     
-                    <ul class="space-y-5">
+                    <ul class="space-y-4">
                         <li class="flex items-start gap-3 group">
-                            <div class="bg-primary/10 p-2 rounded-full text-primary shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
+                            <div class="bg-primary/10 p-1.5 rounded-full text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                                 <CheckCircle2 class="w-4 h-4" />
                             </div>
                             <div>
-                                <p class="font-medium text-sm text-foreground">1. Configure Your Search</p>
-                                <p class="text-xs text-muted-foreground mt-1 leading-relaxed">Use the top filters to choose your target cryptocurrency (e.g., USDT) and local fiat currency.</p>
+                                <p class="font-medium text-sm text-foreground">1. Configure Search</p>
+                                <p class="text-xs text-muted-foreground mt-0.5">Choose your target crypto and fiat.</p>
                             </div>
                         </li>
                         <li class="flex items-start gap-3 group">
-                            <div class="bg-primary/10 p-2 rounded-full text-primary shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
+                            <div class="bg-primary/10 p-1.5 rounded-full text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                                 <CheckCircle2 class="w-4 h-4" />
                             </div>
                             <div>
                                 <p class="font-medium text-sm text-foreground">2. Set Target Amount</p>
-                                <p class="text-xs text-muted-foreground mt-1 leading-relaxed">Input the exact fiat amount to filter out merchants whose trading limits don't match your needs.</p>
+                                <p class="text-xs text-muted-foreground mt-0.5">Filter by merchant trading limits.</p>
                             </div>
                         </li>
                         <li class="flex items-start gap-3 group">
-                            <div class="bg-primary/10 p-2 rounded-full text-primary shrink-0 mt-0.5 group-hover:bg-primary/20 transition-colors">
+                            <div class="bg-primary/10 p-1.5 rounded-full text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
                                 <CheckCircle2 class="w-4 h-4" />
                             </div>
                             <div>
                                 <p class="font-medium text-sm text-foreground">3. Spot the Spread</p>
-                                <p class="text-xs text-muted-foreground mt-1 leading-relaxed">Analyze the comparison cards to identify price differences. Buy low on one exchange, sell high on another.</p>
+                                <p class="text-xs text-muted-foreground mt-0.5">Buy low on one exchange, sell high on another.</p>
                             </div>
                         </li>
                     </ul>
                 </div>
 
             {:else if activeTab === 'roadmap'}
-                <div in:fade={{ duration: 200, delay: 100 }} class="space-y-6">
+                <div in:fade={{ duration: 200 }} class="space-y-6">
                     <div>
-                        <h3 class="text-lg font-semibold mb-2 text-foreground">What's Next?</h3>
-                        <p class="text-muted-foreground text-sm mb-6">Our vision for the future of the P2P Companion.</p>
+                        <h3 class="font-semibold text-foreground">Building the Future</h3>
+                        <p class="text-muted-foreground text-xs mt-1">Help us unlock these upcoming features!</p>
                     </div>
-                    <div class="relative border-l-2 border-white/10 ml-3 space-y-8 pb-4">
-                        <div class="relative pl-6">
+                    
+                    <div class="relative border-l-2 border-white/10 ml-3 space-y-6 pb-2">
+                        <div class="relative pl-5">
                             <span class="absolute left-[-9px] top-1 w-4 h-4 rounded-full bg-primary ring-4 ring-background shadow-[0_0_10px_rgba(var(--color-primary),0.5)]"></span>
-                            <h4 class="font-bold text-sm text-foreground">Phase 1: Foundation (Live)</h4>
-                            <ul class="mt-2 space-y-2 text-xs text-muted-foreground">
-                                <li class="flex items-center gap-1"><ChevronRight class="w-3 h-3 text-primary" /> Multi-exchange integrations</li>
-                                <li class="flex items-center gap-1"><ChevronRight class="w-3 h-3 text-primary" /> Global Edge runtime</li>
-                            </ul>
+                            <h4 class="font-bold text-sm text-foreground">Phase 1: Foundation</h4>
+                            <p class="text-[11px] text-primary mt-1">Live Now</p>
                         </div>
-                        <div class="relative pl-6 opacity-70 hover:opacity-100 transition-opacity">
+                        
+                        <div class="relative pl-5 opacity-80 hover:opacity-100 transition-opacity">
                             <span class="absolute left-[-9px] top-1 w-4 h-4 rounded-full bg-muted border-2 border-muted-foreground ring-4 ring-background"></span>
                             <h4 class="font-bold text-sm text-foreground">Phase 2: Smart Analytics</h4>
-                            <ul class="mt-2 space-y-2 text-xs text-muted-foreground">
+                            <ul class="mt-1 space-y-1 text-xs text-muted-foreground">
                                 <li class="flex items-center gap-1"><ChevronRight class="w-3 h-3" /> Automated Spread Calculator</li>
-                                <li class="flex items-center gap-1"><ChevronRight class="w-3 h-3" /> Historic price trend graphs</li>
+                                <li class="flex items-center gap-1"><ChevronRight class="w-3 h-3" /> Visual trend graphs</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="relative pl-5 opacity-60 hover:opacity-100 transition-opacity">
+                            <span class="absolute left-[-9px] top-1 w-4 h-4 rounded-full bg-muted border-2 border-muted-foreground ring-4 ring-background"></span>
+                            <h4 class="font-bold text-sm text-foreground">Phase 3: Automation</h4>
+                            <ul class="mt-1 space-y-1 text-xs text-muted-foreground">
+                                <li class="flex items-center gap-1"><ChevronRight class="w-3 h-3" /> Price alert notifications</li>
                             </ul>
                         </div>
                     </div>
+                    
+                    <button 
+                        onclick={() => activeTab = 'support'}
+                        class="w-full mt-4 py-2 text-xs font-bold text-primary bg-primary/10 rounded-xl hover:bg-primary/20 transition-colors flex items-center justify-center gap-2"
+                    >
+                        Fuel the roadmap <ChevronRight class="w-3 h-3" />
+                    </button>
                 </div>
 
             {:else if activeTab === 'support'}
-                <div in:fade={{ duration: 200, delay: 100 }} class="space-y-6">
-                    <div>
-                        <h3 class="text-lg font-semibold mb-2 text-foreground">We're here to help!</h3>
-                        <p class="text-muted-foreground text-sm mb-6">
-                            Running into issues or have a feature request? Reach out to us or help support the project's development.
-                        </p>
-                    </div>
+                <div in:fade={{ duration: 200 }} class="space-y-6">
                     
-                    <div class="space-y-4">
-                        <a href="mailto:your-email@example.com" class="flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-background/40 hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 group">
-                            <div class="bg-primary/10 p-3 rounded-full text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all">
-                                <Mail class="w-5 h-5" />
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 to-background border border-primary/30 p-5 shadow-lg">
+                        <div class="absolute -right-4 -top-4 opacity-10 rotate-12">
+                            <HeartHandshake class="w-24 h-24" />
+                        </div>
+                        <div class="relative z-10">
+                            <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
+                                <Sparkles class="w-4 h-4 text-primary" /> Support the Vision
+                            </h3>
+                            <p class="text-xs text-muted-foreground mt-2 leading-relaxed">
+                                P2P Companion is free and ad-free. Your donations keep the Edge servers running and directly fuel the development of the roadmap features!
+                            </p>
+                            
+                            <div class="mt-4 space-y-2">
+                                <a href="https://buymeacoffee.com/yourlink" target="_blank" class="w-full flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground text-xs font-bold rounded-xl hover:shadow-[0_0_15px_rgba(var(--color-primary),0.5)] transition-all">
+                                    <Coffee class="w-4 h-4" /> Buy me a Coffee
+                                </a>
+                                
+                                <button 
+                                    onclick={handleDonate}
+                                    class="w-full flex items-center justify-center gap-2 py-2.5 bg-background border border-white/10 text-foreground text-xs font-bold rounded-xl hover:bg-white/5 transition-all">
+                                    <Wallet class="w-4 h-4" /> Donate Crypto
+                                </button>
                             </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-foreground group-hover:text-primary transition-colors">Email Support</h4>
-                                <p class="text-xs text-muted-foreground mt-0.5">Drop us a line anytime.</p>
-                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-2 border-t border-white/5">
+                        <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Reach Out</h4>
+                        
+                        <a href="mailto:your-email@example.com" class="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all group">
+                            <Mail class="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <div class="text-xs text-foreground group-hover:text-primary transition-colors">Email Support</div>
                         </a>
 
-                        <a href="https://github.com/your-github/p2p-companion/issues" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-xl border border-white/5 bg-background/40 hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 group">
-                            <div class="bg-primary/10 p-3 rounded-full text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all">
-                                <MessageSquare class="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-foreground group-hover:text-primary transition-colors">Report a Bug</h4>
-                                <p class="text-xs text-muted-foreground mt-0.5">Open an issue on GitHub.</p>
-                            </div>
+                        <a href="https://github.com/your-github/p2p-companion/issues" target="_blank" class="flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all group">
+                            <MessageSquare class="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <div class="text-xs text-foreground group-hover:text-primary transition-colors">Report a Bug on GitHub</div>
                         </a>
                     </div>
                 </div>
@@ -191,22 +221,12 @@
 {/if}
 
 <style>
-    .writing-vertical-lr {
-        writing-mode: vertical-lr;
+    /* Hide scrollbar for a much cleaner glassy look */
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
     }
-    
-    /* Clean up the scrollbar to make it fit the glassy theme */
-    .scrollbar-thin::-webkit-scrollbar {
-        width: 6px;
-    }
-    .scrollbar-thin::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    .scrollbar-thin::-webkit-scrollbar-thumb {
-        background-color: rgba(156, 163, 175, 0.3);
-        border-radius: 20px;
-    }
-    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(156, 163, 175, 0.5);
+    .scrollbar-none {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
 </style>
