@@ -22,6 +22,7 @@
 		CommandList
 	} from '../ui/command';
 	import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+
 	import { cn } from '$lib/utils';
 	import { filterState } from './stateFilter.svelte';
 
@@ -33,36 +34,36 @@
 </script>
 
 <div
-	class="relative flex flex-col gap-4 rounded-[20px] border border-white/40 dark:border-white/10 px-5 py-4 md:flex-row md:items-center md:gap-5 bg-white/40 dark:bg-black/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out overflow-hidden group"
+	class="relative flex flex-col gap-4 rounded-[20px] border border-white/40 dark:border-white/10 px-5 py-4 md:flex-row md:items-center md:gap-5 bg-white/40 dark:bg-black/20 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all duration-500 ease-out group"
 >
-	<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+	<div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-[20px]"></div>
 
-	<div class="flex w-full flex-col items-start gap-4 md:flex-row md:items-center md:gap-4 relative z-10">
+	<div class="flex w-full flex-col items-start gap-3 md:flex-row md:items-center md:gap-4 relative z-10">
 		
-		<div class="w-full space-y-1.5 md:w-auto">
+		<div class="w-full space-y-1 md:w-auto">
 			<Label class="px-1 font-bold text-[11px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Type</Label>
 
 			<Select type="single" bind:value={filterState.current.type}>
-				<SelectTrigger class="w-full md:w-[100px] h-10 text-xs font-bold text-zinc-800 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/10 backdrop-blur-md rounded-xl hover:bg-white/80 dark:hover:bg-white/10 transition-all shadow-sm">
+				<SelectTrigger class="w-full md:w-[100px] h-10 text-xs font-bold text-zinc-800 bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 backdrop-blur-md rounded-xl hover:bg-white/80 dark:hover:bg-white/10 transition-all shadow-sm">
 					{actionTypes[filterStateType]}
 				</SelectTrigger>
 
-				<SelectContent class="w-full md:w-[100px] rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-white/30 shadow-2xl">
+				<SelectContent class="w-full md:w-[100px] rounded-xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-white/40 shadow-2xl">
 					<SelectItem value="buy" class="text-xs font-bold rounded-lg cursor-pointer">Buy</SelectItem>
 					<SelectItem value="sell" class="text-xs font-bold rounded-lg cursor-pointer">Sell</SelectItem>
 				</SelectContent>
 			</Select>
 		</div>
 
-		<div class="w-full space-y-1.5 md:w-auto">
+		<div class="w-full space-y-1 md:w-auto">
 			<Label class="px-1 font-bold text-[11px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Token</Label>
 
 			<Select type="single" bind:value={filterState.current.selectedToken}>
-				<SelectTrigger class="w-full md:w-[110px] h-10 text-xs font-bold text-zinc-800 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/10 backdrop-blur-md rounded-xl hover:bg-white/80 dark:hover:bg-white/10 transition-all shadow-sm">
+				<SelectTrigger class="w-full md:w-[110px] h-10 text-xs font-bold text-zinc-800 bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 backdrop-blur-md rounded-xl hover:bg-white/80 dark:hover:bg-white/10 transition-all shadow-sm">
 					{filterStateSelectedToken}
 				</SelectTrigger>
 
-				<SelectContent class="w-full md:w-[110px] rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-white/30 shadow-2xl">
+				<SelectContent class="w-full md:w-[110px] rounded-xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-white/40 shadow-2xl">
 					{#each availableTokensList as token (token)}
 						<SelectItem value={token} class="text-xs font-bold rounded-lg cursor-pointer">{token}</SelectItem>
 					{/each}
@@ -70,17 +71,16 @@
 			</Select>
 		</div>
 
-		<div class="w-full space-y-1.5 md:w-auto">
+		<div class="w-full space-y-1 md:w-auto">
 			<Label class="px-1 font-bold text-[11px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Fiat</Label>
 
 			<Popover bind:open={openFiatList}>
-				<PopoverTrigger asChild let:builder>
+				<PopoverTrigger>
 					<Button
-						builders={[builder]}
 						role="combobox"
 						aria-expanded={openFiatList}
 						variant="outline"
-						class="w-full justify-between md:w-[130px] h-10 text-xs font-bold text-zinc-800 bg-white/50 dark:bg-white/5 border border-white/60 dark:border-white/10 backdrop-blur-md rounded-xl hover:bg-white/80 dark:hover:bg-white/10 transition-all shadow-sm"
+						class="w-full justify-between md:w-[130px] h-10 text-xs font-bold text-zinc-800 bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 backdrop-blur-md rounded-xl hover:bg-white/80 dark:hover:bg-white/10 transition-all shadow-sm"
 					>
 						{filterStateFiat}
 						<ChevronsUpDownIcon class={cn('ml-1 size-3.5 shrink-0 text-zinc-400 transition-transform duration-300', {
@@ -89,7 +89,7 @@
 					</Button>
 				</PopoverTrigger>
 
-				<PopoverContent class="w-[220px] p-0 rounded-xl bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-white/30 shadow-2xl">
+				<PopoverContent class="w-[220px] p-0 rounded-xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-white/40 shadow-2xl">
 					<Command class="bg-transparent">
 						<CommandInput placeholder="Search Fiats..." class="text-xs h-10 font-medium" />
 						<CommandList class="max-h-[220px] overflow-y-auto scrollbar-thin">
