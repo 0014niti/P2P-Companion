@@ -9,7 +9,7 @@
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="h-5 w-5 text-white"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
 				</div>
 				<div class="flex flex-col mt-0.5">
-					<h1 class="text-xl font-black tracking-tight text-zinc-900 leading-none">P2P <span class="font-medium text-zinc-500">Companion</span></h1>
+					<h1 class="text-xl font-black tracking-tight text-zinc-900 leading-none">P2P <span class="font-medium text-zinc-500">Terminal</span></h1>
 					<p class="text-[9px] font-bold tracking-widest text-zinc-400 uppercase mt-1.5">Global P2P Scanner</p>
 				</div>
 			</div>
