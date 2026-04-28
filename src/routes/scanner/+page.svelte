@@ -11,7 +11,6 @@
 	import { slide, fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
-	import WelcomePanel from '$lib/components/WelcomePanel.svelte';
 	import SideGuide from '$lib/components/SideGuide.svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
@@ -184,8 +183,6 @@
 		animation: shimmer 2s infinite;
 	}
 </style>
-
-<WelcomePanel />
 
 <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-50">
 	<div class="absolute -top-[20%] -left-[10%] h-[70%] w-[60%] rounded-full bg-blue-400/10 blur-[120px]"></div>
