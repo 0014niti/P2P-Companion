@@ -42,23 +42,32 @@
 		}
 	}
 
-	// --- 2. Arbitrage Engine: Best Buy/Sell Spotter ---
+	// --- 2. Arbitrage Engine: Best Buy/Sell Spotter (BULLETPROOF VERSION) ---
 	const bestRateExchangeName = $derived.by(() => {
 		if (!$p2pOrderStore.orders || $p2pOrderStore.orders.length === 0) return null;
 		
 		let bestExchange = null;
-		let bestPrice = currentFilters.type === 'BUY' ? Infinity : -Infinity;
+		// Force uppercase to fix any state mismatches
+		const filterType = String(currentFilters.type || '').toUpperCase();
+		const isBuy = filterType === 'BUY';
+		
+		let bestPrice = isBuy ? Infinity : -Infinity;
 
 		for (const exchange of visibleExchanges) {
 			const ads = ordersByExchange.get(exchange.name) || [];
-			if (ads.length > 0 && ads[0].price) {
-				const price = parseFloat(ads[0].price);
-				if (currentFilters.type === 'BUY' && price < bestPrice) {
-					bestPrice = price;
-					bestExchange = exchange.name;
-				} else if (currentFilters.type === 'SELL' && price > bestPrice) {
-					bestPrice = price;
-					bestExchange = exchange.name;
+			
+			// Ensure the ad and price actually exist before checking
+			if (ads.length > 0 && ads[0] && ads[0].price !== undefined) {
+				const price = Number(ads[0].price);
+				
+				if (!isNaN(price)) {
+					if (isBuy && price < bestPrice) {
+						bestPrice = price;
+						bestExchange = exchange.name;
+					} else if (!isBuy && price > bestPrice) {
+						bestPrice = price;
+						bestExchange = exchange.name;
+					}
 				}
 			}
 		}
@@ -300,7 +309,7 @@
 							isLoading={$p2pOrderStore.isLoading}
 							error={$p2pOrderStore.errors[exchange.key]}
 							isBestRate={bestRateExchangeName === exchange.name}
-							filterType={currentFilters.type}
+							filterType={String(currentFilters.type || 'BUY').toUpperCase()}
 						/>
 					</div>
 				{/each}
