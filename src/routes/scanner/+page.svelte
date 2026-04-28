@@ -11,6 +11,7 @@
 	import { slide, fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
+	import SideGuide from '$lib/components/SideGuide.svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
 	const currentFilters = $derived(filterState.current);
@@ -240,6 +241,8 @@
 			</div>
 		{/if}
 	</div>
+
+<SideGuide />
 
 	<article class="mt-8 sm:mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-5 sm:p-8 shadow-sm">
 		<h2 class="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 mb-3 sm:mb-4">Global P2P Market Intelligence & Price Comparison</h2>
