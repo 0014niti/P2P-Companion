@@ -11,6 +11,7 @@
 	import { slide, fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
+	import WelcomePanel from '$lib/components/WelcomePanel.svelte';
 	import SideGuide from '$lib/components/SideGuide.svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
@@ -20,6 +21,50 @@
 	let showFilters = $state(false);
 	let showDonation = $state(false);
 	let copiedCoin = $state('');
+
+	// --- 1. Customization: Exchange Toggles State ---
+	let activeExchanges = $state<Record<string, boolean>>({});
+
+	// Derive only the exchanges the user has kept active
+	const visibleExchanges = $derived(
+		filterExchangesArr(filterStateSelectedToken).filter(ex => activeExchanges[ex.name] !== false)
+	);
+
+	// Filter orders for the table view to hide disabled exchanges
+	const visibleOrders = $derived(
+		$p2pOrderStore.orders?.filter(order => activeExchanges[order.exchange] !== false) || []
+	);
+
+	function toggleExchange(name: string) {
+		if (activeExchanges[name] === undefined) {
+			activeExchanges[name] = false;
+		} else {
+			activeExchanges[name] = !activeExchanges[name];
+		}
+	}
+
+	// --- 2. Arbitrage Engine: Best Buy/Sell Spotter ---
+	const bestRateExchangeName = $derived.by(() => {
+		if (!$p2pOrderStore.orders || $p2pOrderStore.orders.length === 0) return null;
+		
+		let bestExchange = null;
+		let bestPrice = currentFilters.type === 'BUY' ? Infinity : -Infinity;
+
+		for (const exchange of visibleExchanges) {
+			const ads = ordersByExchange.get(exchange.name) || [];
+			if (ads.length > 0 && ads[0].price) {
+				const price = parseFloat(ads[0].price);
+				if (currentFilters.type === 'BUY' && price < bestPrice) {
+					bestPrice = price;
+					bestExchange = exchange.name;
+				} else if (currentFilters.type === 'SELL' && price > bestPrice) {
+					bestPrice = price;
+					bestExchange = exchange.name;
+				}
+			}
+		}
+		return bestExchange;
+	});
 
 	// --- PWA Install State ---
 	let deferredPrompt: any = null;
@@ -41,6 +86,13 @@
 		}
 	});
 
+	// Save active exchanges to local storage automatically
+	$effect(() => {
+		if (Object.keys(activeExchanges).length > 0) {
+			localStorage.setItem('activeExchanges', JSON.stringify(activeExchanges));
+		}
+	});
+
 	const ordersByExchange = $derived.by(() => {
 		if (!$p2pOrderStore.orders) return new Map();
 		return $p2pOrderStore.orders.reduce((acc, order) => {
@@ -54,7 +106,6 @@
 	});
 
 	onMount(() => {
-		// 1. Initialize AdSense
 		try {
 			// @ts-ignore
 			(window.adsbygoogle = window.adsbygoogle || []).push({});
@@ -62,15 +113,19 @@
 			console.error('AdSense initialization error:', err);
 		}
 
-		// 2. Capture the PWA Install Event for Android/Chrome
 		window.addEventListener('beforeinstallprompt', (e) => {
 			e.preventDefault();
 			deferredPrompt = e;
 			showInstallButton = true;
 		});
+
+		// Load saved exchange toggle preferences
+		const savedExchanges = localStorage.getItem('activeExchanges');
+		if (savedExchanges) {
+			activeExchanges = JSON.parse(savedExchanges);
+		}
 	});
 
-	// --- PWA Install Function ---
 	async function installPWA() {
 		if (deferredPrompt) {
 			deferredPrompt.prompt();
@@ -110,15 +165,17 @@
 		background: #a1a1aa;
 	}
 	
-	/* MOBILE FIX: Completely hide scrollbar for the horizontal card carousel */
+	/* MOBILE FIX: Completely hide scrollbar for horizontal elements */
 	.hide-scrollbar::-webkit-scrollbar {
 		display: none;
 	}
 	.hide-scrollbar {
-		-ms-overflow-style: none; /* IE and Edge */
-		scrollbar-width: none;  /* Firefox */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
 	}
 </style>
+
+<WelcomePanel />
 
 <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-50">
 	<div class="absolute -top-[20%] -left-[10%] h-[70%] w-[60%] rounded-full bg-blue-400/10 blur-[120px]"></div>
@@ -219,30 +276,45 @@
 		</div>
 	{/if}
 
-	<div class="pt-2">
+	<div in:fly={{ y: -10, duration: 300 }} class="flex overflow-x-auto gap-2 py-2 hide-scrollbar w-full pt-4">
+		{#each filterExchangesArr(filterStateSelectedToken) as exchange}
+			<button 
+				onclick={() => toggleExchange(exchange.name)}
+				class="whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all duration-300 flex items-center gap-2
+				{activeExchanges[exchange.name] !== false 
+					? 'bg-white border-zinc-200 text-zinc-800 shadow-sm hover:border-blue-300' 
+					: 'bg-zinc-100/50 border-transparent text-zinc-400 opacity-70 hover:opacity-100 hover:bg-zinc-200/50'}"
+			>
+				<span class="w-2 h-2 rounded-full {activeExchanges[exchange.name] !== false ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-zinc-300'} transition-colors"></span>
+				{exchange.name}
+			</button>
+		{/each}
+	</div>
+
+	<div>
 		{#if viewMode === 'cards'}
-			<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:overflow-visible md:snap-none md:pb-0 hide-scrollbar">
-				{#each filterExchangesArr(filterStateSelectedToken) as exchange (exchange.key)}
+			<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:overflow-visible md:snap-none md:pb-0 hide-scrollbar pt-6">
+				{#each visibleExchanges as exchange (exchange.key)}
 					<div class="w-[85vw] max-w-[340px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink">
 						<ExchangeCards
 							{exchange}
 							ads={ordersByExchange.get(exchange.name) ?? []}
 							isLoading={$p2pOrderStore.isLoading}
 							error={$p2pOrderStore.errors[exchange.key]}
+							isBestRate={bestRateExchangeName === exchange.name}
+							filterType={currentFilters.type}
 						/>
 					</div>
 				{/each}
 			</div>
 		{:else}
-			<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} class="w-full overflow-x-auto rounded-2xl border border-zinc-200/60 bg-white/50 backdrop-blur-sm shadow-sm hide-scrollbar">
+			<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} class="w-full overflow-x-auto rounded-2xl border border-zinc-200/60 bg-white/50 backdrop-blur-sm shadow-sm hide-scrollbar mt-2">
 				<div class="min-w-[800px] p-1">
-					<ComparisonTable orders={$p2pOrderStore.orders} isLoading={$p2pOrderStore.isLoading} />
+					<ComparisonTable orders={visibleOrders} isLoading={$p2pOrderStore.isLoading} />
 				</div>
 			</div>
 		{/if}
 	</div>
-
-<SideGuide onDonateClick={() => (showDonation = true)} />
 
 	<article class="mt-8 sm:mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-5 sm:p-8 shadow-sm">
 		<h2 class="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 mb-3 sm:mb-4">Global P2P Market Intelligence & Price Comparison</h2>
@@ -327,9 +399,11 @@
 {#if showInstallButton}
 	<button 
 		onclick={installPWA} 
-		class="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-2xl shadow-zinc-900/40 transition-all hover:scale-105 active:scale-95 duration-500"
+		class="fixed bottom-6 right-[5.5rem] z-50 flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-2xl shadow-zinc-900/40 transition-all hover:scale-105 active:scale-95 duration-500"
 	>
 		<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
 		Install App
 	</button>
 {/if}
+
+<SideGuide onDonateClick={() => (showDonation = true)} />
