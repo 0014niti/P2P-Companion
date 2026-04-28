@@ -12,6 +12,9 @@
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 	import SideGuide from '$lib/components/SideGuide.svelte';
+	
+	// 🌟 NEW: Import the OTC Board
+	import OtcBoard from '$lib/components/OtcBoard.svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
 	const currentFilters = $derived(filterState.current);
@@ -20,6 +23,9 @@
 	let showFilters = $state(false);
 	let showDonation = $state(false);
 	let copiedCoin = $state('');
+	
+	// 🌟 NEW: OTC Board State
+	let isOtcBoardOpen = $state(false);
 
 	// --- 1. Customization: Exchange Toggles State ---
 	let activeExchanges = $state<Record<string, boolean>>({});
@@ -183,6 +189,7 @@
 		animation: shimmer 2s infinite;
 	}
 </style>
+
 
 <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-50">
 	<div class="absolute -top-[20%] -left-[10%] h-[70%] w-[60%] rounded-full bg-blue-400/10 blur-[120px]"></div>
@@ -459,3 +466,16 @@
 {/if}
 
 <SideGuide onDonateClick={() => (showDonation = true)} />
+
+<OtcBoard bind:isOpen={isOtcBoardOpen} />
+
+<button 
+	onclick={() => isOtcBoardOpen = true}
+	class="fixed bottom-20 right-6 md:bottom-6 md:right-6 z-[90] flex items-center gap-2.5 rounded-full bg-blue-600 px-5 py-3.5 text-sm font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all hover:scale-105 hover:bg-blue-500 active:scale-95 duration-500 border border-blue-400/50"
+>
+	<span class="relative flex h-2.5 w-2.5">
+	  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-200 opacity-75"></span>
+	  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+	</span>
+	Live OTC Chat
+</button>

@@ -53,7 +53,8 @@
 	"dependencies": {
 		"@fontsource-variable/outfit": "^5.2.7",
 		"@tanstack/svelte-query": "^5.87.4",
-		"mode-watcher": "^1.1.0"
+		"mode-watcher": "^1.1.0",
+		"nostr-tools": "^2.10.4"
 	},
 	"packageManager": "pnpm@10.17.0"
 }
