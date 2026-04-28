@@ -1,6 +1,5 @@
 import { SimplePool, generateSecretKey, getPublicKey, finalizeEvent } from 'nostr-tools';
 
-// Safe Hex Encoders to avoid dependency build issues
 function bytesToHex(bytes: Uint8Array): string {
     return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
 }
@@ -8,11 +7,11 @@ function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 }
 
-// Global public relays (The Decentralized Servers)
 const RELAYS = [
     'wss://relay.damus.io',
     'wss://nos.lol',
-    'wss://relay.primal.net'
+    'wss://relay.nostr.band',
+    'wss://offchain.pub'
 ];
 
 export interface NostrMessage {
@@ -27,12 +26,14 @@ class NostrEngine {
     messages = $state<NostrMessage[]>([]);
     isConnected = $state(false);
     
+    // NEW: Track if user is using an extension
+    isExtensionLogin = $state(false); 
+    
     private secretKeyHex: string | null = null;
     public publicKeyHex: string | null = $state(null);
     private currentSub: any = null;
 
     constructor() {
-        // Only run in browser, prevents Vercel server-side rendering crashes
         if (typeof window !== 'undefined') {
             this.initializeKeys();
         }
@@ -45,7 +46,6 @@ class NostrEngine {
             const skBytes = hexToBytes(storedKey);
             this.publicKeyHex = getPublicKey(skBytes);
         } else {
-            // Generate a fresh burner identity instantly
             const skBytes = generateSecretKey();
             this.secretKeyHex = bytesToHex(skBytes);
             this.publicKeyHex = getPublicKey(skBytes);
@@ -53,9 +53,24 @@ class NostrEngine {
         }
     }
 
-    // Connect and listen to a specific fiat channel (e.g., #OTC_INR)
+    // NEW: Login with NIP-07 Browser Extension (Alby, nos2x)
+    public async loginWithExtension() {
+        if (typeof window !== 'undefined' && (window as any).nostr) {
+            try {
+                const pubkey = await (window as any).nostr.getPublicKey();
+                this.publicKeyHex = pubkey;
+                this.isExtensionLogin = true;
+                this.secretKeyHex = null; // Clear burner key from memory
+            } catch (err) {
+                console.error("User rejected extension login", err);
+            }
+        } else {
+            alert("No Nostr extension found! Please install the Alby or nos2x browser extension to log in.");
+        }
+    }
+
     public subscribeToChannel(fiatTicker: string) {
-        const hashtag = `OTC_${fiatTicker.toUpperCase()}`;
+        const hashtag = `p2potc_${fiatTicker.toLowerCase()}`;
         
         if (this.currentSub) {
             this.currentSub.close();
@@ -66,14 +81,13 @@ class NostrEngine {
             RELAYS,
             [
                 {
-                    kinds: [1], // 1 = Short Text Note (Standard Chat)
-                    '#t': [hashtag], // Filter by our specific app hashtag
-                    limit: 50 // Load last 50 messages
+                    kinds: [1], 
+                    '#t': [hashtag], 
+                    limit: 50 
                 }
             ],
             {
                 onevent: (event) => {
-                    // Prevent duplicates and sort by newest
                     const exists = this.messages.find(m => m.id === event.id);
                     if (!exists) {
                         this.messages = [...this.messages, event as NostrMessage].sort((a, b) => b.created_at - a.created_at);
@@ -88,9 +102,8 @@ class NostrEngine {
     }
 
     public async sendMessage(content: string, fiatTicker: string) {
-        if (!this.secretKeyHex) return;
-        const hashtag = `OTC_${fiatTicker.toUpperCase()}`;
-        const skBytes = hexToBytes(this.secretKeyHex);
+        if (!this.publicKeyHex) return;
+        const hashtag = `p2potc_${fiatTicker.toLowerCase()}`;
 
         let eventTemplate = {
             kind: 1,
@@ -99,14 +112,25 @@ class NostrEngine {
             content: content,
         };
 
-        // Cryptographically sign the message (proving you own the burner key)
-        const signedEvent = finalizeEvent(eventTemplate, skBytes);
+        let signedEvent;
 
-        // Publish to relays
+        // NEW: Check if we need to sign via Extension or Burner Key
+        if (this.isExtensionLogin && typeof window !== 'undefined' && (window as any).nostr) {
+            try {
+                signedEvent = await (window as any).nostr.signEvent(eventTemplate);
+            } catch(e) {
+                console.error("Extension signing failed", e);
+                return;
+            }
+        } else if (this.secretKeyHex) {
+            const skBytes = hexToBytes(this.secretKeyHex);
+            signedEvent = finalizeEvent(eventTemplate, skBytes);
+        } else {
+            return;
+        }
+
         try {
             await Promise.any(this.pool.publish(RELAYS, signedEvent));
-            
-            // Optimistically add to UI so it feels instantaneous
             const exists = this.messages.find(m => m.id === signedEvent.id);
             if (!exists) {
                 this.messages = [signedEvent as NostrMessage, ...this.messages].sort((a, b) => b.created_at - a.created_at);
@@ -117,5 +141,4 @@ class NostrEngine {
     }
 }
 
-// Export a singleton instance so the whole app shares the same connection
 export const nostrStore = new NostrEngine();

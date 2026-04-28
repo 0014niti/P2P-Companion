@@ -471,7 +471,7 @@
 
 <button 
 	onclick={() => isOtcBoardOpen = true}
-	class="fixed bottom-20 right-6 md:bottom-6 md:right-6 z-[90] flex items-center gap-2.5 rounded-full bg-blue-600 px-5 py-3.5 text-sm font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all hover:scale-105 hover:bg-blue-500 active:scale-95 duration-500 border border-blue-400/50"
+	class="fixed bottom-6 left-6 z-[90] flex items-center gap-2.5 rounded-full bg-blue-600 px-5 py-3.5 text-sm font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all hover:scale-105 hover:bg-blue-500 active:scale-95 duration-500 border border-blue-400/50"
 >
 	<span class="relative flex h-2.5 w-2.5">
 	  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-200 opacity-75"></span>
