@@ -189,7 +189,7 @@
 		}
 	}
 	.animate-shimmer {
-		animation: shimmer 2s infinite;
+		animation: shimmer 2.5s infinite;
 	}
 </style>
 
@@ -329,19 +329,13 @@
 			</div>
 
 			<div class="relative">
-				<div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-slate-50 via-slate-50/80 to-transparent z-[60] pointer-events-none md:hidden flex items-center justify-end pr-3 pb-4">
-					<div class="flex items-center gap-0.5 text-[9px] font-black text-zinc-500 uppercase tracking-widest bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.1)] border border-zinc-200/50 animate-pulse">
-						Swipe <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-					</div>
-				</div>
-
 				<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} 
 					class="flex overflow-x-auto snap-x snap-mandatory pb-8 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:overflow-visible md:snap-none md:pb-0 hide-scrollbar pt-2 md:pt-4
-						   -space-x-12 md:space-x-0 md:gap-5 pl-2 pr-[20vw] md:px-0">
+						   gap-3 sm:gap-5 px-3 sm:px-0">
 					
 					{#if $p2pOrderStore.isLoading && (!$p2pOrderStore.orders || $p2pOrderStore.orders.length === 0)}
-						{#each Array(5) as _, i}
-							<div class="w-[85vw] max-w-[340px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink relative h-[400px] rounded-2xl bg-white/50 backdrop-blur-2xl border border-zinc-200/60 shadow-xl overflow-hidden" style="z-index: {50 - i};">
+						{#each Array(5) as _}
+							<div class="w-[92vw] max-w-[380px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink relative h-[400px] rounded-2xl bg-white/50 backdrop-blur-2xl border border-zinc-200/60 shadow-xl overflow-hidden">
 								
 								<div class="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/80 to-transparent z-10"></div>
 								
@@ -371,10 +365,9 @@
 						{/each}
 					
 					{:else}
-						{#each visibleExchanges as exchange, i (exchange.key)}
+						{#each visibleExchanges as exchange (exchange.key)}
 							<div id="card-{exchange.name}" 
-								 class="w-[85vw] max-w-[340px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink relative transition-all duration-500 hover:-translate-y-3"
-								 style="z-index: {50 - i};">
+								 class="w-[92vw] max-w-[380px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink relative transition-all duration-300 hover:-translate-y-1">
 								<ExchangeCards
 									{exchange}
 									ads={ordersByExchange.get(exchange.name) ?? []}
