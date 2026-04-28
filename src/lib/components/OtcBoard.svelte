@@ -8,10 +8,14 @@
 	let { isOpen = $bindable(false) } = $props();
 	
 	// Structured Form State
-	let tradeType = $state('WTS'); // Want to Sell by default
+	let tradeType = $state('WTS');
 	let tradeCoin = $state('USDT');
 	let tradePrice = $state('');
 	let tradeNote = $state('');
+
+	// Login State
+	let showLoginPopup = $state(false);
+	let loginNameInput = $state('');
 
 	const currentFiat = $derived(filterState.current.fiat || 'USDT');
 
@@ -24,22 +28,22 @@
 	async function handleStructuredSend() {
 		if (!tradePrice || !tradeNote.trim()) return;
 		
-		// Format into a beautiful clean message
-		const content = `[${tradeType}] ${tradeCoin} for ${currentFiat} @ ${tradePrice}\n📝 Note: ${tradeNote.slice(0, 100)}`; // limit note length
-		
+		const content = `[${tradeType}] ${tradeCoin} for ${currentFiat} @ ${tradePrice}\n📝 Note: ${tradeNote.slice(0, 100)}`;
 		await nostrStore.sendMessage(content, currentFiat);
 		
-		// Reset inputs
 		tradePrice = '';
 		tradeNote = '';
 	}
 
-	function formatTime(timestamp: number) {
-		return new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	function saveUsername() {
+		if (loginNameInput.trim().length > 1) {
+			nostrStore.setUsername(loginNameInput.trim());
+			showLoginPopup = false;
+		}
 	}
 
-	function formatNpub(hex: string) {
-		return `User_${hex.slice(0, 4)}...${hex.slice(-4)}`;
+	function formatTime(timestamp: number) {
+		return new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 	}
 </script>
 
@@ -66,17 +70,20 @@
 			</div>
 			
 			<div class="flex items-center gap-2">
-				{#if !nostrStore.isExtensionLogin}
+				{#if !nostrStore.username}
 					<button 
-						onclick={() => nostrStore.loginWithExtension()}
-						class="text-[10px] font-bold bg-purple-50 text-purple-700 px-2.5 py-1.5 rounded-lg hover:bg-purple-100 transition-colors border border-purple-200 shadow-sm active:scale-95"
+						onclick={() => showLoginPopup = true}
+						class="text-[10px] font-bold bg-zinc-900 text-white px-3 py-1.5 rounded-lg hover:bg-zinc-800 transition-all shadow-sm active:scale-95"
 					>
-						Login
+						Set Username
 					</button>
 				{:else}
-					<span class="text-[10px] font-bold bg-green-50 text-green-700 px-2.5 py-1.5 rounded-lg border border-green-200 shadow-sm">
-						Logged In
-					</span>
+					<button 
+						onclick={() => showLoginPopup = true}
+						class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-3 py-1.5 rounded-lg border border-zinc-200 shadow-sm flex items-center gap-1 hover:bg-zinc-200 transition-colors"
+					>
+						<User class="size-3" /> {nostrStore.username}
+					</button>
 				{/if}
 
 				<button class="p-2 rounded-full hover:bg-zinc-100 text-zinc-500 transition-colors" onclick={() => isOpen = false}>
@@ -109,7 +116,7 @@
 					<div class="flex items-center gap-1.5 mb-1 px-1">
 						{#if !isMine}<User class="size-3 text-zinc-400" />{/if}
 						<span class="text-[10px] font-bold text-zinc-500 {isMine ? 'text-blue-500' : ''}">
-							{isMine ? 'You' : formatNpub(msg.pubkey)}
+							{isMine ? 'You' : msg.username}
 						</span>
 						<span class="text-[9px] text-zinc-400 ml-1">{formatTime(msg.created_at)}</span>
 					</div>
@@ -144,7 +151,7 @@
 						type="text" 
 						bind:value={tradeNote}
 						maxlength="100"
-						placeholder="Add note (e.g. IMPS only, fast release) max 20 words..." 
+						placeholder="Add note (e.g. IMPS only, fast release)..." 
 						class="flex-1 bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-zinc-400"
 					/>
 					<button type="submit" disabled={!tradePrice || !tradeNote.trim()} class="bg-blue-600 text-white rounded-xl px-4 py-2 flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 transition-all shadow-sm active:scale-95">
@@ -153,5 +160,29 @@
 				</div>
 			</form>
 		</div>
+
+		{#if showLoginPopup}
+			<div class="absolute inset-0 bg-white/80 backdrop-blur-md z-[110] flex items-center justify-center p-6" transition:fade={{duration: 150}}>
+				<div class="bg-white rounded-2xl shadow-2xl border border-zinc-200/80 p-6 w-full max-w-sm" transition:fly={{y: 20}}>
+					<h3 class="text-lg font-black text-zinc-900 mb-2">Set Display Name</h3>
+					<p class="text-xs text-zinc-500 mb-4">Choose how you want to appear on the OTC board. No signup required.</p>
+					
+					<form onsubmit={(e) => { e.preventDefault(); saveUsername(); }} class="space-y-3">
+						<input 
+							type="text" 
+							bind:value={loginNameInput}
+							placeholder="e.g. Trader_IND" 
+							maxlength="15"
+							class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+						/>
+						<div class="flex gap-2">
+							<button type="button" class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-colors" onclick={() => showLoginPopup = false}>Cancel</button>
+							<button type="submit" disabled={loginNameInput.trim().length < 2} class="flex-1 px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50">Save</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		{/if}
+
 	</div>
 {/if}

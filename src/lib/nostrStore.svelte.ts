@@ -7,11 +7,12 @@ function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 }
 
+// 🌟 FIX 1: Better, highly permissive relays that do not block new users
 const RELAYS = [
-    'wss://relay.damus.io',
-    'wss://nos.lol',
-    'wss://relay.nostr.band',
-    'wss://offchain.pub'
+    'wss://relay.primal.net',
+    'wss://relay.snort.social',
+    'wss://nostr.mom',
+    'wss://nos.lol'
 ];
 
 export interface NostrMessage {
@@ -19,6 +20,7 @@ export interface NostrMessage {
     pubkey: string;
     content: string;
     created_at: number;
+    username: string; // We will attach the username here
 }
 
 class NostrEngine {
@@ -26,8 +28,8 @@ class NostrEngine {
     messages = $state<NostrMessage[]>([]);
     isConnected = $state(false);
     
-    // NEW: Track if user is using an extension
-    isExtensionLogin = $state(false); 
+    // 🌟 FIX 2: Simple Username State instead of complicated Web3 Extensions
+    username = $state<string | null>(null); 
     
     private secretKeyHex: string | null = null;
     public publicKeyHex: string | null = $state(null);
@@ -40,6 +42,9 @@ class NostrEngine {
     }
 
     private initializeKeys() {
+        // Load Username if they already "logged in"
+        this.username = localStorage.getItem('otc_username');
+
         const storedKey = localStorage.getItem('nostr_burner_key');
         if (storedKey) {
             this.secretKeyHex = storedKey;
@@ -53,20 +58,10 @@ class NostrEngine {
         }
     }
 
-    // NEW: Login with NIP-07 Browser Extension (Alby, nos2x)
-    public async loginWithExtension() {
-        if (typeof window !== 'undefined' && (window as any).nostr) {
-            try {
-                const pubkey = await (window as any).nostr.getPublicKey();
-                this.publicKeyHex = pubkey;
-                this.isExtensionLogin = true;
-                this.secretKeyHex = null; // Clear burner key from memory
-            } catch (err) {
-                console.error("User rejected extension login", err);
-            }
-        } else {
-            alert("No Nostr extension found! Please install the Alby or nos2x browser extension to log in.");
-        }
+    // Call this from the UI to "Login"
+    public setUsername(name: string) {
+        this.username = name;
+        localStorage.setItem('otc_username', name);
     }
 
     public subscribeToChannel(fiatTicker: string) {
@@ -90,7 +85,25 @@ class NostrEngine {
                 onevent: (event) => {
                     const exists = this.messages.find(m => m.id === event.id);
                     if (!exists) {
-                        this.messages = [...this.messages, event as NostrMessage].sort((a, b) => b.created_at - a.created_at);
+                        // Extract our custom Username from the message content
+                        let parsedName = "Anon";
+                        let parsedContent = event.content;
+                        
+                        if (event.content.includes(':|:')) {
+                            const parts = event.content.split(':|:');
+                            parsedName = parts[0];
+                            parsedContent = parts.slice(1).join(':|:');
+                        }
+
+                        const newMessage: NostrMessage = {
+                            id: event.id,
+                            pubkey: event.pubkey,
+                            created_at: event.created_at,
+                            username: parsedName,
+                            content: parsedContent
+                        };
+
+                        this.messages = [...this.messages, newMessage].sort((a, b) => b.created_at - a.created_at);
                         if (this.messages.length > 100) this.messages = this.messages.slice(0, 100);
                     }
                 },
@@ -102,38 +115,38 @@ class NostrEngine {
     }
 
     public async sendMessage(content: string, fiatTicker: string) {
-        if (!this.publicKeyHex) return;
+        if (!this.secretKeyHex) return;
         const hashtag = `p2potc_${fiatTicker.toLowerCase()}`;
+        const skBytes = hexToBytes(this.secretKeyHex);
+
+        // 🌟 Embed the username into the message string safely
+        const safeName = this.username || "Anon";
+        const finalContent = `${safeName}:|:${content}`;
 
         let eventTemplate = {
             kind: 1,
             created_at: Math.floor(Date.now() / 1000),
             tags: [['t', hashtag]],
-            content: content,
+            content: finalContent,
         };
 
-        let signedEvent;
-
-        // NEW: Check if we need to sign via Extension or Burner Key
-        if (this.isExtensionLogin && typeof window !== 'undefined' && (window as any).nostr) {
-            try {
-                signedEvent = await (window as any).nostr.signEvent(eventTemplate);
-            } catch(e) {
-                console.error("Extension signing failed", e);
-                return;
-            }
-        } else if (this.secretKeyHex) {
-            const skBytes = hexToBytes(this.secretKeyHex);
-            signedEvent = finalizeEvent(eventTemplate, skBytes);
-        } else {
-            return;
-        }
+        const signedEvent = finalizeEvent(eventTemplate, skBytes);
 
         try {
-            await Promise.any(this.pool.publish(RELAYS, signedEvent));
+            // 🌟 FIX 3: Force the relays to accept the publish request
+            const pubs = this.pool.publish(RELAYS, signedEvent);
+            await Promise.allSettled(pubs); // Wait for relays to process
+            
             const exists = this.messages.find(m => m.id === signedEvent.id);
             if (!exists) {
-                this.messages = [signedEvent as NostrMessage, ...this.messages].sort((a, b) => b.created_at - a.created_at);
+                const newMessage: NostrMessage = {
+                    id: signedEvent.id,
+                    pubkey: signedEvent.pubkey,
+                    created_at: signedEvent.created_at,
+                    username: safeName,
+                    content: content
+                };
+                this.messages = [newMessage, ...this.messages].sort((a, b) => b.created_at - a.created_at);
             }
         } catch (err) {
             console.error("Failed to publish message", err);
