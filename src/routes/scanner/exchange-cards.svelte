@@ -174,8 +174,29 @@
 						</div>
 					{/each}
 				</div>
+				
 			{:else}
-				<p class="text-muted-foreground text-xs text-center py-2">No ads available</p>
+				<div class="flex flex-col items-center justify-center p-6 text-center min-h-[220px]">
+					<div class="w-12 h-12 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center mb-3 shadow-sm">
+						<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-orange-400">
+							<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+							<path d="M12 9v4"/>
+							<path d="M12 17h.01"/>
+						</svg>
+					</div>
+					<p class="text-sm font-black text-zinc-800 tracking-tight mb-1">Data Unavailable</p>
+					<p class="text-[10px] font-medium text-zinc-500 leading-relaxed max-w-[220px] mb-4">
+						Exchanges may temporarily block API access due to regional censorship or network firewalls.
+					</p>
+					<a
+						href={exchange.p2pLink}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="text-[10px] font-bold text-zinc-700 bg-white border border-zinc-200/80 px-4 py-2 rounded-xl shadow-sm transition-all hover:bg-zinc-50 active:scale-95 flex items-center gap-1.5"
+					>
+						Verify on {exchange.name} <span class="text-[12px] leading-none text-zinc-400">↗</span>
+					</a>
+				</div>
 			{/if}
 		</CardContent>
 	</Card>
