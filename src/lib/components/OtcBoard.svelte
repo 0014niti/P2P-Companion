@@ -79,12 +79,34 @@
 		return `hsl(${Math.abs(hash) % 360}, 75%, 65%)`; 
 	}
 
+		// 🌟 FIX: Bulletproof String Parser (Ignores weird mobile formatting!)
 	function parseOffer(content: string) {
-		// 🌟 FIX: Added the 's' flag to the regex so it perfectly catches everything even if there are weird line breaks
-		const match = content.match(/\[(WTS|WTB)\] (.*?) for (.*?) @ (.*?)(?:\n📝 Note: (.*))?/s);
-		if (match) return { isOffer: true, type: match[1], coin: match[2], fiat: match[3], price: match[4], note: match[5] || '' };
+		try {
+			if (content.includes('[WTS]') || content.includes('[WTB]')) {
+				const type = content.includes('[WTS]') ? 'WTS' : 'WTB';
+				
+				const part1 = content.split('] ')[1];
+				const coin = part1.split(' for ')[0].trim();
+				
+				const part2 = part1.split(' for ')[1];
+				const fiat = part2.split(' @ ')[0].trim();
+				
+				const part3 = part2.split(' @ ')[1];
+				const price = part3.split('\n')[0].trim(); // Grabs the price cleanly
+				
+				let note = '';
+				if (content.includes('Note:')) {
+					note = content.split('Note:')[1].trim(); // Grabs the note cleanly
+				}
+
+				return { isOffer: true, type, coin, fiat, price, note };
+			}
+		} catch (e) {
+			console.warn("Could not parse offer strictly, falling back to text bubble.");
+		}
 		return { isOffer: false, text: content };
 	}
+
 </script>
 
 {#if isOpen}
@@ -182,7 +204,6 @@
 								onclick={() => { 
 									if(!isMine) {
 										if (nostrStore.isRestoredAccount) {
-											// 🌟 FIX: We pass the parsed offer right into the activeDm state!
 											activeDm = {pubkey: msg.pubkey, username: msg.username, offerContext: offer};
 										} else {
 											alert("🔒 VIP Room Locked!\n\nTo prevent losing access to your private negotiations, you must explicitly import your Private Key in the Account menu first.");
@@ -220,8 +241,23 @@
 									<div class="text-[10px] font-medium px-2.5 py-1.5 rounded-xl {isMine ? 'bg-blue-700/40 text-blue-50' : 'bg-white/50 text-zinc-700 border border-white/40'}"><span class="opacity-70 mr-1">📝</span> {offer.note}</div>
 								{/if}
 							</div>
+						
+						{:else}
+							<div class="relative max-w-[85%] rounded-[20px] px-4 py-3 text-sm shadow-sm border transition-all duration-300 backdrop-blur-2xl
+								{isMine ? 'bg-blue-600/90 text-white border-blue-400/50 rounded-tr-sm' : 'bg-white/70 text-zinc-900 border-white/60 rounded-tl-sm'}">
+								<div class="flex justify-between items-center mb-1">
+									<div class="flex items-center gap-2">
+										{#if !isMine}
+											<div class="w-4 h-4 rounded-full border border-white/60 flex items-center justify-center text-[8px] font-black text-white" style="background: {generateAvatarColor(msg.username)}">{msg.username.charAt(0).toUpperCase()}</div>
+										{/if}
+										<span class="text-[10px] font-bold {isMine ? 'text-blue-200' : 'text-zinc-600'}">{isMine ? 'You' : msg.username}</span>
+									</div>
+									<span class="text-[8px] opacity-70 ml-3">{formatTime(msg.created_at)}</span>
+								</div>
+								<p class="whitespace-pre-wrap break-words leading-relaxed font-medium">{msg.content}</p>
+							</div>
 						{/if}
-					</div>
+					</div>			
 				{/each}
 
 			{:else}
