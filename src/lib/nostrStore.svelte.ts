@@ -7,16 +7,12 @@ function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 }
 
-// 🌟 FIX 1: The "Shotgun" Array of Unrestricted Relays
+// 🌟 FIX 1: Removed dead relays to stop timeouts, kept the fastest global relays
 const RELAYS = [
-    'wss://relay.damus.io',           // Strict, but massive
-    'wss://nos.lol',                  // Usually permissive
-    'wss://relay.nostr.band',         // Great for indexing
-    'wss://nostr.mom',                // Unrestricted
-    'wss://relay.current.fyi',        // Unrestricted
-    'wss://relay.primal.net',         // High performance
-    'wss://relay.nostr.bg',           // European permissive
-    'wss://nostr.bitcoiner.social'    // Cypherpunk permissive
+    'wss://relay.damus.io',
+    'wss://nos.lol',
+    'wss://relay.primal.net',
+    'wss://relay.snort.social'
 ];
 
 export interface NostrMessage {
@@ -73,15 +69,17 @@ class NostrEngine {
 
         console.log(`📡 Connecting to Nostr Relays for #${hashtag}...`);
 
+        // 🌟 FIX 2: Create a PURE Javascript Object (Strips Svelte Proxies)
+        // This stops the "filter is not an object" error from the relays!
+        const filter = JSON.parse(JSON.stringify({
+            kinds: [1], 
+            '#t': [hashtag], 
+            limit: 100 
+        }));
+
         this.currentSub = this.pool.subscribeMany(
             RELAYS,
-            [
-                {
-                    kinds: [1], 
-                    '#t': [hashtag], 
-                    limit: 100 
-                }
-            ],
+            [filter],
             {
                 onevent: (event) => {
                     const exists = this.messages.find(m => m.id === event.id);
@@ -129,25 +127,19 @@ class NostrEngine {
         };
 
         const signedEvent = finalizeEvent(eventTemplate, skBytes);
-        console.log("🚀 Attempting to publish event to Nostr...", signedEvent);
+        console.log("🚀 Publishing...", signedEvent);
 
         try {
-            // 🌟 FIX 2: Wait for all relays to respond and log their answers
             const pubs = this.pool.publish(RELAYS, signedEvent);
             const results = await Promise.allSettled(pubs);
             
             let successCount = 0;
             results.forEach((res, index) => {
-                if (res.status === 'rejected') {
-                    console.warn(`❌ Relay ${RELAYS[index]} rejected:`, res.reason);
-                } else {
-                    console.log(`✅ Relay ${RELAYS[index]} accepted!`);
-                    successCount++;
-                }
+                if (res.status === 'fulfilled') successCount++;
             });
 
             if (successCount === 0) {
-                alert("Warning: The Nostr network rejected your message (likely due to spam filters). Try again in a few minutes.");
+                console.warn("Nostr network rejected message.");
             }
 
             const exists = this.messages.find(m => m.id === signedEvent.id);
@@ -162,7 +154,7 @@ class NostrEngine {
                 this.messages = [newMessage, ...this.messages].sort((a, b) => b.created_at - a.created_at);
             }
         } catch (err) {
-            console.error("Critical failure publishing message:", err);
+            console.error("Failed to publish message:", err);
         }
     }
 }
