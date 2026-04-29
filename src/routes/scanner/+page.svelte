@@ -7,13 +7,14 @@
 	import ComparisonTable from '$lib/components/ComparisonTable.svelte';
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import type { P2POrder } from '$lib/types';
-	import { Settings2, RefreshCw, Activity, Heart, Copy, Check, X } from 'lucide-svelte';
+	
+	// 🌟 Added Download, BookOpen, and Zap icons for the new Dock
+	import { Settings2, RefreshCw, Activity, Heart, Copy, Check, X, Download, BookOpen, Zap } from 'lucide-svelte';
+	
 	import { slide, fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 	import SideGuide from '$lib/components/SideGuide.svelte';
-	
-	// 🌟 NEW: Import the OTC Board
 	import OtcBoard from '$lib/components/OtcBoard.svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
@@ -24,8 +25,9 @@
 	let showDonation = $state(false);
 	let copiedCoin = $state('');
 	
-	// 🌟 NEW: OTC Board State
 	let isOtcBoardOpen = $state(false);
+	// 🌟 NEW: Guide State for the dock
+	let isGuideOpen = $state(false); 
 
 	// --- 1. Customization: Exchange Toggles State ---
 	let activeExchanges = $state<Record<string, boolean>>({});
@@ -231,7 +233,7 @@
 			
 			{#if $p2pOrderStore.marketRate || $p2pOrderStore.usdRate}
 				<div class="flex items-center gap-2 text-[10px] sm:text-xs font-medium text-zinc-500 overflow-x-auto hide-scrollbar pb-1 w-full whitespace-nowrap">
-					<Activity class="size-3.5 text-blue-500 shrink-0" /> 
+					<Activity class="size-3.5 text-blue-500 shrink-0" /> 
 					<span class="shrink-0 font-bold uppercase tracking-wider text-[9px] sm:text-[10px]">Rates:</span>
 					
 					{#if $p2pOrderStore.usdRate && $p2pOrderStore.fiat !== 'USD'}
@@ -292,11 +294,11 @@
 
 	<div in:fly={{ y: -10, duration: 300 }} class="flex overflow-x-auto gap-2 py-2 hide-scrollbar w-full pt-2 sm:pt-4">
 		{#each filterExchangesArr(filterStateSelectedToken) as exchange}
-			<button 
+			<button 
 				onclick={() => toggleExchange(exchange.name)}
 				class="whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all duration-300 flex items-center gap-2
-				{activeExchanges[exchange.name] !== false 
-					? 'bg-white border-zinc-200 text-zinc-800 shadow-sm hover:border-blue-300' 
+				{activeExchanges[exchange.name] !== false 
+					? 'bg-white border-zinc-200 text-zinc-800 shadow-sm hover:border-blue-300' 
 					: 'bg-zinc-100/50 border-transparent text-zinc-400 opacity-70 hover:opacity-100 hover:bg-zinc-200/50'}"
 			>
 				<span class="w-2 h-2 rounded-full {activeExchanges[exchange.name] !== false ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-zinc-300'} transition-colors"></span>
@@ -310,7 +312,7 @@
 			
 			<div in:fly={{ y: 10, duration: 300, delay: 100 }} class="md:hidden flex overflow-x-auto gap-4 py-3 hide-scrollbar w-full mb-2">
 				{#each visibleExchanges as exchange}
-					<button 
+					<button 
 						onclick={() => {
 							const el = document.getElementById(`card-${exchange.name}`);
 							if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -326,7 +328,7 @@
 			</div>
 
 			<div class="relative w-full">
-				<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} 
+				<div in:fly={{ y: 20, duration: 400, delay: 150, easing: cubicOut }} out:fade={{ duration: 150 }} 
 					class="flex overflow-x-auto snap-x snap-mandatory pb-8 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 gap-4 sm:gap-5 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 md:overflow-visible md:snap-none hide-scrollbar">
 					
 					{#if $p2pOrderStore.isLoading && (!$p2pOrderStore.orders || $p2pOrderStore.orders.length === 0)}
@@ -359,7 +361,7 @@
 					
 					{:else}
 						{#each visibleExchanges as exchange (exchange.key)}
-							<div id="card-{exchange.name}" 
+							<div id="card-{exchange.name}" 
 								 class="w-[88vw] max-w-[360px] shrink-0 snap-center md:w-auto md:max-w-none md:shrink relative transition-all duration-300 hover:-translate-y-1">
 								<ExchangeCards
 									{exchange}
@@ -383,7 +385,7 @@
 		{/if}
 	</div>
 
-	<article class="mt-8 sm:mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-5 sm:p-8 shadow-sm">
+	<article class="mt-8 sm:mt-12 rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl p-5 sm:p-8 shadow-sm mb-20">
 		<h2 class="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 mb-3 sm:mb-4">Global P2P Market Intelligence & Price Comparison</h2>
 		<p class="text-sm sm:text-base text-zinc-700 mb-5 sm:mb-6 leading-relaxed">
 			Welcome to the premier data terminal designed for everyday traders and analysts. Our infrastructure aggregates real-time Peer-to-Peer (P2P) order books across major centralized exchanges, allowing you to instantly compare USDT pricing dynamics and identify the best available rates across different fiat currencies.
@@ -401,81 +403,100 @@
 </div>
 
 {#if showDonation}
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4" onclick={(e) => { if (e.target === e.currentTarget) showDonation = false; }} transition:fade={{ duration: 200 }}>
-        <div class="w-full max-w-md rounded-[24px] border border-white/60 bg-white/90 backdrop-blur-2xl p-6 shadow-2xl" transition:fly={{ y: 20, duration: 300, easing: cubicOut }}>
-            <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2 text-rose-600">
-                    <Heart class="size-5 fill-current" />
-                    <h3 class="text-xl font-black text-zinc-900">Support the Dev</h3>
-                </div>
-                <button class="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition-colors" onclick={() => (showDonation = false)}>
-                    <X class="size-5" />
-                </button>
-            </div>
-            <p class="text-sm text-zinc-600 mb-6 font-medium leading-relaxed">
-                If this terminal helped you capture a profitable spread, consider supporting the server costs to keep it 100% free and ad-light.
-            </p>
-            <div class="space-y-3">
-                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-blue-300">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">USDT (TRC20 Network)</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9</code>
-                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9', 'USDT')}>
-                            {#if copiedCoin === 'USDT'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
-                        </button>
-                    </div>
-                </div>
-                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-orange-300">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">Bitcoin (BTC)</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_BTC_ADDRESS</code>
-                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_BTC_ADDRESS', 'BTC')}>
-                            {#if copiedCoin === 'BTC'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
-                        </button>
-                    </div>
-                </div>
-                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-zinc-400">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">Ripple (XRP)</span>
-                        <span class="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">Include Memo if required</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_XRP_ADDRESS</code>
-                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_XRP_ADDRESS', 'XRP')}>
-                            {#if copiedCoin === 'XRP'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4" onclick={(e) => { if (e.target === e.currentTarget) showDonation = false; }} transition:fade={{ duration: 200 }}>
+        <div class="w-full max-w-md rounded-[24px] border border-white/60 bg-white/90 backdrop-blur-2xl p-6 shadow-2xl" transition:fly={{ y: 20, duration: 300, easing: cubicOut }}>
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2 text-rose-600">
+                    <Heart class="size-5 fill-current" />
+                    <h3 class="text-xl font-black text-zinc-900">Support the Dev</h3>
+                </div>
+                <button class="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition-colors" onclick={() => (showDonation = false)}>
+                    <X class="size-5" />
+                </button>
+            </div>
+            <p class="text-sm text-zinc-600 mb-6 font-medium leading-relaxed">
+                If this terminal helped you capture a profitable spread, consider supporting the server costs to keep it 100% free and ad-light.
+            </p>
+            <div class="space-y-3">
+                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-blue-300">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">USDT (TRC20 Network)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9</code>
+                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9', 'USDT')}>
+                            {#if copiedCoin === 'USDT'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
+                        </button>
+                    </div>
+                </div>
+                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-orange-300">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">Bitcoin (BTC)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_BTC_ADDRESS</code>
+                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_BTC_ADDRESS', 'BTC')}>
+                            {#if copiedCoin === 'BTC'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
+                        </button>
+                    </div>
+                </div>
+                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-zinc-400">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">Ripple (XRP)</span>
+                        <span class="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">Include Memo if required</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_XRP_ADDRESS</code>
+                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_XRP_ADDRESS', 'XRP')}>
+                            {#if copiedCoin === 'XRP'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {/if}
 
-{#if showInstallButton}
-	<button 
-		onclick={installPWA} 
-		class="fixed bottom-6 right-[5.5rem] z-50 flex items-center gap-2 rounded-full bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-2xl shadow-zinc-900/40 transition-all hover:scale-105 active:scale-95 duration-500"
-	>
-		<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-		Install App
-	</button>
-{/if}
-
-<SideGuide onDonateClick={() => (showDonation = true)} />
-
+<SideGuide bind:isOpen={isGuideOpen} onDonateClick={() => (showDonation = true)} />
 <OtcBoard bind:isOpen={isOtcBoardOpen} />
 
-<button 
-	onclick={() => isOtcBoardOpen = true}
-	class="fixed top-4 right-5 md:top-5 md:right-6 z-[90] flex items-center gap-2 rounded-full bg-white/60 backdrop-blur-xl px-4 py-2 text-xs md:text-sm font-black text-blue-700 shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all hover:scale-105 hover:bg-white/90 active:scale-95 duration-500 border border-white/60"
->
-	<span class="relative flex h-2 w-1">
-	  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-100 opacity-65"></span>
-	  <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-	</span>
-	OTC Nexus <span class="hidden md:inline"></span>
-</button>
+<div class="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-[90] flex items-center p-1.5 rounded-full bg-zinc-900/85 backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.6)]">
+
+	{#if showInstallButton}
+		<button 
+			class="group flex items-center gap-2 px-3 md:px-4 py-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all duration-300 text-[11px] md:text-xs font-bold active:scale-95"
+			onclick={installPWA}
+			title="Install Web App"
+		>
+			<Download class="size-4 md:size-4 group-hover:-translate-y-0.5 transition-transform duration-300" />
+			<span class="hidden md:inline whitespace-nowrap">Install App</span>
+		</button>
+
+		<div class="w-px h-5 bg-white/10 mx-1"></div>
+	{/if}
+
+	<button 
+		class="group flex items-center gap-2 px-3 md:px-4 py-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all duration-300 text-[11px] md:text-xs font-bold active:scale-95"
+		onclick={() => isGuideOpen = true}
+		title="Platform Guide"
+	>
+		<BookOpen class="size-4 md:size-4 group-hover:-translate-y-0.5 transition-transform duration-300" />
+		<span class="hidden md:inline whitespace-nowrap">User Guide</span>
+	</button>
+
+	<div class="w-px h-5 bg-white/10 ml-1 mr-2 md:mx-2"></div>
+
+	<button 
+		onclick={() => isOtcBoardOpen = true}
+		class="group flex items-center gap-2 md:gap-2.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-4 md:px-5 py-2.5 text-[11px] md:text-sm font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] active:scale-95 border border-blue-400/50 relative overflow-hidden"
+	>
+		<span class="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0">
+		  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
+		  <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
+		</span>
+
+		<span class="relative z-10 tracking-wide drop-shadow-sm whitespace-nowrap">OTC Nexus</span>
+
+		<Zap class="size-3.5 md:size-4 fill-white text-white drop-shadow-md group-hover:rotate-12 group-hover:scale-110 transition-all duration-300" />
+	</button>
+</div>
