@@ -7,12 +7,16 @@ function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 }
 
-// 🌟 FIX 1: Better, highly permissive relays that do not block new users
+// 🌟 FIX 1: The "Shotgun" Array of Unrestricted Relays
 const RELAYS = [
-    'wss://relay.primal.net',
-    'wss://relay.snort.social',
-    'wss://nostr.mom',
-    'wss://nos.lol'
+    'wss://relay.damus.io',           // Strict, but massive
+    'wss://nos.lol',                  // Usually permissive
+    'wss://relay.nostr.band',         // Great for indexing
+    'wss://nostr.mom',                // Unrestricted
+    'wss://relay.current.fyi',        // Unrestricted
+    'wss://relay.primal.net',         // High performance
+    'wss://relay.nostr.bg',           // European permissive
+    'wss://nostr.bitcoiner.social'    // Cypherpunk permissive
 ];
 
 export interface NostrMessage {
@@ -20,15 +24,13 @@ export interface NostrMessage {
     pubkey: string;
     content: string;
     created_at: number;
-    username: string; // We will attach the username here
+    username: string;
 }
 
 class NostrEngine {
     pool = new SimplePool();
     messages = $state<NostrMessage[]>([]);
     isConnected = $state(false);
-    
-    // 🌟 FIX 2: Simple Username State instead of complicated Web3 Extensions
     username = $state<string | null>(null); 
     
     private secretKeyHex: string | null = null;
@@ -42,9 +44,7 @@ class NostrEngine {
     }
 
     private initializeKeys() {
-        // Load Username if they already "logged in"
         this.username = localStorage.getItem('otc_username');
-
         const storedKey = localStorage.getItem('nostr_burner_key');
         if (storedKey) {
             this.secretKeyHex = storedKey;
@@ -58,7 +58,6 @@ class NostrEngine {
         }
     }
 
-    // Call this from the UI to "Login"
     public setUsername(name: string) {
         this.username = name;
         localStorage.setItem('otc_username', name);
@@ -72,20 +71,21 @@ class NostrEngine {
             this.messages = [];
         }
 
+        console.log(`📡 Connecting to Nostr Relays for #${hashtag}...`);
+
         this.currentSub = this.pool.subscribeMany(
             RELAYS,
             [
                 {
                     kinds: [1], 
                     '#t': [hashtag], 
-                    limit: 50 
+                    limit: 100 
                 }
             ],
             {
                 onevent: (event) => {
                     const exists = this.messages.find(m => m.id === event.id);
                     if (!exists) {
-                        // Extract our custom Username from the message content
                         let parsedName = "Anon";
                         let parsedContent = event.content;
                         
@@ -104,7 +104,6 @@ class NostrEngine {
                         };
 
                         this.messages = [...this.messages, newMessage].sort((a, b) => b.created_at - a.created_at);
-                        if (this.messages.length > 100) this.messages = this.messages.slice(0, 100);
                     }
                 },
                 oneose: () => {
@@ -119,7 +118,6 @@ class NostrEngine {
         const hashtag = `p2potc_${fiatTicker.toLowerCase()}`;
         const skBytes = hexToBytes(this.secretKeyHex);
 
-        // 🌟 Embed the username into the message string safely
         const safeName = this.username || "Anon";
         const finalContent = `${safeName}:|:${content}`;
 
@@ -131,12 +129,27 @@ class NostrEngine {
         };
 
         const signedEvent = finalizeEvent(eventTemplate, skBytes);
+        console.log("🚀 Attempting to publish event to Nostr...", signedEvent);
 
         try {
-            // 🌟 FIX 3: Force the relays to accept the publish request
+            // 🌟 FIX 2: Wait for all relays to respond and log their answers
             const pubs = this.pool.publish(RELAYS, signedEvent);
-            await Promise.allSettled(pubs); // Wait for relays to process
+            const results = await Promise.allSettled(pubs);
             
+            let successCount = 0;
+            results.forEach((res, index) => {
+                if (res.status === 'rejected') {
+                    console.warn(`❌ Relay ${RELAYS[index]} rejected:`, res.reason);
+                } else {
+                    console.log(`✅ Relay ${RELAYS[index]} accepted!`);
+                    successCount++;
+                }
+            });
+
+            if (successCount === 0) {
+                alert("Warning: The Nostr network rejected your message (likely due to spam filters). Try again in a few minutes.");
+            }
+
             const exists = this.messages.find(m => m.id === signedEvent.id);
             if (!exists) {
                 const newMessage: NostrMessage = {
@@ -149,7 +162,7 @@ class NostrEngine {
                 this.messages = [newMessage, ...this.messages].sort((a, b) => b.created_at - a.created_at);
             }
         } catch (err) {
-            console.error("Failed to publish message", err);
+            console.error("Critical failure publishing message:", err);
         }
     }
 }
