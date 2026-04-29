@@ -7,14 +7,14 @@ function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 }
 
-// Global Relays
+// The 3 most stable global relays
 const RELAYS = [
     'wss://relay.damus.io',
     'wss://nos.lol',
     'wss://relay.primal.net'
 ];
 
-// Pool is completely outside the Svelte Class to prevent Proxy infection
+// Pool is used ONLY for publishing to avoid Proxy conflicts
 const pool = new SimplePool();
 
 export interface NostrMessage {
@@ -32,7 +32,9 @@ class NostrEngine {
     
     private secretKeyHex: string | null = null;
     public publicKeyHex: string | null = $state(null);
-    private currentSub: any = null;
+    
+    // NEW: We will hold native WebSockets here to bypass the library bugs
+    private activeSockets: WebSocket[] = [];
 
     constructor() {
         if (typeof window !== 'undefined') {
@@ -60,36 +62,58 @@ class NostrEngine {
         localStorage.setItem('otc_username', name);
     }
 
+    // 🌟 THE FIX: 100% Native WebSockets. Immune to Svelte Proxies!
     public subscribeToChannel(fiatTicker: string) {
         const hashtag = `p2potc_${fiatTicker.toLowerCase()}`;
         
-        if (this.currentSub) {
-            this.currentSub.close();
-            this.messages = [];
-        }
+        // 1. Clean up old connections
+        this.activeSockets.forEach(ws => ws.close());
+        this.activeSockets = [];
+        this.messages = [];
 
-        console.log(`📡 Connecting to Nostr Relays for #${hashtag}...`);
+        console.log(`📡 Connecting to Native WebSockets for #${hashtag}...`);
 
-        // 🌟 THE FIX: Complete Proxy Annihilation
-        // We stringify and re-parse the arrays to guarantee 100% pure JSON objects
-        const rawFilters = [{ kinds: [1], '#t': [hashtag], limit: 100 }];
-        const safeFilters = JSON.parse(JSON.stringify(rawFilters));
-        const safeRelays = JSON.parse(JSON.stringify(RELAYS));
+        // 2. Create the exact, pure JSON string the relays demand
+        const subId = `otc-sub-${Math.floor(Math.random() * 10000)}`;
+        const reqPayload = JSON.stringify([
+            "REQ", 
+            subId, 
+            { kinds: [1], '#t': [hashtag], limit: 100 }
+        ]);
 
-        this.currentSub = pool.subscribeMany(
-            safeRelays,
-            safeFilters,
-            {
-                // We point to a separate function to prevent Svelte from proxying the callback context
-                onevent: (event: any) => this.handleIncomingEvent(event),
-                oneose: () => { this.isConnected = true; }
+        // 3. Connect manually
+        RELAYS.forEach(url => {
+            try {
+                const ws = new WebSocket(url);
+                
+                ws.onopen = () => {
+                    ws.send(reqPayload); // Request the messages
+                    this.isConnected = true;
+                };
+
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    
+                    // If it's an event belonging to our subscription
+                    if (data[0] === "EVENT" && data[1] === subId) {
+                        this.handleIncomingEvent(data[2]);
+                    } 
+                    // Log errors directly from the relay
+                    else if (data[0] === "NOTICE") {
+                        console.warn(`Relay ${url} warning:`, data[1]);
+                    }
+                };
+
+                this.activeSockets.push(ws);
+            } catch (err) {
+                console.error(`Failed to connect to ${url}`);
             }
-        );
+        });
     }
 
-    // Isolated Event Handler
+    // Safely parse and deduplicate incoming messages
     private handleIncomingEvent(event: any) {
-        const exists = this.messages.find(m => m.id === event.id);
+        const exists = this.messages.some(m => m.id === event.id);
         if (!exists) {
             let parsedName = "Anon";
             let parsedContent = event.content;
@@ -108,7 +132,6 @@ class NostrEngine {
                 content: parsedContent
             };
 
-            // Safely update Svelte state
             this.messages = [...this.messages, newMessage].sort((a, b) => b.created_at - a.created_at);
         }
     }
@@ -132,6 +155,7 @@ class NostrEngine {
         console.log("🚀 Publishing Event...");
 
         try {
+            // Publishing using SimplePool still works perfectly, so we keep it.
             const safeRelays = JSON.parse(JSON.stringify(RELAYS));
             const pubs = pool.publish(safeRelays, signedEvent);
             const results = await Promise.allSettled(pubs);
@@ -147,7 +171,7 @@ class NostrEngine {
                 console.log(`✅ Message accepted by ${successCount} relays!`);
             }
 
-            // Manually trigger the event handler to instantly show it on the sender's screen
+            // Instantly show our own message in the UI
             this.handleIncomingEvent(signedEvent);
 
         } catch (err) {
