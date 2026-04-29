@@ -7,15 +7,14 @@ function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 }
 
-// Removed snort.social (504 timeout) and kept the 3 most reliable, massive global relays
+// Global Relays
 const RELAYS = [
     'wss://relay.damus.io',
     'wss://nos.lol',
     'wss://relay.primal.net'
 ];
 
-// 🌟 THE FIX: Move the Nostr Pool OUTSIDE the class! 
-// Svelte's $state compiler will completely ignore this, keeping the WebSockets 100% pure.
+// Pool is completely outside the Svelte Class to prevent Proxy infection
 const pool = new SimplePool();
 
 export interface NostrMessage {
@@ -27,7 +26,6 @@ export interface NostrMessage {
 }
 
 class NostrEngine {
-    // Only the UI data is reactive now
     messages = $state<NostrMessage[]>([]);
     isConnected = $state(false);
     username = $state<string | null>(null); 
@@ -72,45 +70,47 @@ class NostrEngine {
 
         console.log(`📡 Connecting to Nostr Relays for #${hashtag}...`);
 
-        // Because pool is outside the class, this filter remains a pure JS object!
-        const filter = {
-            kinds: [1], 
-            '#t': [hashtag], 
-            limit: 100 
-        };
+        // 🌟 THE FIX: Complete Proxy Annihilation
+        // We stringify and re-parse the arrays to guarantee 100% pure JSON objects
+        const rawFilters = [{ kinds: [1], '#t': [hashtag], limit: 100 }];
+        const safeFilters = JSON.parse(JSON.stringify(rawFilters));
+        const safeRelays = JSON.parse(JSON.stringify(RELAYS));
 
         this.currentSub = pool.subscribeMany(
-            RELAYS,
-            [filter],
+            safeRelays,
+            safeFilters,
             {
-                onevent: (event) => {
-                    const exists = this.messages.find(m => m.id === event.id);
-                    if (!exists) {
-                        let parsedName = "Anon";
-                        let parsedContent = event.content;
-                        
-                        if (event.content.includes(':|:')) {
-                            const parts = event.content.split(':|:');
-                            parsedName = parts[0];
-                            parsedContent = parts.slice(1).join(':|:');
-                        }
-
-                        const newMessage: NostrMessage = {
-                            id: event.id,
-                            pubkey: event.pubkey,
-                            created_at: event.created_at,
-                            username: parsedName,
-                            content: parsedContent
-                        };
-
-                        this.messages = [...this.messages, newMessage].sort((a, b) => b.created_at - a.created_at);
-                    }
-                },
-                oneose: () => {
-                    this.isConnected = true;
-                }
+                // We point to a separate function to prevent Svelte from proxying the callback context
+                onevent: (event: any) => this.handleIncomingEvent(event),
+                oneose: () => { this.isConnected = true; }
             }
         );
+    }
+
+    // Isolated Event Handler
+    private handleIncomingEvent(event: any) {
+        const exists = this.messages.find(m => m.id === event.id);
+        if (!exists) {
+            let parsedName = "Anon";
+            let parsedContent = event.content;
+            
+            if (event.content.includes(':|:')) {
+                const parts = event.content.split(':|:');
+                parsedName = parts[0];
+                parsedContent = parts.slice(1).join(':|:');
+            }
+
+            const newMessage: NostrMessage = {
+                id: event.id,
+                pubkey: event.pubkey,
+                created_at: event.created_at,
+                username: parsedName,
+                content: parsedContent
+            };
+
+            // Safely update Svelte state
+            this.messages = [...this.messages, newMessage].sort((a, b) => b.created_at - a.created_at);
+        }
     }
 
     public async sendMessage(content: string, fiatTicker: string) {
@@ -132,14 +132,13 @@ class NostrEngine {
         console.log("🚀 Publishing Event...");
 
         try {
-            const pubs = pool.publish(RELAYS, signedEvent);
+            const safeRelays = JSON.parse(JSON.stringify(RELAYS));
+            const pubs = pool.publish(safeRelays, signedEvent);
             const results = await Promise.allSettled(pubs);
             
             let successCount = 0;
-            results.forEach((res, index) => {
-                if (res.status === 'fulfilled') {
-                    successCount++;
-                }
+            results.forEach((res) => {
+                if (res.status === 'fulfilled') successCount++;
             });
 
             if (successCount === 0) {
@@ -148,17 +147,9 @@ class NostrEngine {
                 console.log(`✅ Message accepted by ${successCount} relays!`);
             }
 
-            const exists = this.messages.find(m => m.id === signedEvent.id);
-            if (!exists) {
-                const newMessage: NostrMessage = {
-                    id: signedEvent.id,
-                    pubkey: signedEvent.pubkey,
-                    created_at: signedEvent.created_at,
-                    username: safeName,
-                    content: content
-                };
-                this.messages = [newMessage, ...this.messages].sort((a, b) => b.created_at - a.created_at);
-            }
+            // Manually trigger the event handler to instantly show it on the sender's screen
+            this.handleIncomingEvent(signedEvent);
+
         } catch (err) {
             console.error("Failed to publish message:", err);
         }
