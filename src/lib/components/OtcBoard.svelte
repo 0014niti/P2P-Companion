@@ -2,7 +2,7 @@
 	import { nostrStore } from '$lib/nostrStore.svelte';
 	import { filterState } from '$lib/components/filter/stateFilter.svelte';
 	import { fade, scale, slide } from 'svelte/transition';
-	import { X, Send, ShieldAlert, Tags, Zap, KeyRound, ChevronLeft, Lock } from 'lucide-svelte';
+	import { X, Send, ShieldAlert, Tags, Zap, KeyRound, ChevronLeft, Lock, Link, ExternalLink, AlertTriangle } from 'lucide-svelte';
 	import { backOut } from 'svelte/easing';
 
 	let { isOpen = $bindable(false) } = $props();
@@ -15,11 +15,13 @@
 	let showAccountModal = $state(false);
 	let showIntroModal = $state(false);
 	
+	// 🌟 NEW: State for the Safe-Link Warning Modal
+	let pendingExternalLink = $state<string | null>(null);
+	
 	let loginNameInput = $state('');
 	let restoreKeyInput = $state('');
 	let isKeyCopied = $state(false);
 
-	// 🌟 FIX: Added `offerContext` so the VIP room remembers the price!
 	let activeDm = $state<{pubkey: string, username: string, offerContext?: any} | null>(null);
 	let dmInput = $state('');
 
@@ -33,13 +35,10 @@
 				showIntroModal = true;
 			}
 		}
-		// 🌟 NEW: Clear the badges when the user is actively looking at the chat
+
 		if (isOpen) {
-			if (!activeDm) {
-				nostrStore.markGlobalRead(); // Looking at global feed
-			} else {
-				nostrStore.markPrivateRead(); // Looking at VIP room
-			}
+			if (!activeDm) { nostrStore.markGlobalRead(); } 
+			else { nostrStore.markPrivateRead(); }
 		}
 	});
 
@@ -62,12 +61,8 @@
 	}
 
 	function saveUsername() {
-		if (loginNameInput.trim().length > 1) {
-			nostrStore.setUsername(loginNameInput.trim());
-		}
-		if (restoreKeyInput.trim().length > 10) {
-			nostrStore.restoreFromKey(restoreKeyInput);
-		}
+		if (loginNameInput.trim().length > 1) { nostrStore.setUsername(loginNameInput.trim()); }
+		if (restoreKeyInput.trim().length > 10) { nostrStore.restoreFromKey(restoreKeyInput); }
 		showAccountModal = false;
 	}
 
@@ -87,34 +82,35 @@
 		return `hsl(${Math.abs(hash) % 360}, 75%, 65%)`; 
 	}
 
-		// 🌟 FIX: Bulletproof String Parser (Ignores weird mobile formatting!)
 	function parseOffer(content: string) {
-		try {
-			if (content.includes('[WTS]') || content.includes('[WTB]')) {
-				const type = content.includes('[WTS]') ? 'WTS' : 'WTB';
-				
-				const part1 = content.split('] ')[1];
-				const coin = part1.split(' for ')[0].trim();
-				
-				const part2 = part1.split(' for ')[1];
-				const fiat = part2.split(' @ ')[0].trim();
-				
-				const part3 = part2.split(' @ ')[1];
-				const price = part3.split('\n')[0].trim(); // Grabs the price cleanly
-				
-				let note = '';
-				if (content.includes('Note:')) {
-					note = content.split('Note:')[1].trim(); // Grabs the note cleanly
-				}
-
-				return { isOffer: true, type, coin, fiat, price, note };
-			}
-		} catch (e) {
-			console.warn("Could not parse offer strictly, falling back to text bubble.");
-		}
+		const match = content.match(/\[(WTS|WTB)\] (.*?) for (.*?) @ (.*?)(?:\n📝 Note: (.*))?/s);
+		if (match) return { isOffer: true, type: match[1], coin: match[2], fiat: match[3], price: match[4], note: match[5] || '' };
 		return { isOffer: false, text: content };
 	}
 
+	// 🌟 NEW: Smart Safe-Link Parser! Splits messages into text and clickable URLs
+	function parseMessageContent(text: string) {
+		const urlRegex = /(https?:\/\/[^\s]+|wa\.me\/[^\s]+|t\.me\/[^\s]+)/g;
+		const parts = [];
+		let lastIndex = 0;
+		let match;
+		
+		while ((match = urlRegex.exec(text)) !== null) {
+			if (match.index > lastIndex) {
+				parts.push({ type: 'text', content: text.slice(lastIndex, match.index) });
+			}
+			let url = match[0];
+			if (!url.startsWith('http')) url = 'https://' + url; // Auto-fix wa.me and t.me
+			parts.push({ type: 'link', content: match[0], url: url });
+			lastIndex = urlRegex.lastIndex;
+		}
+		
+		if (lastIndex < text.length) {
+			parts.push({ type: 'text', content: text.slice(lastIndex) });
+		}
+		
+		return parts.length > 0 ? parts : [{ type: 'text', content: text }];
+	}
 </script>
 
 {#if isOpen}
@@ -211,15 +207,10 @@
 								{isMine ? 'bg-blue-600/90 text-white border-blue-400/50 rounded-tr-sm' : 'bg-white/70 text-zinc-900 border-white/60 rounded-tl-sm cursor-pointer hover:bg-white/90 hover:scale-[1.02]'}"
 								onclick={() => { 
 									if(!isMine) {
-										if (nostrStore.isRestoredAccount) {
-											activeDm = {pubkey: msg.pubkey, username: msg.username, offerContext: offer};
-										} else {
-											alert("🔒 VIP Room Locked!\n\nTo prevent losing access to your private negotiations, you must explicitly import your Private Key in the Account menu first.");
-											showAccountModal = true;
-										}
+										if (nostrStore.isRestoredAccount) { activeDm = {pubkey: msg.pubkey, username: msg.username, offerContext: offer}; } 
+										else { alert("🔒 VIP Room Locked!\n\nTo prevent losing access to your private negotiations, you must explicitly import your Private Key in the Account menu first."); showAccountModal = true; }
 									} 
-								}}
-								role="button" tabindex="0">
+								}} role="button" tabindex="0">
 								
 								<div class="flex justify-between items-center mb-2">
 									<div class="flex items-center gap-2">
@@ -262,10 +253,20 @@
 									</div>
 									<span class="text-[8px] opacity-70 ml-3">{formatTime(msg.created_at)}</span>
 								</div>
-								<p class="whitespace-pre-wrap break-words leading-relaxed font-medium">{msg.content}</p>
+								<p class="whitespace-pre-wrap break-words leading-relaxed font-medium">
+									{#each parseMessageContent(msg.content) as part}
+										{#if part.type === 'link'}
+											<button onclick={() => pendingExternalLink = part.url} class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 px-2 py-0.5 rounded-md text-[11px] font-bold transition-colors mx-0.5 active:scale-95">
+												<Link class="size-3"/> {part.content}
+											</button>
+										{:else}
+											{part.content}
+										{/if}
+									{/each}
+								</p>
 							</div>
 						{/if}
-					</div>			
+					</div>
 				{/each}
 
 			{:else}
@@ -284,7 +285,17 @@
 							<span class="text-[8px] text-zinc-600">{formatTime(msg.created_at)}</span>
 						</div>
 						<div class="max-w-[85%] rounded-2xl px-4 py-2.5 text-sm shadow-sm border {isMine ? 'bg-blue-600 text-white border-blue-500 rounded-tr-sm' : 'bg-zinc-800 text-zinc-100 border-zinc-700 rounded-tl-sm'}">
-							<p class="whitespace-pre-wrap break-words leading-relaxed font-medium">{msg.content}</p>
+							<p class="whitespace-pre-wrap break-words leading-relaxed font-medium">
+								{#each parseMessageContent(msg.content) as part}
+									{#if part.type === 'link'}
+										<button onclick={() => pendingExternalLink = part.url} class="inline-flex items-center gap-1 {isMine ? 'bg-white/20 text-white border-white/30 hover:bg-white/30' : 'bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/40'} px-2 py-0.5 rounded-md text-[11px] font-bold transition-colors mx-0.5 active:scale-95">
+											<Link class="size-3"/> {part.content}
+										</button>
+									{:else}
+										{part.content}
+									{/if}
+								{/each}
+							</p>
 						</div>
 					</div>
 				{/each}
@@ -306,11 +317,41 @@
 				</form>
 			</div>
 		{:else}
-			<div class="p-3 border-t border-zinc-700/50 bg-zinc-800/80 backdrop-blur-xl shrink-0" transition:slide>
+			<div class="p-3 border-t border-zinc-700/50 bg-zinc-800/80 backdrop-blur-xl shrink-0 flex flex-col gap-2" transition:slide>
+				
+				{#if activeDm.offerContext?.isOffer}
+					<div class="flex gap-2 overflow-x-auto hide-scrollbar pb-1 px-1">
+						<button onclick={() => dmInput = `Hi, is your ${activeDm?.offerContext.coin} still available?`} class="shrink-0 bg-zinc-700/50 hover:bg-zinc-600 border border-zinc-600 text-zinc-300 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all active:scale-95">👋 Hi, still available?</button>
+						<button onclick={() => dmInput = `I agree to your rate of ${activeDm?.offerContext.price}. Send payment details.`} class="shrink-0 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/50 text-blue-400 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all active:scale-95">🤝 Agree to Rate</button>
+						<button onclick={() => dmInput = `Can we negotiate a slightly better rate for a bulk trade?`} class="shrink-0 bg-zinc-700/50 hover:bg-zinc-600 border border-zinc-600 text-zinc-300 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all active:scale-95">📉 Negotiate Bulk</button>
+					</div>
+				{/if}
+
 				<form onsubmit={(e) => { e.preventDefault(); handleDMSend(); }} class="flex gap-2">
 					<input type="text" bind:value={dmInput} placeholder="Type encrypted message..." class="flex-1 bg-zinc-900 border border-zinc-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 placeholder:text-zinc-500"/>
 					<button type="submit" disabled={!dmInput.trim()} class="bg-blue-600 text-white rounded-xl px-5 flex items-center justify-center hover:bg-blue-500 disabled:opacity-50 transition-all active:scale-95"><Send class="size-4" /></button>
 				</form>
+			</div>
+		{/if}
+
+		{#if pendingExternalLink}
+			<div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md z-[130] flex items-center justify-center p-6" transition:fade={{duration: 150}}>
+				<div class="bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl border border-white p-6 w-full max-w-sm flex flex-col" transition:scale={{start: 0.95, duration: 300, easing: backOut}}>
+					<div class="flex items-center gap-3 mb-4 text-rose-600">
+						<div class="p-2 bg-rose-100 rounded-full"><AlertTriangle class="size-6" /></div>
+						<h3 class="text-xl font-black text-zinc-900 leading-tight">External Link</h3>
+					</div>
+					<p class="text-sm font-medium text-zinc-600 mb-4 leading-relaxed">
+						You are leaving the encrypted neutral terminal. OTC Nexus cannot verify the safety of external links. 
+					</p>
+					<div class="bg-zinc-100 p-3 rounded-xl border border-zinc-200 mb-6">
+						<p class="text-[10px] font-mono text-zinc-500 break-all">{pendingExternalLink}</p>
+					</div>
+					<div class="flex gap-2 pt-2">
+						<button class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-all" onclick={() => pendingExternalLink = null}>Cancel</button>
+						<a href={pendingExternalLink} target="_blank" rel="noopener noreferrer" class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 transition-all text-center flex items-center justify-center gap-2 shadow-md shadow-rose-500/20" onclick={() => pendingExternalLink = null}>Proceed <ExternalLink class="size-4"/></a>
+					</div>
+				</div>
 			</div>
 		{/if}
 
