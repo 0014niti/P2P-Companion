@@ -7,13 +7,16 @@ function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 }
 
-// 🌟 FIX 1: Removed dead relays to stop timeouts, kept the fastest global relays
+// Removed snort.social (504 timeout) and kept the 3 most reliable, massive global relays
 const RELAYS = [
     'wss://relay.damus.io',
     'wss://nos.lol',
-    'wss://relay.primal.net',
-    'wss://relay.snort.social'
+    'wss://relay.primal.net'
 ];
+
+// 🌟 THE FIX: Move the Nostr Pool OUTSIDE the class! 
+// Svelte's $state compiler will completely ignore this, keeping the WebSockets 100% pure.
+const pool = new SimplePool();
 
 export interface NostrMessage {
     id: string;
@@ -24,7 +27,7 @@ export interface NostrMessage {
 }
 
 class NostrEngine {
-    pool = new SimplePool();
+    // Only the UI data is reactive now
     messages = $state<NostrMessage[]>([]);
     isConnected = $state(false);
     username = $state<string | null>(null); 
@@ -69,15 +72,14 @@ class NostrEngine {
 
         console.log(`📡 Connecting to Nostr Relays for #${hashtag}...`);
 
-        // 🌟 FIX 2: Create a PURE Javascript Object (Strips Svelte Proxies)
-        // This stops the "filter is not an object" error from the relays!
-        const filter = JSON.parse(JSON.stringify({
+        // Because pool is outside the class, this filter remains a pure JS object!
+        const filter = {
             kinds: [1], 
             '#t': [hashtag], 
             limit: 100 
-        }));
+        };
 
-        this.currentSub = this.pool.subscribeMany(
+        this.currentSub = pool.subscribeMany(
             RELAYS,
             [filter],
             {
@@ -127,19 +129,23 @@ class NostrEngine {
         };
 
         const signedEvent = finalizeEvent(eventTemplate, skBytes);
-        console.log("🚀 Publishing...", signedEvent);
+        console.log("🚀 Publishing Event...");
 
         try {
-            const pubs = this.pool.publish(RELAYS, signedEvent);
+            const pubs = pool.publish(RELAYS, signedEvent);
             const results = await Promise.allSettled(pubs);
             
             let successCount = 0;
             results.forEach((res, index) => {
-                if (res.status === 'fulfilled') successCount++;
+                if (res.status === 'fulfilled') {
+                    successCount++;
+                }
             });
 
             if (successCount === 0) {
-                console.warn("Nostr network rejected message.");
+                console.warn("❌ All relays rejected the message.");
+            } else {
+                console.log(`✅ Message accepted by ${successCount} relays!`);
             }
 
             const exists = this.messages.find(m => m.id === signedEvent.id);
