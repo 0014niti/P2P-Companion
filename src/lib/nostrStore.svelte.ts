@@ -1,4 +1,4 @@
-import { SimplePool, generateSecretKey, getPublicKey, finalizeEvent } from 'nostr-tools';
+import { SimplePool, generateSecretKey, getPublicKey, finalizeEvent, nip04 } from 'nostr-tools';
 
 function bytesToHex(bytes: Uint8Array): string {
     return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -7,14 +7,12 @@ function hexToBytes(hex: string): Uint8Array {
     return new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
 }
 
-// The 3 most stable global relays
 const RELAYS = [
     'wss://relay.damus.io',
     'wss://nos.lol',
     'wss://relay.primal.net'
 ];
 
-// Pool is used ONLY for publishing to avoid Proxy conflicts
 const pool = new SimplePool();
 
 export interface NostrMessage {
@@ -23,17 +21,20 @@ export interface NostrMessage {
     content: string;
     created_at: number;
     username: string;
+    targetPubkey?: string;
 }
 
 class NostrEngine {
     messages = $state<NostrMessage[]>([]);
+    dmMessages = $state<NostrMessage[]>([]);
     isConnected = $state(false);
     username = $state<string | null>(null); 
     
-    private secretKeyHex: string | null = null;
-    public publicKeyHex: string | null = $state(null);
+    // 🌟 NEW: Track if they have explicitly logged in
+    isRestoredAccount = $state(false);
     
-    // NEW: We will hold native WebSockets here to bypass the library bugs
+    public secretKeyHex: string | null = $state(null);
+    public publicKeyHex: string | null = $state(null);
     private activeSockets: WebSocket[] = [];
 
     constructor() {
@@ -45,15 +46,23 @@ class NostrEngine {
     private initializeKeys() {
         this.username = localStorage.getItem('otc_username');
         const storedKey = localStorage.getItem('nostr_burner_key');
+        const keyType = localStorage.getItem('otc_key_type'); // 🌟 NEW: Check key type
+
         if (storedKey) {
             this.secretKeyHex = storedKey;
             const skBytes = hexToBytes(storedKey);
             this.publicKeyHex = getPublicKey(skBytes);
+            
+            // If they previously restored a key, mark them as a verified account
+            if (keyType === 'restored') {
+                this.isRestoredAccount = true;
+            }
         } else {
             const skBytes = generateSecretKey();
             this.secretKeyHex = bytesToHex(skBytes);
             this.publicKeyHex = getPublicKey(skBytes);
             localStorage.setItem('nostr_burner_key', this.secretKeyHex);
+            localStorage.setItem('otc_key_type', 'burner'); // Default to burner
         }
     }
 
@@ -62,77 +71,93 @@ class NostrEngine {
         localStorage.setItem('otc_username', name);
     }
 
-    // 🌟 THE FIX: 100% Native WebSockets. Immune to Svelte Proxies!
+    // 🌟 NEW: When they login, upgrade their account status!
+    public restoreFromKey(key: string) {
+        try {
+            const cleanKey = key.trim();
+            const skBytes = hexToBytes(cleanKey);
+            this.publicKeyHex = getPublicKey(skBytes); 
+            this.secretKeyHex = cleanKey;
+            
+            localStorage.setItem('nostr_burner_key', cleanKey);
+            localStorage.setItem('otc_key_type', 'restored'); // Upgrade to restored
+            this.isRestoredAccount = true; // Unlock VIP Room
+            return true;
+        } catch(e) {
+            return false;
+        }
+    }
+
     public subscribeToChannel(fiatTicker: string) {
         const hashtag = `p2potc_${fiatTicker.toLowerCase()}`;
         
-        // 1. Clean up old connections
         this.activeSockets.forEach(ws => ws.close());
         this.activeSockets = [];
         this.messages = [];
+        this.dmMessages = [];
 
-        console.log(`📡 Connecting to Native WebSockets for #${hashtag}...`);
+        console.log(`📡 Connecting to Native WebSockets for #${hashtag} and VIP DMs...`);
 
-        // 2. Create the exact, pure JSON string the relays demand
         const subId = `otc-sub-${Math.floor(Math.random() * 10000)}`;
+        
         const reqPayload = JSON.stringify([
             "REQ", 
             subId, 
-            { kinds: [1], '#t': [hashtag], limit: 100 }
+            { kinds: [1], '#t': [hashtag], limit: 100 },
+            { kinds: [4], '#p': [this.publicKeyHex!], limit: 50 },
+            { kinds: [4], authors: [this.publicKeyHex!], limit: 50 }
         ]);
 
-        // 3. Connect manually
         RELAYS.forEach(url => {
             try {
                 const ws = new WebSocket(url);
-                
-                ws.onopen = () => {
-                    ws.send(reqPayload); // Request the messages
-                    this.isConnected = true;
-                };
-
+                ws.onopen = () => { ws.send(reqPayload); this.isConnected = true; };
                 ws.onmessage = (event) => {
                     const data = JSON.parse(event.data);
-                    
-                    // If it's an event belonging to our subscription
                     if (data[0] === "EVENT" && data[1] === subId) {
                         this.handleIncomingEvent(data[2]);
-                    } 
-                    // Log errors directly from the relay
-                    else if (data[0] === "NOTICE") {
-                        console.warn(`Relay ${url} warning:`, data[1]);
                     }
                 };
-
                 this.activeSockets.push(ws);
-            } catch (err) {
-                console.error(`Failed to connect to ${url}`);
-            }
+            } catch (err) { console.error(`Failed to connect to ${url}`); }
         });
     }
 
-    // Safely parse and deduplicate incoming messages
-    private handleIncomingEvent(event: any) {
-        const exists = this.messages.some(m => m.id === event.id);
-        if (!exists) {
-            let parsedName = "Anon";
-            let parsedContent = event.content;
-            
-            if (event.content.includes(':|:')) {
-                const parts = event.content.split(':|:');
-                parsedName = parts[0];
-                parsedContent = parts.slice(1).join(':|:');
+    private async handleIncomingEvent(event: any) {
+        if (event.kind === 1) {
+            const exists = this.messages.some(m => m.id === event.id);
+            if (!exists) {
+                let parsedName = "Anon";
+                let parsedContent = event.content;
+                if (event.content.includes(':|:')) {
+                    const parts = event.content.split(':|:');
+                    parsedName = parts[0];
+                    parsedContent = parts.slice(1).join(':|:');
+                }
+                const newMessage: NostrMessage = {
+                    id: event.id, pubkey: event.pubkey, created_at: event.created_at,
+                    username: parsedName, content: parsedContent
+                };
+                this.messages = [...this.messages, newMessage].sort((a, b) => b.created_at - a.created_at);
             }
-
-            const newMessage: NostrMessage = {
-                id: event.id,
-                pubkey: event.pubkey,
-                created_at: event.created_at,
-                username: parsedName,
-                content: parsedContent
-            };
-
-            this.messages = [...this.messages, newMessage].sort((a, b) => b.created_at - a.created_at);
+        } 
+        else if (event.kind === 4) {
+            const exists = this.dmMessages.some(m => m.id === event.id);
+            if (!exists) {
+                try {
+                    const isSender = event.pubkey === this.publicKeyHex;
+                    const targetPubkey = isSender ? event.tags.find((t: any[]) => t[0] === 'p')[1] : event.pubkey;
+                    
+                    const skBytes = hexToBytes(this.secretKeyHex!);
+                    const decrypted = await nip04.decrypt(skBytes, targetPubkey, event.content);
+                    
+                    const newMessage: NostrMessage = {
+                        id: event.id, pubkey: event.pubkey, created_at: event.created_at,
+                        username: isSender ? "You" : "VIP", content: decrypted, targetPubkey: targetPubkey
+                    };
+                    this.dmMessages = [...this.dmMessages, newMessage].sort((a, b) => a.created_at - b.created_at);
+                } catch(e) { console.warn("Failed to decrypt DM"); }
+            }
         }
     }
 
@@ -140,43 +165,38 @@ class NostrEngine {
         if (!this.secretKeyHex) return;
         const hashtag = `p2potc_${fiatTicker.toLowerCase()}`;
         const skBytes = hexToBytes(this.secretKeyHex);
-
         const safeName = this.username || "Anon";
         const finalContent = `${safeName}:|:${content}`;
 
-        let eventTemplate = {
-            kind: 1,
-            created_at: Math.floor(Date.now() / 1000),
-            tags: [['t', hashtag]],
-            content: finalContent,
-        };
-
+        let eventTemplate = { kind: 1, created_at: Math.floor(Date.now() / 1000), tags: [['t', hashtag]], content: finalContent };
         const signedEvent = finalizeEvent(eventTemplate, skBytes);
-        console.log("🚀 Publishing Event...");
+        
+        try {
+            const safeRelays = JSON.parse(JSON.stringify(RELAYS));
+            pool.publish(safeRelays, signedEvent);
+            this.handleIncomingEvent(signedEvent);
+        } catch (err) {}
+    }
+
+    public async sendDM(targetPubkey: string, content: string) {
+        if (!this.secretKeyHex) return;
+        const skBytes = hexToBytes(this.secretKeyHex);
+        
+        const encryptedContent = await nip04.encrypt(skBytes, targetPubkey, content);
+        
+        let eventTemplate = {
+            kind: 4,
+            created_at: Math.floor(Date.now() / 1000),
+            tags: [['p', targetPubkey]],
+            content: encryptedContent,
+        };
+        const signedEvent = finalizeEvent(eventTemplate, skBytes);
 
         try {
-            // Publishing using SimplePool still works perfectly, so we keep it.
             const safeRelays = JSON.parse(JSON.stringify(RELAYS));
-            const pubs = pool.publish(safeRelays, signedEvent);
-            const results = await Promise.allSettled(pubs);
-            
-            let successCount = 0;
-            results.forEach((res) => {
-                if (res.status === 'fulfilled') successCount++;
-            });
-
-            if (successCount === 0) {
-                console.warn("❌ All relays rejected the message.");
-            } else {
-                console.log(`✅ Message accepted by ${successCount} relays!`);
-            }
-
-            // Instantly show our own message in the UI
-            this.handleIncomingEvent(signedEvent);
-
-        } catch (err) {
-            console.error("Failed to publish message:", err);
-        }
+            pool.publish(safeRelays, signedEvent);
+            this.handleIncomingEvent(signedEvent); 
+        } catch (err) {}
     }
 }
 
