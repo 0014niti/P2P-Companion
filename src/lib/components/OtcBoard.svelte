@@ -12,17 +12,15 @@
 	let tradePrice = $state('');
 	let tradeNote = $state('');
 
-	// UI States
 	let showAccountModal = $state(false);
 	let showIntroModal = $state(false);
 	
-	// Account Inputs
 	let loginNameInput = $state('');
 	let restoreKeyInput = $state('');
 	let isKeyCopied = $state(false);
 
-	// 🌟 NEW: VIP Room State
-	let activeDm = $state<{pubkey: string, username: string} | null>(null);
+	// 🌟 FIX: Added `offerContext` so the VIP room remembers the price!
+	let activeDm = $state<{pubkey: string, username: string, offerContext?: any} | null>(null);
 	let dmInput = $state('');
 
 	const currentFiat = $derived(filterState.current.fiat || 'USDT');
@@ -74,6 +72,7 @@
 	}
 
 	function formatTime(timestamp: number) { return new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+	
 	function generateAvatarColor(username: string) {
 		let hash = 0;
 		for (let i = 0; i < username.length; i++) hash = username.charCodeAt(i) + ((hash << 5) - hash);
@@ -81,7 +80,8 @@
 	}
 
 	function parseOffer(content: string) {
-		const match = content.match(/\[(WTS|WTB)\] (.*?) for (.*?) @ (.*?)(?:\n📝 Note: (.*))?/);
+		// 🌟 FIX: Added the 's' flag to the regex so it perfectly catches everything even if there are weird line breaks
+		const match = content.match(/\[(WTS|WTB)\] (.*?) for (.*?) @ (.*?)(?:\n📝 Note: (.*))?/s);
 		if (match) return { isOffer: true, type: match[1], coin: match[2], fiat: match[3], price: match[4], note: match[5] || '' };
 		return { isOffer: false, text: content };
 	}
@@ -91,12 +91,11 @@
 	<div class="fixed inset-0 bg-slate-900/10 backdrop-blur-[2px] z-[100]" transition:fade={{ duration: 200 }} onclick={() => isOpen = false} aria-hidden="true"></div>
 
 	<div class="fixed z-[101] flex flex-col overflow-hidden border border-white/50 shadow-[0_20px_60px_rgba(0,0,0,0.15)] backdrop-blur-3xl transition-colors duration-500
-		{activeDm ? 'bg-zinc-900/90 border-zinc-700/50' : 'bg-white/40'}
+		{activeDm ? 'bg-zinc-900/95 border-zinc-700/50' : 'bg-white/40'}
 		inset-4 top-20 rounded-[2rem] md:inset-auto md:right-6 md:top-24 md:bottom-6 md:w-[420px] md:rounded-[2rem]" 
 		transition:scale={{ start: 0.95, opacity: 0, duration: 400, easing: backOut }}>
 		
-		<div class="p-4 border-b flex items-center justify-between shrink-0 {activeDm ? 'border-zinc-700/50 bg-zinc-800/50' : 'border-white/40 bg-white/30'}">
-			
+		<div class="p-4 border-b flex items-center justify-between shrink-0 {activeDm ? 'border-zinc-700/50 bg-zinc-800/80' : 'border-white/40 bg-white/30'}">
 			{#if !activeDm}
 				<div class="flex items-center gap-3">
 					<div class="h-10 w-10 rounded-full bg-blue-600/90 backdrop-blur-md flex items-center justify-center shadow-[0_0_15px_rgba(37,99,235,0.4)]">
@@ -147,6 +146,21 @@
 			</div>
 		{/if}
 
+		{#if activeDm && activeDm.offerContext?.isOffer}
+			<div class="bg-zinc-800/50 border-b border-zinc-700/50 p-3 px-4 flex justify-between items-center shrink-0 z-10" transition:slide>
+				<div class="flex items-center gap-2">
+					<span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Ref:</span>
+					<span class="px-2 py-0.5 rounded text-[9px] font-black tracking-widest uppercase {activeDm.offerContext.type === 'WTS' ? 'bg-rose-500/10 text-rose-400' : 'bg-emerald-500/10 text-emerald-400'}">
+						{activeDm.offerContext.type} {activeDm.offerContext.coin}
+					</span>
+				</div>
+				<div class="flex items-baseline gap-1">
+					<span class="text-xl font-black tracking-tighter text-white drop-shadow-sm">{activeDm.offerContext.price}</span>
+					<span class="text-[10px] font-bold text-zinc-400">{activeDm.offerContext.fiat}</span>
+				</div>
+			</div>
+		{/if}
+
 		<div class="flex-1 overflow-y-auto p-4 space-y-4 hide-scrollbar flex flex-col-reverse relative">
 			
 			{#if !activeDm}
@@ -164,19 +178,19 @@
 					<div class="flex flex-col {isMine ? 'items-end' : 'items-start'} group w-full">
 						{#if offer.isOffer}
 							<div class="relative w-[90%] md:w-[85%] rounded-[20px] p-3.5 shadow-sm border transition-all duration-300 group-hover:shadow-md backdrop-blur-2xl
-	{isMine ? 'bg-blue-600/90 text-white border-blue-400/50 rounded-tr-sm' : 'bg-white/70 text-zinc-900 border-white/60 rounded-tl-sm cursor-pointer hover:bg-white/90 hover:scale-[1.02]'}"
-	onclick={() => { 
-		if(!isMine) {
-			// 🌟 NEW: The Bouncer at the VIP Room Door
-			if (nostrStore.isRestoredAccount) {
-				activeDm = {pubkey: msg.pubkey, username: msg.username};
-			} else {
-				alert("🔒 VIP Room Locked!\n\nTo prevent losing access to your private negotiations, you must explicitly import your Private Key in the Account menu first.");
-				showAccountModal = true;
-			}
-		} 
-	}}
-	role="button" tabindex="0">
+								{isMine ? 'bg-blue-600/90 text-white border-blue-400/50 rounded-tr-sm' : 'bg-white/70 text-zinc-900 border-white/60 rounded-tl-sm cursor-pointer hover:bg-white/90 hover:scale-[1.02]'}"
+								onclick={() => { 
+									if(!isMine) {
+										if (nostrStore.isRestoredAccount) {
+											// 🌟 FIX: We pass the parsed offer right into the activeDm state!
+											activeDm = {pubkey: msg.pubkey, username: msg.username, offerContext: offer};
+										} else {
+											alert("🔒 VIP Room Locked!\n\nTo prevent losing access to your private negotiations, you must explicitly import your Private Key in the Account menu first.");
+											showAccountModal = true;
+										}
+									} 
+								}}
+								role="button" tabindex="0">
 								
 								<div class="flex justify-between items-center mb-2">
 									<div class="flex items-center gap-2">
@@ -258,38 +272,76 @@
 
 		{#if showAccountModal}
 			<div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md z-[110] flex items-center justify-center p-6" transition:fade={{duration: 150}}>
-				<div class="bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl border border-white p-6 w-full max-w-sm" transition:scale={{start: 0.95, duration: 300, easing: backOut}}>
-					<h3 class="text-xl font-black text-zinc-900 mb-1">Account & Security</h3>
-					<p class="text-[11px] font-medium text-zinc-500 mb-5 leading-tight">No central servers. You own your identity entirely.</p>
+				<div class="bg-white/95 backdrop-blur-3xl rounded-3xl shadow-2xl border border-white p-6 w-full max-w-sm flex flex-col" transition:scale={{start: 0.95, duration: 300, easing: backOut}}>
 					
-					<form onsubmit={(e) => { e.preventDefault(); saveUsername(); }} class="space-y-4">
-						
-						<div class="space-y-1.5">
-							<label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Display Name</label>
-							<input type="text" bind:value={loginNameInput} placeholder={nostrStore.username || "e.g. Trader_IND"} maxlength="15" class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-4 py-3 text-sm font-black focus:outline-none focus:ring-2 focus:ring-blue-500/30"/>
+					{#if nostrStore.isRestoredAccount}
+						<div class="flex items-center justify-between mb-5 border-b border-zinc-100 pb-4">
+							<div class="flex items-center gap-3">
+								<div class="w-12 h-12 rounded-full border-2 border-white shadow-md flex items-center justify-center text-lg font-black text-white" style="background: {generateAvatarColor(nostrStore.username || 'Anon')}">
+									{(nostrStore.username || 'A').charAt(0).toUpperCase()}
+								</div>
+								<div>
+									<h3 class="text-xl font-black text-zinc-900 leading-tight">{nostrStore.username || 'Syncing...'}</h3>
+									<p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-1"><Lock class="size-3"/> Verified Account</p>
+								</div>
+							</div>
 						</div>
 
-						<div class="space-y-1.5">
-							<label class="text-[10px] font-black uppercase tracking-widest text-emerald-600 ml-1 flex items-center gap-1"><KeyRound class="size-3"/> Your Private Key (Save This)</label>
+						<div class="space-y-2 mb-6">
+							<label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Your Private Key (Master Password)</label>
 							<div class="flex gap-2">
-								<input type="text" readonly value={nostrStore.secretKeyHex} class="w-full bg-emerald-50/50 border border-emerald-200 text-emerald-900 rounded-xl px-3 py-2.5 text-xs font-mono blur-[3px] hover:blur-none transition-all cursor-pointer"/>
-								<button type="button" onclick={copyPrivateKey} class="px-3 bg-emerald-100 text-emerald-700 rounded-xl hover:bg-emerald-200 transition-colors text-[10px] font-bold">
+								<input type="text" readonly value={nostrStore.secretKeyHex} class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-3 py-2.5 text-xs font-mono blur-[4px] hover:blur-none transition-all cursor-pointer shadow-inner"/>
+								<button type="button" onclick={copyPrivateKey} class="px-4 bg-blue-100 text-blue-700 rounded-xl hover:bg-blue-200 transition-colors text-xs font-bold shadow-sm">
 									{isKeyCopied ? 'Copied!' : 'Copy'}
 								</button>
 							</div>
-							<p class="text-[9px] text-zinc-400 font-medium">If you clear cookies, you lose your chats. Save this key to restore your account.</p>
-						</div>
-
-						<div class="space-y-1.5 border-t border-zinc-100 pt-3">
-							<label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Restore Account</label>
-							<input type="password" bind:value={restoreKeyInput} placeholder="Paste Private Key to switch accounts..." class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-4 py-3 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/30"/>
+							<p class="text-[10px] text-zinc-500 font-medium leading-relaxed bg-rose-50 p-2 rounded-xl border border-rose-100 text-rose-700">
+								<strong>⚠️ Do not lose this!</strong> You will need this key to log in on other devices.
+							</p>
 						</div>
 
 						<div class="flex gap-2 pt-2">
-							<button type="button" class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-all" onclick={() => showAccountModal = false}>Cancel</button>
-							<button type="submit" class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20">Save & Apply</button>
+							<button type="button" class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-all" onclick={() => showAccountModal = false}>Close</button>
+							<button type="button" class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition-all" onclick={() => nostrStore.logout()}>Log Out</button>
 						</div>
-					</form>
+					{:else}
+						<div class="flex bg-zinc-100 p-1 rounded-2xl mb-5 shadow-inner">
+							<button class="flex-1 py-2 text-xs font-bold rounded-xl transition-all {!restoreKeyInput ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}" onclick={() => restoreKeyInput = ''}>Sign Up</button>
+							<button class="flex-1 py-2 text-xs font-bold rounded-xl transition-all {restoreKeyInput ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-700'}" onclick={() => restoreKeyInput = ' '}>Sign In</button>
+						</div>
+
+						{#if !restoreKeyInput}
+							<form onsubmit={(e) => { e.preventDefault(); nostrStore.createOfficialAccount(loginNameInput); }} class="space-y-4">
+								<div>
+									<h3 class="text-xl font-black text-zinc-900 mb-1">Create Account</h3>
+									<p class="text-[11px] font-medium text-zinc-500 leading-tight">No email or password needed. We instantly generate a highly secure Web3 identity for you.</p>
+								</div>
+								<div class="space-y-1.5">
+									<label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Choose an Account ID</label>
+									<input type="text" bind:value={loginNameInput} placeholder="e.g. BinanceWhale" maxlength="15" class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-4 py-3.5 text-sm font-black focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-inner"/>
+								</div>
+								<div class="flex gap-2 pt-2">
+									<button type="button" class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-all" onclick={() => showAccountModal = false}>Cancel</button>
+									<button type="submit" disabled={loginNameInput.trim().length < 2} class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-all shadow-md shadow-blue-500/20 disabled:opacity-50">Create Keys</button>
+								</div>
+							</form>
+						{:else}
+							<form onsubmit={(e) => { e.preventDefault(); nostrStore.restoreFromKey(restoreKeyInput); }} class="space-y-4">
+								<div>
+									<h3 class="text-xl font-black text-zinc-900 mb-1">Welcome Back</h3>
+									<p class="text-[11px] font-medium text-zinc-500 leading-tight">Paste your Private Key below to restore your account, username, and encrypted chats.</p>
+								</div>
+								<div class="space-y-1.5">
+									<label class="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Private Key</label>
+									<input type="password" bind:value={restoreKeyInput} placeholder="Paste 64-character hex key..." class="w-full bg-zinc-50 border border-zinc-200 text-zinc-900 rounded-xl px-4 py-3 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/30 shadow-inner"/>
+								</div>
+								<div class="flex gap-2 pt-2">
+									<button type="button" class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 transition-all" onclick={() => showAccountModal = false}>Cancel</button>
+									<button type="submit" disabled={restoreKeyInput.trim().length < 60} class="flex-1 px-4 py-3 rounded-2xl text-sm font-bold text-white bg-zinc-900 hover:bg-zinc-800 transition-all shadow-md shadow-zinc-900/20 disabled:opacity-50">Sign In</button>
+								</div>
+							</form>
+						{/if}
+					{/if}
 				</div>
 			</div>
 		{/if}

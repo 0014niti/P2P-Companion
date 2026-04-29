@@ -29,8 +29,6 @@ class NostrEngine {
     dmMessages = $state<NostrMessage[]>([]);
     isConnected = $state(false);
     username = $state<string | null>(null); 
-    
-    // 🌟 NEW: Track if they have explicitly logged in
     isRestoredAccount = $state(false);
     
     public secretKeyHex: string | null = $state(null);
@@ -46,23 +44,23 @@ class NostrEngine {
     private initializeKeys() {
         this.username = localStorage.getItem('otc_username');
         const storedKey = localStorage.getItem('nostr_burner_key');
-        const keyType = localStorage.getItem('otc_key_type'); // 🌟 NEW: Check key type
+        const keyType = localStorage.getItem('otc_key_type'); 
 
         if (storedKey) {
             this.secretKeyHex = storedKey;
             const skBytes = hexToBytes(storedKey);
             this.publicKeyHex = getPublicKey(skBytes);
             
-            // If they previously restored a key, mark them as a verified account
             if (keyType === 'restored') {
                 this.isRestoredAccount = true;
             }
         } else {
+            // Still generate a background burner just so they can passively read the feed
             const skBytes = generateSecretKey();
             this.secretKeyHex = bytesToHex(skBytes);
             this.publicKeyHex = getPublicKey(skBytes);
             localStorage.setItem('nostr_burner_key', this.secretKeyHex);
-            localStorage.setItem('otc_key_type', 'burner'); // Default to burner
+            localStorage.setItem('otc_key_type', 'burner'); 
         }
     }
 
@@ -71,7 +69,14 @@ class NostrEngine {
         localStorage.setItem('otc_username', name);
     }
 
-    // 🌟 NEW: When they login, upgrade their account status!
+    // 🌟 NEW: Official Sign Up
+    public createOfficialAccount(name: string) {
+        this.setUsername(name);
+        localStorage.setItem('otc_key_type', 'restored'); // Locks the account in
+        this.isRestoredAccount = true;
+    }
+
+    // 🌟 NEW: Official Sign In
     public restoreFromKey(key: string) {
         try {
             const cleanKey = key.trim();
@@ -80,12 +85,27 @@ class NostrEngine {
             this.secretKeyHex = cleanKey;
             
             localStorage.setItem('nostr_burner_key', cleanKey);
-            localStorage.setItem('otc_key_type', 'restored'); // Upgrade to restored
-            this.isRestoredAccount = true; // Unlock VIP Room
+            localStorage.setItem('otc_key_type', 'restored'); 
+            this.isRestoredAccount = true;
+            
+            // Clear local username. The engine will auto-recover it from their past messages!
+            this.username = null; 
+            localStorage.removeItem('otc_username');
+            
+            // Reconnect to fetch their history
+            this.activeSockets.forEach(ws => ws.close());
             return true;
         } catch(e) {
             return false;
         }
+    }
+
+    // Completely wipe and start fresh
+    public logout() {
+        localStorage.removeItem('nostr_burner_key');
+        localStorage.removeItem('otc_key_type');
+        localStorage.removeItem('otc_username');
+        window.location.reload();
     }
 
     public subscribeToChannel(fiatTicker: string) {
@@ -96,13 +116,9 @@ class NostrEngine {
         this.messages = [];
         this.dmMessages = [];
 
-        console.log(`📡 Connecting to Native WebSockets for #${hashtag} and VIP DMs...`);
-
         const subId = `otc-sub-${Math.floor(Math.random() * 10000)}`;
-        
         const reqPayload = JSON.stringify([
-            "REQ", 
-            subId, 
+            "REQ", subId, 
             { kinds: [1], '#t': [hashtag], limit: 100 },
             { kinds: [4], '#p': [this.publicKeyHex!], limit: 50 },
             { kinds: [4], authors: [this.publicKeyHex!], limit: 50 }
@@ -119,7 +135,7 @@ class NostrEngine {
                     }
                 };
                 this.activeSockets.push(ws);
-            } catch (err) { console.error(`Failed to connect to ${url}`); }
+            } catch (err) {}
         });
     }
 
@@ -134,6 +150,12 @@ class NostrEngine {
                     parsedName = parts[0];
                     parsedContent = parts.slice(1).join(':|:');
                 }
+
+                // 🌟 THE MAGIC TRICK: Auto-Recover Username on New Devices!
+                if (event.pubkey === this.publicKeyHex && !this.username && parsedName !== "Anon") {
+                    this.setUsername(parsedName);
+                }
+
                 const newMessage: NostrMessage = {
                     id: event.id, pubkey: event.pubkey, created_at: event.created_at,
                     username: parsedName, content: parsedContent
@@ -156,7 +178,7 @@ class NostrEngine {
                         username: isSender ? "You" : "VIP", content: decrypted, targetPubkey: targetPubkey
                     };
                     this.dmMessages = [...this.dmMessages, newMessage].sort((a, b) => a.created_at - b.created_at);
-                } catch(e) { console.warn("Failed to decrypt DM"); }
+                } catch(e) {}
             }
         }
     }
@@ -184,12 +206,7 @@ class NostrEngine {
         
         const encryptedContent = await nip04.encrypt(skBytes, targetPubkey, content);
         
-        let eventTemplate = {
-            kind: 4,
-            created_at: Math.floor(Date.now() / 1000),
-            tags: [['p', targetPubkey]],
-            content: encryptedContent,
-        };
+        let eventTemplate = { kind: 4, created_at: Math.floor(Date.now() / 1000), tags: [['p', targetPubkey]], content: encryptedContent };
         const signedEvent = finalizeEvent(eventTemplate, skBytes);
 
         try {
