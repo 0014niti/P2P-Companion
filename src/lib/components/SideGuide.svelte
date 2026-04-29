@@ -3,17 +3,15 @@
     import { fade, scale } from 'svelte/transition';
     import { backOut, expoOut } from 'svelte/easing';
 
-    // This property allows the scanner page to pass down its donation modal trigger
-    let { onDonateClick } = $props();
-
-    let isOpen = $state(false);
+    // 🌟 FIX: Made isOpen a bindable prop so the Dock can control it!
+    let { isOpen = $bindable(false), onDonateClick } = $props();
+    
     let activeTab = $state<'notes' | 'roadmap' | 'support'>('notes');
 
-    function togglePanel() {
-        isOpen = !isOpen;
+    function closePanel() {
+        isOpen = false;
     }
 
-    // Function to close this guide and pop open the main donation modal
     function handleDonate() {
         isOpen = false;
         if (onDonateClick) {
@@ -22,24 +20,10 @@
     }
 </script>
 
-{#if !isOpen}
-    <button 
-        onclick={togglePanel}
-        class="fixed right-6 bottom-6 z-50 w-14 h-14 rounded-full flex items-center justify-center group transition-all duration-300 ease-out
-               bg-gradient-to-tr from-primary to-primary/70 text-primary-foreground
-               shadow-[0_10px_20px_-10px_rgba(var(--color-primary),0.8),inset_0_-3px_5px_rgba(0,0,0,0.2),inset_0_2px_4px_rgba(255,255,255,0.4)]
-               hover:scale-110 hover:-translate-y-2 border border-white/20"
-        in:scale={{ duration: 400, easing: backOut }}
-        out:scale={{ duration: 200, opacity: 0 }}
-    >
-        <Sparkles class="w-6 h-6 group-hover:rotate-12 transition-transform duration-500" />
-    </button>
-{/if}
-
 {#if isOpen}
     <button
         class="fixed inset-0 bg-background/20 backdrop-blur-[2px] z-[60] w-full h-full cursor-default"
-        onclick={togglePanel}
+        onclick={closePanel}
         aria-label="Close Panel"
         in:fade={{ duration: 300, easing: expoOut }}
         out:fade={{ duration: 200 }}
@@ -57,7 +41,7 @@
                 Companion Guide
             </h2>
             <button 
-                onclick={togglePanel}
+                onclick={closePanel}
                 class="p-2 bg-background/50 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground hover:rotate-90 duration-300"
             >
                 <X class="w-4 h-4" />
@@ -91,7 +75,6 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-6 scrollbar-none">
-            
             {#if activeTab === 'notes'}
                 <div in:fade={{ duration: 200 }} class="space-y-5">
                     <div>
@@ -174,7 +157,6 @@
 
             {:else if activeTab === 'support'}
                 <div in:fade={{ duration: 200 }} class="space-y-6">
-                    
                     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 to-background border border-primary/30 p-5 shadow-lg">
                         <div class="absolute -right-4 -top-4 opacity-10 rotate-12">
                             <HeartHandshake class="w-24 h-24" />
@@ -182,7 +164,7 @@
                         <div class="relative z-10">
                             <h3 class="text-sm font-bold text-foreground flex items-center gap-2">
                                 <Sparkles class="w-4 h-4 text-primary" /> Support the Vision
-                            </h3>
+                             </h3>
                             <p class="text-xs text-muted-foreground mt-2 leading-relaxed">
                                 P2P Companion is free and ad-free. Your donations keep the Edge servers running and directly fuel the development of the roadmap features!
                             </p>
@@ -191,7 +173,6 @@
                                 <a href="https://buymeacoffee.com/yourlink" target="_blank" class="w-full flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground text-xs font-bold rounded-xl hover:shadow-[0_0_15px_rgba(var(--color-primary),0.5)] transition-all">
                                     <Coffee class="w-4 h-4" /> Buy me a Coffee
                                 </a>
-                                
                                 <button 
                                     onclick={handleDonate}
                                     class="w-full flex items-center justify-center gap-2 py-2.5 bg-background border border-white/10 text-foreground text-xs font-bold rounded-xl hover:bg-white/5 transition-all">
