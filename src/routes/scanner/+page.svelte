@@ -471,11 +471,11 @@
 
 <button 
 	onclick={() => isOtcBoardOpen = true}
-	class="fixed top-4 right-4 md:top-6 md:right-6 z-[90] flex items-center gap-2 rounded-full bg-white/60 backdrop-blur-xl px-4 py-2 text-xs md:text-sm font-black text-blue-700 shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all hover:scale-105 hover:bg-white/90 active:scale-95 duration-500 border border-white/60"
+	class="fixed top-4 right-5 md:top-5 md:right-6 z-[90] flex items-center gap-2 rounded-full bg-white/60 backdrop-blur-xl px-4 py-2 text-xs md:text-sm font-black text-blue-700 shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all hover:scale-105 hover:bg-white/90 active:scale-95 duration-500 border border-white/60"
 >
-	<span class="relative flex h-2 w-2">
-	  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+	<span class="relative flex h-2 w-1">
+	  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-100 opacity-65"></span>
 	  <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
 	</span>
-	OTC Nexus <span class="hidden md:inline">⚡</span>
+	OTC Nexus <span class="hidden md:inline"></span>
 </button>
