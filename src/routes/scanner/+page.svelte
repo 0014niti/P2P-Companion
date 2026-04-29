@@ -488,11 +488,23 @@
 
 	<button 
 		onclick={() => isOtcBoardOpen = true}
-		class="group flex items-center gap-2 md:gap-2.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-4 md:px-5 py-2.5 text-[11px] md:text-sm font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] active:scale-95 border border-blue-400/50 relative overflow-hidden"
+		class="group flex items-center gap-2 md:gap-2.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-4 md:px-5 py-2.5 text-[11px] md:text-sm font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] active:scale-95 border border-blue-400/50 relative overflow-visible"
 	>
+		{#if nostrStore.unreadPrivate}
+			<span class="absolute -top-1.5 -right-1.5 flex h-4 w-4 z-20">
+			  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+			  <span class="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-zinc-900 shadow-sm"></span>
+			</span>
+		{:else if nostrStore.unreadGlobal}
+			<span class="absolute -top-1.5 -right-1.5 flex h-4 w-4 z-20">
+			  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+			  <span class="relative inline-flex rounded-full h-4 w-4 bg-rose-500 border-2 border-zinc-900 shadow-sm"></span>
+			</span>
+		{/if}
+
 		<span class="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0">
-		  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
-		  <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
+		  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-300 opacity-75"></span>
+		  <span class="relative inline-flex rounded-full h-full w-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.8)]"></span>
 		</span>
 
 		<span class="relative z-10 tracking-wide drop-shadow-sm whitespace-nowrap">OTC Nexus</span>

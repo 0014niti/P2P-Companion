@@ -33,6 +33,14 @@
 				showIntroModal = true;
 			}
 		}
+		// 🌟 NEW: Clear the badges when the user is actively looking at the chat
+		if (isOpen) {
+			if (!activeDm) {
+				nostrStore.markGlobalRead(); // Looking at global feed
+			} else {
+				nostrStore.markPrivateRead(); // Looking at VIP room
+			}
+		}
 	});
 
 	function dismissIntro() {

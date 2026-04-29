@@ -31,6 +31,11 @@ class NostrEngine {
     username = $state<string | null>(null); 
     isRestoredAccount = $state(false);
     
+    // 🌟 NEW: Unread State Trackers
+    unreadGlobal = $state(false);
+    unreadPrivate = $state(false);
+    private sessionStartTime: number = 0; // To ignore old history
+
     public secretKeyHex: string | null = $state(null);
     public publicKeyHex: string | null = $state(null);
     private activeSockets: WebSocket[] = [];
@@ -38,8 +43,14 @@ class NostrEngine {
     constructor() {
         if (typeof window !== 'undefined') {
             this.initializeKeys();
+            // 🌟 NEW: Record exactly when the user opened the app
+            this.sessionStartTime = Math.floor(Date.now() / 1000);
         }
     }
+
+    // 🌟 NEW: Methods to clear the badges when the user opens the chat
+    public markGlobalRead() { this.unreadGlobal = false; }
+    public markPrivateRead() { this.unreadPrivate = false; }
 
     private initializeKeys() {
         this.username = localStorage.getItem('otc_username');
@@ -140,6 +151,10 @@ class NostrEngine {
     }
 
     private async handleIncomingEvent(event: any) {
+        // 🌟 NEW: Is this a new message, and is it from someone else?
+        const isNew = event.created_at >= this.sessionStartTime;
+        const isMine = event.pubkey === this.publicKeyHex;
+
         if (event.kind === 1) {
             const exists = this.messages.some(m => m.id === event.id);
             if (!exists) {
@@ -161,6 +176,9 @@ class NostrEngine {
                     username: parsedName, content: parsedContent
                 };
                 this.messages = [...this.messages, newMessage].sort((a, b) => b.created_at - a.created_at);
+                // 🌟 NEW: Trigger Red Dot for Global
+                if (isNew && !isMine) {
+                    this.unreadGlobal = true;
             }
         } 
         else if (event.kind === 4) {
@@ -178,11 +196,15 @@ class NostrEngine {
                         username: isSender ? "You" : "VIP", content: decrypted, targetPubkey: targetPubkey
                     };
                     this.dmMessages = [...this.dmMessages, newMessage].sort((a, b) => a.created_at - b.created_at);
+                    // 🌟 NEW: Trigger Green Dot for VIP
+                    if (isNew && !isMine) {
+                        this.unreadPrivate = true;
+                    }
                 } catch(e) {}
             }
         }
     }
-
+    }
     public async sendMessage(content: string, fiatTicker: string) {
         if (!this.secretKeyHex) return;
         const hashtag = `p2potc_${fiatTicker.toLowerCase()}`;
