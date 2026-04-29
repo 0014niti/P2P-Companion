@@ -471,11 +471,11 @@
 
 <button 
 	onclick={() => isOtcBoardOpen = true}
-	class="fixed bottom-6 left-6 z-[90] flex items-center gap-2.5 rounded-full bg-blue-600 px-5 py-3.5 text-sm font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all hover:scale-105 hover:bg-blue-500 active:scale-95 duration-500 border border-blue-400/50"
+	class="fixed top-4 right-4 md:top-6 md:right-6 z-[90] flex items-center gap-2 rounded-full bg-white/60 backdrop-blur-xl px-4 py-2 text-xs md:text-sm font-black text-blue-700 shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-all hover:scale-105 hover:bg-white/90 active:scale-95 duration-500 border border-white/60"
 >
-	<span class="relative flex h-2.5 w-2.5">
-	  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-200 opacity-75"></span>
-	  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+	<span class="relative flex h-2 w-2">
+	  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+	  <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
 	</span>
-	Live OTC Chat
+	OTC Nexus <span class="hidden md:inline">⚡</span>
 </button>
