@@ -1,0 +1,109 @@
+import { extractTerms, checkIsNewUserOnly, type ExchangeP2PAd } from '.';
+
+const HTX_COINS: Record<string, string> = { USDT: '2', BTC: '1', ETH: '3', HT: '4', USDC: '69', TRX: '11' };
+const HTX_FIATS: Record<string, string> = { USD: '2', CNY: '1', EUR: '3', GBP: '4', VND: '14', PHP: '59', INR: '34', IDR: '13', RUB: '12', NGN: '60', BRL: '44', TRY: '57' };
+
+export const fetchHtx = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
+	const coinId = HTX_COINS[props.token.toUpperCase()];
+	const currencyId = HTX_FIATS[props.fiat.toUpperCase()];
+	if (!coinId || !currencyId) return [];
+
+	const tradeType = props.type === 'buy' ? 'sell' : 'buy';
+	const targetUrl = `https://www.htx.com/-/x/otc/v1/data/trade-market?coinId=${coinId}&currency=${currencyId}&tradeType=${tradeType}&currPage=1&payMethod=0&acceptOrder=0&country=&blockType=general&online=1&range=0&amount=&t=${Date.now()}`;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	let data: { code?: number; data?: Record<string, any>[] } | null = null;
+	let marketRate = 0;
+
+	try {
+		// 1. Fetch HTX Data via Vercel Edge
+		const res = await fetch(targetUrl, {
+			headers: { 
+				'Accept': 'application/json, text/plain, */*',
+				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+				'Accept-Language': 'en-US,en;q=0.9',
+				'Origin': 'https://www.htx.com',
+				'Referer': 'https://www.htx.com/en-us/fiat-crypto/trade/buy-usdt-usd/',
+				'Sec-Fetch-Dest': 'empty',
+				'Sec-Fetch-Mode': 'cors',
+				'Sec-Fetch-Site': 'same-origin'
+			}
+		});
+		if (res.ok) {
+			const text = await res.text();
+			try { data = JSON.parse(text); } catch (e) { /* quiet ignore */ }
+		}
+
+		// 2. Fetch Real-World Oracle Rate from Coinbase to catch scammers
+		const rateRes = await fetch('https://api.coinbase.com/v2/exchange-rates?currency=USD');
+		if (rateRes.ok) {
+			const rateData = await rateRes.json();
+			const fiatRate = parseFloat(rateData.data.rates[props.fiat.toUpperCase()]);
+			const tokenRate = parseFloat(rateData.data.rates[props.token.toUpperCase()] || '1');
+			
+			if (['USDT', 'USDC', 'FDUSD', 'DAI'].includes(props.token.toUpperCase())) {
+				marketRate = fiatRate;
+			} else {
+				marketRate = fiatRate / tokenRate;
+			}
+		}
+	} catch (e) { console.warn('HTX direct fetch failed:', e); }
+
+	if (!data || data.code !== 200 || !data.data) return [];
+
+	let parsedAds = data.data;
+
+	// FILTER STEP 1: Destroy dummy accounts (scammers usually have 0-5 trades)
+	parsedAds = parsedAds.filter(item => parseInt(item.tradeMonthTimes || '0', 10) > 5);
+
+	// FILTER STEP 2: The Bulletproof Oracle Filter
+	if (marketRate > 0) {
+		// Destroy any ad that is more than 15% away from the REAL global exchange rate
+		parsedAds = parsedAds.filter(ad => {
+			const p = parseFloat(ad.price || '0');
+			return Math.abs(p - marketRate) / marketRate <= 0.15; 
+		});
+	} else if (parsedAds.length > 2) {
+		// Fallback to median if Coinbase fails for some reason
+		const prices = parsedAds.map(ad => parseFloat(ad.price || '0')).sort((a, b) => a - b);
+		const medianPrice = prices[Math.floor(prices.length / 2)];
+		parsedAds = parsedAds.filter(ad => {
+			const p = parseFloat(ad.price || '0');
+			return Math.abs(p - medianPrice) / medianPrice <= 0.15; 
+		});
+	}
+
+	return parsedAds.map((item) => {
+		const priceStr = item.price !== undefined ? item.price.toString() : '0';
+		const surplusStr = item.tradeCount !== undefined ? item.tradeCount.toString() : '0';
+		let positiveRate = parseFloat(item.orderCompleteRate || '0');
+		if (positiveRate > 1) positiveRate = positiveRate / 100;
+
+		return {
+			advNo: item.id?.toString() || Math.random().toString(),
+			tradeType: props.type.toUpperCase(),
+			asset: props.token.toUpperCase(),
+			fiatUnit: props.fiat.toUpperCase(),
+			price: priceStr,
+			surplusAmount: surplusStr,
+			tradableQuantity: surplusStr,
+			fiatSymbol: props.fiat.toUpperCase(),
+			minSingleTransAmount: item.minTradeLimit?.toString() || '0',
+			maxSingleTransAmount: item.maxTradeLimit?.toString() || '0',
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			paymentMethods: item.payMethods ? item.payMethods.map((method: any) => ({
+				type: method.name || 'Bank',
+				identifier: method.payMethodId?.toString() || 'unknown',
+				name: method.name || 'Bank Transfer'
+			})) : [],
+			advertiser: {
+				name: item.userName || 'Unknown',
+				userId: item.uid?.toString() || '',
+				monthOrderCount: parseInt(item.tradeMonthTimes || '0', 10),
+				positiveRate: positiveRate
+			},
+			terms: extractTerms(item),
+			isNewUserOnly: checkIsNewUserOnly(item)
+		};
+	}) as ExchangeP2PAd[];
+};
