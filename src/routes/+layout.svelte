@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { page } from '$app/stores'; // <-- 1. Added page store for the canonical URL
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/header.svelte';
 	import '@fontsource-variable/outfit';
@@ -20,7 +21,12 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>Crypto P2P Comparison</title>
+	
+	<!-- 2. The new Dynamic Canonical Tag for Google -->
+	<link rel="canonical" href={`https://p2pcompanion.com${$page.url.pathname}`} />
+	
+	<!-- 3. Updated your title to match the new branding -->
+	<title>P2P comparison | Global P2P Scanner by P2PCompanion</title>
 </svelte:head>
 
 <ModeWatcher />
