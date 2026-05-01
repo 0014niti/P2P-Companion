@@ -55,7 +55,7 @@
 		},
 		{
 			question: 'Which exchanges and currencies are supported?',
-			answer: 'We currently aggregate data from Binance, OKX, and Bybit. Our engine covers over 50 fiat currencies, including NGN, TRY, ARS, PHP, VND, and more, allowing for global market analysis.'
+			answer: 'We currently aggregate data from Binance, OKX, and Bybit. Our engine covers over 50 fiat currencies, including USD, EUR, GBP, RUB, GN, TRY, ARS, PHP, VND, INR, RUB,and more, allowing for global market analysis.'
 		}
 	];
 </script>
@@ -71,7 +71,7 @@
 			"@context": "https://schema.org",
 			"@type": "WebApplication",
 			"name": "P2P Terminal",
-			"url": "https://p2pcompanion.vercel.app/",
+			"url": "https://p2pcompanion.com/",
 			"description": "Global crypto data terminal to analyze real-time P2P stablecoin spreads across major centralized exchanges.",
 			"applicationCategory": "FinanceApplication",
 			"genre": "Financial Data Analytics",
@@ -115,7 +115,7 @@
 
 <!-- Floating Bottom CTA Dock -->
 <div class="fixed bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-[90] flex items-center p-2 rounded-full bg-white/20 backdrop-blur-3xl border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all duration-300">
-	<a href="/scanner" class="group relative flex items-center gap-3 px-6 md:px-8 py-2.5 md:py-3 rounded-full text-sm md:text-base font-black text-blue-700 transition-all duration-500 hover:scale-[1.02] active:scale-95 overflow-hidden">
+	<a href="/terminal" class="group relative flex items-center gap-3 px-6 md:px-8 py-2.5 md:py-3 rounded-full text-sm md:text-base font-black text-blue-700 transition-all duration-500 hover:scale-[1.02] active:scale-95 overflow-hidden">
 		<span class="absolute inset-0 -translate-x-full animate-[sweep_4s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent"></span>
 		<span class="relative flex h-2 w-2 shrink-0">
 		  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -138,12 +138,12 @@
 				<span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span></span>
 				Live Market Data
 			</span>
-			<h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-zinc-950 leading-[1.05] mb-4">
+			<h1 class="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tighter text-zinc-950 leading-[1.05] mb-4 animate-fade-in-up">
 				Compare Every <br/>
-				<span class="text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-indigo-700">Crypto Price Spread.</span>
+				<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-700 animate-gradient-text">Crypto Price Spread.</span>
 			</h1>
 			<p class="text-zinc-700 text-base sm:text-lg font-medium max-w-lg">
-				Instantly compare real-time USDT order books across top global exchanges. Find the best P2P rates and uncover fiat inefficiencies with premium data.
+				Instantly compare real-time USDT order books across top global exchanges. Find the best P2P rates and uncover fiat inefficiencies with realtime and unbiased data.
 			</p>
 		</div>
 
@@ -201,7 +201,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-zinc-900 text-sm">Unbiased Aggregation</h3>
-                        <p class="text-[13px] text-zinc-600 leading-relaxed mt-0.5">Raw order book data directly from top exchanges without manipulation.</p>
+                        <p class="text-[13px] text-zinc-600 leading-relaxed mt-0.5">Live and Raw order book data directly fetched from top exchanges without manipulation.</p>
                     </div>
                 </div>
                 <div class="flex items-start gap-4">
@@ -265,8 +265,8 @@
                 </li>
             </ul>
             <div class="mt-5 pt-4 border-t border-indigo-200/60 relative z-10">
-                <a href="mailto:feedback@p2pcompanion.dev" class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600/10 border border-indigo-200 hover:bg-indigo-600 hover:text-white text-indigo-700 px-4 py-2.5 text-xs font-bold transition-all duration-300 active:scale-95">
-                    Request a Feature
+                <a href="mailto:p2pcompanion@proton.me" class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600/10 border border-indigo-200 hover:bg-indigo-600 hover:text-white text-indigo-700 px-4 py-2.5 text-xs font-bold transition-all duration-300 active:scale-95">
+                    Request a Feature (mail me)
                 </a>
             </div>
         </div>
@@ -306,7 +306,7 @@
 
 	<section class="mt-12 text-center opacity-60">
 		<p class="text-xs text-zinc-500 font-medium">
-			Global Data Coverage: Instantly compare P2P rates for NGN (Naira), TRY (Lira), ARS (Peso), PHP (Peso), VND (Dong), and 50+ regional fiat currencies.
+			Global Data Coverage: Instantly compare P2P rates for NGN (Naira), TRY (Lira), ARS (Peso), PHP (Peso), VND (Dong), INR (Rupee), RUB (Ruble), USD (US Dollar), EUR (Euro), GBP (Pound Sterling),	and 50+ regional fiat currencies.
 		</p>
 	</section>
 
@@ -327,5 +327,21 @@
 		0% { transform: translateX(-100%) skewX(-15deg); }
 		25% { transform: translateX(200%) skewX(-15deg); }
 		100% { transform: translateX(200%) skewX(-15deg); }
+	}
+	@keyframes gradient-shift {
+		0% { background-position: 0% 50%; }
+		50% { background-position: 100% 50%; }
+		100% { background-position: 0% 50%; }
+	}
+	.animate-gradient-text {
+		animation: gradient-shift 6s ease-in-out infinite;
+		background-size: 200% 200%;
+	}
+	@keyframes fade-in-up {
+		0% { opacity: 0; transform: translateY(20px); }
+		100% { opacity: 1; transform: translateY(0); }
+	}
+	.animate-fade-in-up {
+		animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 	}
 </style>

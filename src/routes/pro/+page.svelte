@@ -82,7 +82,7 @@
             {/if}
             
             <div class="text-center mt-8">
-                 <a href="/scanner" class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">&larr; Back to Free Scanner</a>
+                 <a href="/terminal" class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">&larr; Back to Free Terminal</a>
             </div>
         </div>
     </div>
@@ -96,8 +96,8 @@
                 </h1>
                 <p class="text-zinc-400 mt-1">Curated data signals & historical spread analysis.</p>
             </div>
-            <a href="/scanner" class="mt-4 sm:mt-0 text-sm font-bold text-zinc-400 hover:text-white transition-colors flex items-center gap-2">
-                &larr; Back to Scanner
+        <a href="/terminal" class="mt-4 sm:mt-0 text-sm font-bold text-zinc-400 hover:text-white transition-colors flex items-center gap-2">
+            &larr; Back to Terminal
             </a>
         </header>
 

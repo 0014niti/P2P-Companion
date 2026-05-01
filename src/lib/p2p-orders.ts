@@ -1,12 +1,12 @@
 import { writable } from 'svelte/store';
-import { filterExchangesArr, getDynamicLink, type ExchangeKeys, type ExchangeP2PAd } from '$lib/exchanges';
+import { filterExchangesArr, getDynamicLink, type ExchangeKey } from '$lib/exchanges';
 import { fetchUrlBuilder } from '$lib/exchanges/url-builder'; 
-import type { P2POrder } from '$lib/types';
+import type { ExchangeP2PAd, P2POrder } from '$lib/types';
 
 type P2PState = {
 	orders: P2POrder[];
 	isLoading: boolean;
-	errors: Partial<Record<ExchangeKeys, Error | null>>;
+	errors: Partial<Record<ExchangeKey, Error | null>>;
 	marketRate: number | null;
 	usdRate: number | null;
 	token: string | null;

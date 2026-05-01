@@ -28,6 +28,12 @@
 
 	let openFiatList = $state(false);
 
+	// Save user's fiat preference to local storage
+	$effect(() => {
+		if (filterState.current.fiat) {
+			localStorage.setItem('selectedFiat', filterState.current.fiat);
+		}
+	});
 	const filterStateType = $derived(filterState.current.type);
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
 	const filterStateFiat = $derived(filterState.current.fiat);

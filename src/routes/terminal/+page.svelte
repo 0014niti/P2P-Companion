@@ -86,15 +86,30 @@
 	// --- PWA Install State ---
 	let deferredPrompt: any = null;
 	let showInstallButton = $state(false);
+	let initialFiatLoaded = $state(false); // New state to track if initial fiat is set
 
 	$effect(() => {
 		const type = currentFilters.type;
 		const token = currentFilters.selectedToken;
 		const fiat = currentFilters.fiat;
 
-		if (token && fiat) {
+		// Only fetch orders once the initial fiat has been loaded (either from local storage or GeoIP)
+		if (token && fiat && initialFiatLoaded) {
 			p2pOrderStore.fetchOrders({ type, token, fiat });
 		}
+	});
+
+	// Effect to save fiat to localStorage when it changes
+	$effect(() => {
+		if (currentFilters.fiat) {
+			localStorage.setItem('selectedFiat', currentFilters.fiat);
+		}
+	});
+
+	// Effect to save token to localStorage when it changes
+	$effect(() => {
+		if (currentFilters.selectedToken)
+			localStorage.setItem('selectedToken', currentFilters.selectedToken);
 	});
 
 	$effect(() => {
@@ -130,6 +145,24 @@
 		});
 
 		const savedExchanges = localStorage.getItem('activeExchanges');
+		const savedFiat = localStorage.getItem('selectedFiat');
+		const savedToken = localStorage.getItem('selectedToken');
+
+		if (savedFiat) {
+			filterState.current.fiat = savedFiat;
+			initialFiatLoaded = true; // Fiat loaded from local storage
+		}
+		if (savedToken) {
+			filterState.current.selectedToken = savedToken;
+		}
+
+		// If no fiat saved in local storage, try to detect from IP
+		if (!savedFiat) {
+			fetch('/api/geoip')
+				.then((res) => res.json())
+				.then((data) => (filterState.current.fiat = data.fiat))
+				.finally(() => (initialFiatLoaded = true)); // Mark as loaded even if GeoIP fails
+		}
 		if (savedExchanges) {
 			activeExchanges = JSON.parse(savedExchanges);
 		}
@@ -158,8 +191,7 @@
 	<meta property="og:title" content="Live {currentFilters.selectedToken || 'USDT'} P2P Rates" />
 	<meta property="og:description" content="Find the best {currentFilters.type || 'BUY'} rates across Binance, OKX, and Bybit instantly." />
 	<meta name="twitter:card" content="summary_large_image" />
-	<link rel="canonical" href="https://p2pcompanion.com/scanner" />
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5684719528000331" crossorigin="anonymous"></script>
+	<link rel="canonical" href="https://p2pcompanion.com/terminal" />
 </svelte:head>
 
 <style>
