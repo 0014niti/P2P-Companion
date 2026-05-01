@@ -51,9 +51,9 @@ export async function GET({ request }) {
 			case 'paxful':
 				response = await fetchPaxful({ type: type as 'buy' | 'sell', token, fiat });
 				break;
-			case 'localcoinswap':
-				response = await fetchLocalCoinSwap({ type: type as 'buy' | 'sell', token, fiat });
-				break;
+			// case 'localcoinswap':
+			// 	response = await fetchLocalCoinSwap({ type: type as 'buy' | 'sell', token, fiat });
+			// 	break;
 			default:
 				break;
 		}

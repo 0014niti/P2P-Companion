@@ -1,12 +1,12 @@
 import { writable } from 'svelte/store';
-import { filterExchangesArr, getDynamicLink, type ExchangeKey } from '$lib/exchanges';
+import { filterExchangesArr, getDynamicLink, type ExchangeKeys, type ExchangeP2PAd } from '$lib/exchanges';
 import { fetchUrlBuilder } from '$lib/exchanges/url-builder'; 
-import type { ExchangeP2PAd, P2POrder } from '$lib/types';
+import type { P2POrder } from '$lib/types';
 
 type P2PState = {
 	orders: P2POrder[];
 	isLoading: boolean;
-	errors: Partial<Record<ExchangeKey, Error | null>>;
+	errors: Partial<Record<ExchangeKeys, Error | null>>;
 	marketRate: number | null;
 	usdRate: number | null;
 	token: string | null;
@@ -56,9 +56,13 @@ function createP2POrderStore() {
 				// All active exchanges now flow directly through your Vercel backend
 				const url = fetchUrlBuilder({ ...filters }, exchange.key);
 				const res = await fetch(url);
-				if (!res.ok) throw new Error(`Request failed with status ${res.status}`);
 				
-				const data = await res.json();
+				let data: any = {};
+				try { data = await res.json(); } catch (e) {}
+				
+				if (!res.ok) throw new Error(data.error || `Request failed with status ${res.status}`);
+				if (data.error) throw new Error(data.error); // Catch our custom API errors
+
 				responsesArray = Array.isArray(data?.responses) ? data.responses : [];
 
 				const validAds = responsesArray.filter((ad): ad is ExchangeP2PAd => !!(ad && ad.advertiser));

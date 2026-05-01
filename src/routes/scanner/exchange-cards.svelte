@@ -10,7 +10,7 @@
 	import type { P2POrder } from '$lib/types';
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import { cn } from '$lib/utils';
-	import { ChevronDown, ShieldCheck, ArrowLeftRight, Clock, Wallet, Info } from 'lucide-svelte';
+	import { ChevronDown, ShieldCheck, ArrowLeftRight, Clock, Wallet, Info, AlertCircle } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 
@@ -93,11 +93,6 @@
 							<div class="h-3 bg-zinc-100/60 rounded w-1/2 animate-pulse"></div>
 						</div>
 					{/each}
-				</div>
-			{:else if error}
-				<div class="text-red-500 flex items-center gap-2 p-3">
-					<span class="text-lg">⚠️</span>
-					<p class="text-xs">{error.message || 'Error loading data'}</p>
 				</div>
 			{:else if ads.length > 0}
 				<div class="divide-y divide-zinc-100/80 max-h-[60vh] md:max-h-[400px] overflow-y-auto hide-scrollbar">
@@ -190,7 +185,26 @@
 					{/each}
 				</div>
 			{:else}
-				<p class="text-muted-foreground text-xs text-center py-2">No ads available</p>
+				<!-- Smart Fallback: Redirects user to the exchange if API is blocked or empty -->
+				<div class="flex flex-col items-center justify-center py-8 px-4 text-center space-y-3 bg-zinc-50/50 m-3 rounded-2xl border border-dashed border-zinc-200/80">
+					<div class="p-2.5 bg-white rounded-full shadow-sm border border-zinc-100 text-rose-500">
+						<AlertCircle class="size-5" />
+					</div>
+					<div>
+						<p class="text-xs font-black text-zinc-800">API Access Limited</p>
+						<p class="text-[10px] text-zinc-500 mt-1 leading-relaxed max-w-[200px]">
+							{error ? 'The exchange firewall blocked our server request.' : 'No ads found via API.'} The offers are still available on the platform.
+						</p>
+					</div>
+					<a
+						href={getDynamicLink(exchange.key, filterType, $p2pOrderStore.token || 'USDT', $p2pOrderStore.fiat || 'USD')}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="mt-2 px-5 py-2 bg-zinc-900 text-white text-[11px] font-bold rounded-full shadow-md hover:bg-zinc-800 hover:scale-105 transition-all active:scale-95"
+					>
+						Check {exchange.name} directly ↗
+					</a>
+				</div>
 			{/if}
 		</CardContent>
 	</Card>

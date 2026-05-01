@@ -7,6 +7,8 @@
 	import ComparisonTable from '$lib/components/ComparisonTable.svelte';
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import type { P2POrder } from '$lib/types';
+	import Toast from '$lib/components/Toast.svelte';
+	import { toastStore } from '$lib/toast';
 	
 	// 🌟 Added Download, BookOpen, and Zap icons for the new Dock
 	import { Settings2, RefreshCw, Activity, Heart, Calculator } from 'lucide-svelte';
@@ -156,6 +158,8 @@
 	<meta property="og:title" content="Live {currentFilters.selectedToken || 'USDT'} P2P Rates" />
 	<meta property="og:description" content="Find the best {currentFilters.type || 'BUY'} rates across Binance, OKX, and Bybit instantly." />
 	<meta name="twitter:card" content="summary_large_image" />
+	<link rel="canonical" href="https://p2pcompanion.com/scanner" />
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5684719528000331" crossorigin="anonymous"></script>
 </svelte:head>
 
 <style>
@@ -286,7 +290,13 @@
 
 				<button
 					class="flex h-10 w-11 sm:h-11 sm:w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200/60 bg-gradient-to-b from-white/90 to-white/50 backdrop-blur-md shadow-sm transition-all hover:bg-white hover:-translate-y-0.5 hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.1)] active:scale-95 active:translate-y-0 disabled:opacity-50 text-zinc-700"
-					onclick={() => { if (currentFilters.selectedToken && currentFilters.fiat) p2pOrderStore.fetchOrders({ type: currentFilters.type, token: currentFilters.selectedToken, fiat: currentFilters.fiat }); }}
+					onclick={async () => { 
+						if (currentFilters.selectedToken && currentFilters.fiat) {
+							toastStore.add('Fetching live rates...', 'info', 2000);
+							await p2pOrderStore.fetchOrders({ type: currentFilters.type, token: currentFilters.selectedToken, fiat: currentFilters.fiat });
+							toastStore.add('Market data updated!', 'success');
+						}
+					}}
 					disabled={$p2pOrderStore.isLoading}
 					aria-label="Refresh Data"
 				>
@@ -411,6 +421,8 @@
 	</article>
 
 </main>
+
+<Toast />
 
 <ArbitrageCalculator 
 	bind:isOpen={isCalculatorOpen} 

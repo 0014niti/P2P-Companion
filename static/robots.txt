@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://p2pcompanion.vercel.app/sitemap.xml
+Sitemap: https://p2pcompanion.com/sitemap.xml
