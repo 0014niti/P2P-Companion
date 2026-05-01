@@ -12,47 +12,37 @@ export const fetchGateio = async (props: { type: 'buy' | 'sell'; token: string; 
 		amount: '', pay_type: '', page: '1', t: currentTimestamp
 	}).toString();
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let data: Record<string, any> | null = null;
-
+	const res = await fetch(targetUrl, {
+		method: 'POST',
+		headers: { 
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+			'Accept': 'application/json, text/plain, */*',
+			'Origin': 'https://www.gate.io',
+			'Referer': 'https://www.gate.io/'
+		},
+		body: bodyPayload
+	});
+	
+	if (!res.ok) throw new Error(`Gate.io Blocked (HTTP ${res.status})`);
+	
+	let data: any;
 	try {
-		const res = await fetch(targetUrl, {
-			method: 'POST',
-			headers: { 
-				'Content-Type': 'application/x-www-form-urlencoded',
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-				'Accept': 'application/json, text/plain, */*',
-				'Accept-Language': 'en-US,en;q=0.9',
-				'Origin': 'https://www.gate.io',
-				'Referer': 'https://www.gate.io/c2c/market',
-				'X-Requested-With': 'XMLHttpRequest',
-				'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-				'Sec-Ch-Ua-Mobile': '?0',
-				'Sec-Ch-Ua-Platform': '"Windows"',
-				'Sec-Fetch-Dest': 'empty',
-				'Sec-Fetch-Mode': 'cors',
-				'Sec-Fetch-Site': 'same-origin'
-			},
-			body: bodyPayload
-		});
-		if (res.ok) {
-			const text = await res.text();
-			try { data = JSON.parse(text); } catch (e) { /* quiet ignore */ }
-		}
-	} catch (e) { console.error('Gate.io direct fetch failed:', e); }
+		data = await res.json();
+	} catch (e) {
+		throw new Error(`Gate.io returned invalid JSON (Possible Captcha)`);
+	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let rawList: any[] = [];
 	if (Array.isArray(data?.data)) rawList = data.data;
 	else if (Array.isArray(data?.data?.list)) rawList = data.data.list;
 	else if (Array.isArray(data?.data?.advs)) rawList = data.data.advs;
 	else if (Array.isArray(data?.list)) rawList = data.list;
-	else if (data) {
-		const found = Object.values(data).find(val => Array.isArray(val));
-		if (found) rawList = found;
-	}
 
-	if (!Array.isArray(rawList) || rawList.length === 0) return [];
+	if (!Array.isArray(rawList)) throw new Error(`Gate.io Parse Error: ${JSON.stringify(data).substring(0, 50)}`);
+	if (rawList.length === 0) {
+		throw new Error(`Gate.io: 0 ads. Raw response: ${JSON.stringify(data).substring(0, 60)}`);
+	}
 
 	return rawList.map((item) => ({
 		advNo: item.adv_id?.toString() || item.id?.toString() || Math.random().toString(),

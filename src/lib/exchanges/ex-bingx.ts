@@ -1,7 +1,8 @@
 import { extractTerms, checkIsNewUserOnly, type ExchangeP2PAd } from '.';
 
 export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; fiat: string }) => {
-	const tradeType = props.type === 'buy' ? 'SELL' : 'BUY';
+	// Swap type mapping to align with BingX API expectations
+	const tradeType = props.type.toUpperCase();
 	const currentTimestamp = Date.now();
 	
 	const targetUrl = `https://bingx.com/api/v3/p2p/adv/search?timestamp=${currentTimestamp}&t=${currentTimestamp}`;
@@ -9,41 +10,36 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		fiat: props.fiat.toUpperCase(),
 		asset: props.token.toUpperCase(),
 		tradeType: tradeType,
-		page: 1, limit: 10, timestamp: currentTimestamp
+		page: 1, limit: 20, timestamp: currentTimestamp
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let data: Record<string, any> | null = null;
-
-	try {
-		const res = await fetch(targetUrl, {
-			method: 'POST',
-			headers: { 
-				'Content-Type': 'application/json',
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-				'Accept': 'application/json, text/plain, */*',
-				'Accept-Language': 'en-US,en;q=0.9',
-				'Origin': 'https://bingx.com',
-				'Referer': 'https://bingx.com/en-us/p2p/',
-				'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-				'Sec-Ch-Ua-Mobile': '?0',
-				'Sec-Ch-Ua-Platform': '"Windows"',
-				'Sec-Fetch-Dest': 'empty',
-				'Sec-Fetch-Mode': 'cors',
-				'Sec-Fetch-Site': 'same-origin'
-			},
-			body: bodyPayload
-		});
-		if (res.ok) {
-			const text = await res.text();
-			try { data = JSON.parse(text); } catch (e) { /* silent catch */ }
-		}
-	} catch (e) { console.error('BingX direct fetch failed:', e); }
+	const res = await fetch(targetUrl, {
+		method: 'POST',
+		headers: { 
+			'Content-Type': 'application/json',
+			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+			'Accept': 'application/json, text/plain, */*',
+			'Origin': 'https://bingx.com',
+			'Referer': 'https://bingx.com/'
+		},
+		body: bodyPayload
+	});
+	
+	if (!res.ok) throw new Error(`BingX Blocked (HTTP ${res.status})`);
+	const data = await res.json();
 
 	const rawList = Array.isArray(data?.data) ? data.data : (data?.data?.list || data?.data?.advList || data?.list || []);
-	if (!Array.isArray(rawList) || rawList.length === 0) return [];
+	
+	if (!Array.isArray(rawList) && data.code !== 0) throw new Error(`BingX API Error: ${JSON.stringify(data).substring(0, 50)}`);
+	if (!Array.isArray(rawList) || rawList.length === 0) {
+		throw new Error(`BingX: 0 ads. Raw response: Code ${data.code}`);
+	}
 
-	return rawList.map((item) => ({
+	return rawList.map((item) => {
+		let positiveRate = parseFloat(item.positiveRate || '0');
+		if (positiveRate > 1) positiveRate = positiveRate / 100;
+
+		return {
 		advNo: item.advId?.toString() || Math.random().toString(),
 		tradeType: props.type.toUpperCase(),
 		asset: props.token.toUpperCase(),
@@ -54,7 +50,6 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		fiatSymbol: props.fiat.toUpperCase(),
 		minSingleTransAmount: item.minAmount || '0',
 		maxSingleTransAmount: item.maxAmount || '0',
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		paymentMethods: item.payMethods ? item.payMethods.map((method: any) => ({
 			type: method.methodName || 'Bank',
 			identifier: method.methodId?.toString() || 'unknown',
@@ -63,10 +58,11 @@ export const fetchBingx = async (props: { type: 'buy' | 'sell'; token: string; f
 		advertiser: {
 			name: item.nickName || 'Unknown',
 			userId: item.userId?.toString() || '',
-			monthOrderCount: item.monthOrderCount || 0,
-			positiveRate: item.positiveRate || 0
+			monthOrderCount: parseInt(item.monthOrderCount || '0', 10),
+			positiveRate: positiveRate
 		},
 		terms: extractTerms(item),
 		isNewUserOnly: checkIsNewUserOnly(item)
-	})) as ExchangeP2PAd[];
+		};
+	}) as ExchangeP2PAd[];
 };

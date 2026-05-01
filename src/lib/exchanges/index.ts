@@ -41,12 +41,19 @@ export const exchanges = {
 								icon: 'https://www.google.com/s2/favicons?domain=remitano.com&sz=128',
 										p2pLink: 'https://remitano.com/p2p'
 	},
-		paxful: {
-					name: 'Paxful',
-							tokensList: ['USDT', 'BTC', 'USDC', 'ETH'] as string[],
-									icon: 'https://www.google.com/s2/favicons?domain=paxful.com&sz=128',
-											p2pLink: 'https://paxful.com/buy'
-		}
+	localcoinswap: {
+		name: 'LocalCoinSwap',
+		tokensList: ['USDT', 'BTC', 'ETH', 'USDC', 'DOT'] as string[],
+		icon: 'https://www.google.com/s2/favicons?domain=localcoinswap.com&sz=128',
+		p2pLink: 'https://localcoinswap.com'
+	},
+	// Temporarily disabled due to strict Cloudflare/Datadome IP blocking on Vercel
+	// paxful: {
+	// 	name: 'Paxful',
+	// 	tokensList: ['USDT', 'BTC', 'USDC', 'ETH'] as string[],
+	// 	icon: 'https://www.google.com/s2/favicons?domain=paxful.com&sz=128',
+	// 	p2pLink: 'https://paxful.com/buy'
+	// }
 } as const;
 
 export const availableTokensList = Array.from(
@@ -89,8 +96,9 @@ export const getDynamicLink = (exchangeId: string, type: string, token: string, 
 			return `https://www.bitget.com/p2p-trade?fiatName=${f}&coinName=${c}`;
 		case 'kucoin':
 			return `https://www.kucoin.com/p2p/fiat-trade/?fiat=${f}`;
-		case 'htx':
-			return `https://www.htx.com/en-us/fiat-crypto/trade/${t}-${c}-${f}/`;
+		case 'localcoinswap':
+			if (advNo) return `https://localcoinswap.com/offer/${advNo}`;
+			return `https://localcoinswap.com/buy/${c}/${f}`;
 		default:
 			const ex = exchanges[exchangeId as ExchangeKeys];
 			return ex ? ex.p2pLink : '#';
