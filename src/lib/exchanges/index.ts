@@ -68,6 +68,35 @@ export const filterExchangesArr = (selectedToken: string) => {
 	return exchangesArr.filter((exchange) => exchange.tokensList.includes(selectedToken));
 };
 
+export const getDynamicLink = (exchangeId: string, type: string, token: string, fiat: string, advNo?: string, userId?: string) => {
+	const t = type.toLowerCase();
+	const c = token.toUpperCase();
+	const f = fiat.toUpperCase();
+	
+	switch (exchangeId.toLowerCase()) {
+		case 'binance':
+			if (advNo) return `https://p2p.binance.com/en/adv?code=${advNo}`;
+			return `https://p2p.binance.com/en/trade/${t}/${c}?fiat=${f}`;
+		case 'okx':
+			return `https://www.okx.com/p2p-markets/${f}/${t}-${c}`;
+		case 'bybit':
+			if (userId) return `https://www.bybit.com/fiat/trade/otc/profile/${userId}`;
+			return `https://www.bybit.com/fiat/trade/otc/?actionType=${t === 'buy' ? '1' : '0'}&token=${c}&fiat=${f}`;
+		case 'mexc':
+			return `https://www.mexc.com/p2p/trade?currency=${f}`;
+		case 'bitget':
+			if (advNo) return `https://www.bitget.com/p2p-trade/ad-details?adNo=${advNo}`;
+			return `https://www.bitget.com/p2p-trade?fiatName=${f}&coinName=${c}`;
+		case 'kucoin':
+			return `https://www.kucoin.com/p2p/fiat-trade/?fiat=${f}`;
+		case 'htx':
+			return `https://www.htx.com/en-us/fiat-crypto/trade/${t}-${c}-${f}/`;
+		default:
+			const ex = exchanges[exchangeId as ExchangeKeys];
+			return ex ? ex.p2pLink : '#';
+	}
+};
+
 // Only the fields we care about
 export type ExchangeP2PAd = {
 	advNo: string;

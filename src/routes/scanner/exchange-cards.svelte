@@ -6,11 +6,11 @@
 		CardHeader,
 		CardTitle
 	} from '$lib/components/ui/card';
-	import type { filterExchangesArr } from '$lib/exchanges';
+	import { getDynamicLink, type filterExchangesArr } from '$lib/exchanges';
 	import type { P2POrder } from '$lib/types';
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import { cn } from '$lib/utils';
-	import { ChevronDown } from 'lucide-svelte';
+	import { ChevronDown, ShieldCheck, ArrowLeftRight, Clock, Wallet, Info } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 
@@ -74,10 +74,10 @@
 				<span class="font-black text-base truncate tracking-tight text-zinc-900">{exchange.name}</span>
 			</CardTitle>
 			<a
-				href={exchange.p2pLink}
+				href={getDynamicLink(exchange.key, filterType, $p2pOrderStore.token || 'USDT', $p2pOrderStore.fiat || 'USD')}
 				target="_blank"
 				rel="noopener noreferrer"
-				class="text-[11px] font-bold text-blue-700 flex items-center gap-1 bg-blue-50 border border-blue-100 px-3.5 py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:bg-blue-100 active:scale-95"
+				class="text-[11px] font-bold text-blue-700 flex items-center gap-1 bg-gradient-to-b from-white to-blue-50 border border-blue-200/80 px-3.5 py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:to-blue-100 hover:shadow active:scale-95"
 				title={`Trade on ${exchange.name}`}
 			>
 				Trade <span class="text-[12px] leading-none">↗</span>
@@ -103,71 +103,86 @@
 				<div class="divide-y divide-zinc-100/80 max-h-[60vh] md:max-h-[400px] overflow-y-auto hide-scrollbar">
 					{#each ads as ad (ad.id)}
 						<div
-							class="p-4 hover:bg-zinc-50/80 border-b border-zinc-100 last:border-0 cursor-pointer transition-all duration-300 ease-out active:bg-zinc-100/60 group"
+							class={cn("px-3 py-2.5 border-b border-zinc-100/80 last:border-0 cursor-pointer transition-all duration-300 ease-out group", expandedAds.has(ad.id) ? "bg-blue-50/40" : "hover:bg-zinc-50/80 active:bg-zinc-100/60")}
 							role="button"
 							tabindex="0"
 							onclick={() => toggleExpand(ad.id)}
 							onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleExpand(ad.id); }}
 						>
-							<div class="flex justify-between items-start">
-								<div class="flex flex-col gap-1">
-									<div class="font-black text-zinc-900 text-[18px] tracking-tight leading-none flex items-center gap-1.5">
-										{Number(ad.price).toLocaleString(undefined, { minimumFractionDigits: 2 })} <span class="text-[10px] font-bold text-zinc-400 mt-1 uppercase">{ad.fiat}</span>
-										{#if ad.isNewUserOnly}
-											<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border border-blue-200 bg-blue-50 text-blue-600 leading-none uppercase tracking-wider shadow-sm">New User</span>
-										{/if}
-									</div>
+							<div class="flex justify-between items-center mb-1">
+								<div class="flex items-center gap-1.5">
+									<span class="font-black text-zinc-900 text-[16px] tracking-tighter tabular-nums leading-none">
+										{Number(ad.price).toLocaleString(undefined, { minimumFractionDigits: 2 })} <span class="text-[9px] font-bold text-zinc-400 uppercase">{ad.fiat}</span>
+									</span>
 									{#if $p2pOrderStore.marketRate}
 										{@const diff = ((Number(ad.price) - $p2pOrderStore.marketRate) / $p2pOrderStore.marketRate) * 100}
-										<div class="text-[10px] font-bold uppercase tracking-wider mt-1 {diff > 0 ? 'text-blue-500' : 'text-emerald-500'}" title="Premium vs Official Market Rate">
-											{diff > 0 ? '+' : ''}{diff.toFixed(2)}% vs market
-										</div>
+										<span class="text-[8px] font-black uppercase tracking-widest px-1 py-[1px] rounded border {diff > 0 ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}" title="Premium vs Official Market Rate">
+											{diff > 0 ? '+' : ''}{diff.toFixed(2)}%
+										</span>
 									{/if}
-									<div class="text-[11px] font-bold text-zinc-500 flex items-center gap-1.5">
-										<span class="truncate max-w-[150px]" title={ad.merchantName}>{ad.merchantName}</span>
-										{#if ad.merchantStats}
-											<span class="text-emerald-600 font-bold">
-												{(ad.merchantStats.positiveRate * 100).toFixed(0)}%
-											</span>
-										{/if}
-									</div>
+									{#if ad.isNewUserOnly}
+										<span class="text-[8px] font-bold px-1 py-[1px] rounded border border-blue-200 bg-blue-50 text-blue-600 uppercase tracking-wider">New</span>
+									{/if}
 								</div>
-								<div class="flex flex-col items-end gap-1 text-right">
-									<div class="text-[11px] font-bold text-zinc-600 tracking-tight bg-zinc-100 px-2 py-0.5 rounded-md border border-zinc-200/50">
-										{new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.minLimit)} - {new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.maxLimit)}
-									</div>
-									<ChevronDown class={cn('size-4 mt-1 text-zinc-400 group-hover:text-zinc-600 transition-all duration-300 ease-out', { 'rotate-180 text-zinc-900': expandedAds.has(ad.id) })} />
+								<div class="flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-zinc-600 tabular-nums bg-white shadow-sm border border-zinc-200/60 px-1.5 py-0.5 rounded-md">
+									{new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.minLimit)} - {new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(ad.maxLimit)}
 								</div>
 							</div>
 
-							<div class="mt-3 text-[10px] text-zinc-400 font-medium line-clamp-1 italic group-hover:text-zinc-500 transition-colors">
-								{ad.terms?.trim() ? ad.terms.replace(/\n/g, ' ').trim() : 'No terms specified'}
+							<div class="flex justify-between items-center">
+								<div class="flex items-center gap-1.5">
+									<span class="truncate max-w-[140px] text-[11px] font-bold text-zinc-500 group-hover:text-zinc-800 transition-colors" title={ad.merchantName}>{ad.merchantName}</span>
+									{#if ad.merchantStats}
+										<span class="flex items-center gap-0.5 text-[9px] font-black text-emerald-600" title="Merchant Completion Rate">
+											<ShieldCheck class="size-2.5" />
+											{(ad.merchantStats.positiveRate * 100).toFixed(0)}%
+										</span>
+									{/if}
+								</div>
+								<ChevronDown class={cn('size-4 text-zinc-300 group-hover:text-zinc-600 transition-transform duration-300 ease-out', { 'rotate-180 text-zinc-800': expandedAds.has(ad.id) })} />
 							</div>
+
 							{#if expandedAds.has(ad.id)}
-								<div transition:slide={{ duration: 300, easing: cubicOut }} class="mt-4 pt-4 border-t border-zinc-100 text-[11px] space-y-2.5">
-									<div class="flex justify-between">
-										<span class="text-zinc-500 font-bold uppercase tracking-wider text-[9px]">Available</span>
-										<span class="font-black text-zinc-700">{ad.available.toLocaleString()} {ad.token}</span>
+								<div transition:slide={{ duration: 250, easing: cubicOut }} class="mt-2.5 pt-2.5 border-t border-zinc-100/80 space-y-2">
+									<div class="grid grid-cols-2 gap-2">
+										<div class="flex flex-col bg-white p-1.5 rounded-lg border border-zinc-100 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+											<span class="flex items-center gap-1 text-zinc-400 font-bold uppercase text-[8px] tracking-wider mb-0.5"><Wallet class="size-2.5" /> Available</span>
+											<span class="font-black text-zinc-800 text-[11px] tabular-nums">{ad.available.toLocaleString()} {ad.token}</span>
+										</div>
+										<div class="flex flex-col bg-white p-1.5 rounded-lg border border-zinc-100 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+											<span class="flex items-center gap-1 text-zinc-400 font-bold uppercase text-[8px] tracking-wider mb-0.5"><Clock class="size-2.5" /> Orders (30d)</span>
+											<span class="font-black text-zinc-800 text-[11px] tabular-nums">{ad.merchantStats?.monthOrderCount || 0}</span>
+										</div>
 									</div>
-									<div class="flex justify-between">
-										<span class="text-zinc-500 font-bold uppercase tracking-wider text-[9px]">Orders (30d)</span>
-										<span class="font-black text-zinc-700">{ad.merchantStats?.monthOrderCount || 0}</span>
-									</div>
+									
 									{#if ad.paymentMethods.length > 0}
-										<div class="pt-2 flex flex-wrap gap-1.5">
+										<div class="flex flex-wrap gap-1">
 											{#each ad.paymentMethods as payment}
-												<Badge variant="outline" style={payment.bgColor ? `background-color: ${payment.bgColor}` : undefined} class={cn('text-[9px] px-2.5 py-1 rounded-md h-auto border border-zinc-200/50 leading-tight font-bold shadow-sm', { 'text-white': !!payment.bgColor, 'text-zinc-600 bg-zinc-50': !payment.bgColor })}>
+												<span 
+													style={payment.bgColor ? `background-color: ${payment.bgColor}15; color: ${payment.bgColor}; border-color: ${payment.bgColor}30` : undefined} 
+													class={cn('text-[9px] px-1.5 py-0.5 rounded border font-bold whitespace-nowrap', !payment.bgColor && 'text-zinc-600 bg-zinc-50 border-zinc-200')}
+												>
 													{payment.name}
-												</Badge>
+												</span>
 											{/each}
 										</div>
 									{/if}
 
-									<div class="pt-3 mt-3 border-t border-zinc-100">
-										<span class="text-[9px] text-zinc-400 block mb-1.5 font-bold uppercase tracking-widest">Merchant Terms</span>
-										<div class="text-[10px] text-zinc-600 whitespace-pre-wrap leading-relaxed p-3 bg-zinc-50 rounded-xl border border-zinc-200/50">
-											{ad.terms?.trim() || 'No terms specified'}
+									{#if ad.terms?.trim()}
+										<div class="text-[10px] text-zinc-600 whitespace-pre-wrap leading-relaxed p-2 bg-zinc-50/80 rounded-lg border border-zinc-100/80 italic">
+											{ad.terms.trim()}
 										</div>
+									{/if}
+
+									<div class="pt-2">
+										<a
+											href={ad.tradeUrl || '#'}
+											target="_blank"
+											rel="noopener noreferrer"
+											class="flex w-full items-center justify-center gap-1.5 rounded-lg bg-blue-50/50 hover:bg-blue-100 border border-blue-200/60 py-2 text-[11px] font-bold text-blue-700 transition-all shadow-sm active:scale-95"
+										>
+											Proceed to Trade ↗
+										</a>
 									</div>
 								</div>
 							{/if}

@@ -3,6 +3,7 @@
 	import type { P2POrder } from '$lib/types';
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import { cn } from '$lib/utils';
+	import { ShieldCheck } from 'lucide-svelte';
 
 	let {
 		orders = [],
@@ -26,41 +27,55 @@
 
 <div class="overflow-x-auto rounded-2xl border border-zinc-200/60 bg-white/80 backdrop-blur-xl shadow-sm">
 	<table class="min-w-full text-left text-sm whitespace-nowrap">
-		<thead class="bg-zinc-50/30 border-b border-zinc-200/60">
-			<tr class="text-[11px] font-bold uppercase tracking-widest text-zinc-500">
-				<th scope="col" class="px-8 py-6">Exchange & Merchant</th>
-				<th scope="col" class="px-8 py-6">Price</th>
-				<th scope="col" class="px-8 py-6">Available</th>
-				<th scope="col" class="px-8 py-6">Limits</th>
-				<th scope="col" class="px-8 py-6">Payment Methods</th>
-				<th scope="col" class="px-8 py-6 text-right">Action</th>
+		<thead class="bg-zinc-50/50 border-b border-zinc-200/60">
+			<tr class="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+				<th scope="col" class="px-5 py-3.5">Exchange & Merchant</th>
+				<th scope="col" class="px-5 py-3.5">Price</th>
+				<th scope="col" class="px-5 py-3.5">Available</th>
+				<th scope="col" class="px-5 py-3.5">Limits</th>
+				<th scope="col" class="px-5 py-3.5">Payment Methods</th>
+				<th scope="col" class="px-5 py-3.5 text-right">Action</th>
 			</tr>
 		</thead>
 		<tbody class="divide-y divide-zinc-100">
 			{#if isLoading}
 				<tr>
-					<td colspan="6" class="px-8 py-20 text-center">
+					<td colspan="6" class="px-5 py-16 text-center">
 						<div class="flex flex-col items-center justify-center space-y-3">
 							<div class="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-							<p class="font-bold text-zinc-500 tracking-wide mt-2">Fetching Market Data...</p>
+							<p class="text-xs font-bold text-zinc-500 tracking-widest uppercase mt-2">Fetching Market Data...</p>
 						</div>
 					</td>
 				</tr>
 			{:else if orders.length === 0}
 				<tr>
-					<td colspan="6" class="px-8 py-20 text-center text-zinc-500 font-medium">
+					<td colspan="6" class="px-5 py-16 text-center text-zinc-500 font-medium text-xs">
 						No market offers match the current criteria.
 					</td>
 				</tr>
 			{:else}
 				{#each orders as order (order.id)}
-					<tr class="transition-all duration-300 ease-out hover:bg-white/50 hover:backdrop-blur-xl group cursor-default">
-						<td class="px-8 py-5">
-							<div class="font-black text-zinc-900 text-[15px]">{order.exchange}</div>
-							<div class="text-xs font-bold text-zinc-500 mt-0.5">{order.merchantName}</div>
+					<tr class="transition-colors duration-200 ease-out hover:bg-white group cursor-default">
+						<td class="px-5 py-3">
+							<div class="flex flex-col gap-1 w-full max-w-[220px]">
+								<div class="flex items-center gap-1.5 w-full">
+									<span class="font-bold text-[12px] text-zinc-800 truncate" title={order.merchantName}>{order.merchantName}</span>
+									{#if order.isNewUserOnly}
+										<span class="text-[8px] font-bold px-1 py-[1px] rounded border border-blue-200 bg-blue-50 text-blue-600 uppercase tracking-wider shrink-0">New</span>
+									{/if}
+								</div>
+								<div class="flex items-center gap-1.5">
+									<span class="text-[9px] font-black text-zinc-500 uppercase tracking-wider bg-zinc-50 px-1.5 py-0.5 rounded-md border border-zinc-200/80 shadow-sm">{order.exchange}</span>
+									{#if order.merchantStats}
+										<span class="flex items-center gap-0.5 text-[9px] font-black text-emerald-600" title="Merchant Completion Rate">
+											<ShieldCheck class="size-2.5" />
+											{(order.merchantStats.positiveRate * 100).toFixed(0)}%
+										</span>
+									{/if}
+								</div>
 							<div 
 								class={cn(
-									"mt-2 max-w-[220px] text-[11px] italic text-zinc-400 cursor-pointer hover:text-zinc-600 transition-all duration-200", 
+									"mt-1.5 text-[10px] italic text-zinc-400 cursor-pointer hover:text-zinc-600 transition-colors duration-200", 
 									expandedTerms.has(order.id) ? "whitespace-pre-wrap break-words" : "truncate"
 								)} 
 								title="Click to expand/collapse terms"
@@ -71,39 +86,45 @@
 							>
 								{order.terms?.trim() ? (expandedTerms.has(order.id) ? order.terms.trim() : order.terms.replace(/\n/g, ' ').trim()) : 'No terms specified'}
 							</div>
-						</td>
-						<td class="px-8 py-5">
-							<div class="text-[17px] font-black text-zinc-900 tracking-tight">
-								{order.price.toLocaleString(undefined, { minimumFractionDigits: 2 })} <span class="text-[11px] font-bold text-zinc-400 uppercase ml-0.5">{order.fiat}</span>
 							</div>
-							{#if $p2pOrderStore.marketRate}
-								{@const diff = ((order.price - $p2pOrderStore.marketRate) / $p2pOrderStore.marketRate) * 100}
-								<div class="mt-1 text-[10px] font-bold uppercase tracking-wider {diff > 0 ? 'text-blue-500' : 'text-emerald-500'}" title="Premium vs Official Market Rate">
-									{diff > 0 ? '+' : ''}{diff.toFixed(2)}% Spread
+						</td>
+						<td class="px-5 py-3">
+							<div class="flex flex-col gap-1 w-fit">
+								<div class="text-[14px] font-black text-zinc-900 tracking-tight tabular-nums leading-none">
+									{Number(order.price).toLocaleString(undefined, { minimumFractionDigits: 2 })} <span class="text-[9px] font-bold text-zinc-400 uppercase">{order.fiat}</span>
 								</div>
-							{/if}
+								{#if $p2pOrderStore.marketRate}
+									{@const diff = ((Number(order.price) - $p2pOrderStore.marketRate) / $p2pOrderStore.marketRate) * 100}
+									<div class="w-fit text-[8px] font-black uppercase tracking-widest px-1.5 py-[1.5px] rounded border {diff > 0 ? 'bg-blue-50/50 text-blue-600 border-blue-100' : 'bg-emerald-50/50 text-emerald-600 border-emerald-100'}" title="Premium vs Official Market Rate">
+										{diff > 0 ? '+' : ''}{diff.toFixed(2)}%
+									</div>
+								{/if}
+							</div>
 						</td>
-						<td class="px-8 py-5">
-							<div class="font-bold text-zinc-700">{order.available.toLocaleString()} <span class="text-[10px] font-bold text-zinc-400 ml-0.5">{order.token}</span></div>
+						<td class="px-5 py-3">
+							<div class="text-[11px] font-bold text-zinc-700 tabular-nums">{new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(order.available)} <span class="text-[9px] font-bold text-zinc-400 ml-0.5">{order.token}</span></div>
 						</td>
-						<td class="px-8 py-5">
-							<div class="font-bold text-zinc-700">{new Intl.NumberFormat('en-US', { notation: 'compact' }).format(order.minLimit)} - {new Intl.NumberFormat('en-US', { notation: 'compact' }).format(order.maxLimit)} <span class="text-[10px] font-bold text-zinc-400 ml-0.5">{order.fiat}</span></div>
+						<td class="px-5 py-3">
+							<div class="text-[11px] font-bold text-zinc-700 tabular-nums">{new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(order.minLimit)} - {new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(order.maxLimit)} <span class="text-[9px] font-bold text-zinc-400 ml-0.5">{order.fiat}</span></div>
 						</td>
-						<td class="px-8 py-5">
-							<div class="flex flex-wrap gap-2 max-w-[250px]">
-								{#each order.paymentMethods as { name: method }}
-									<span class="inline-flex items-center rounded-md bg-zinc-100 px-2.5 py-1 text-[10px] font-bold text-zinc-600 border border-zinc-200/50">
-										{method}
+						<td class="px-5 py-3">
+							<div class="flex flex-wrap gap-1 max-w-[220px]">
+								{#each order.paymentMethods as payment}
+									<span 
+										style={payment.bgColor ? `background-color: ${payment.bgColor}15; color: ${payment.bgColor}; border-color: ${payment.bgColor}30` : undefined} 
+										class={cn('text-[9px] px-1.5 py-0.5 rounded border font-bold whitespace-nowrap', !payment.bgColor && 'text-zinc-600 bg-zinc-50 border-zinc-200/80 shadow-sm')}
+									>
+										{payment.name}
 									</span>
 								{/each}
 							</div>
 						</td>
-						<td class="px-8 py-5 text-right">
+						<td class="px-5 py-3 text-right">
 							<a
-								href={order.tradeUrl || '#'}
+								href={order.p2pLink || order.tradeUrl || '#'}
 								target="_blank"
 								rel="noreferrer"
-								class="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-600/20 transition-all duration-300 ease-out hover:bg-blue-700 hover:shadow-lg active:scale-95"
+								class="inline-flex text-[11px] font-bold text-blue-700 items-center gap-1 bg-gradient-to-b from-white to-blue-50 border border-blue-200/80 px-3.5 py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:to-blue-100 hover:shadow active:scale-95"
 							>
 								Trade ↗
 							</a>

@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { filterExchangesArr, type ExchangeKey } from '$lib/exchanges';
+import { filterExchangesArr, getDynamicLink, type ExchangeKey } from '$lib/exchanges';
 import { fetchUrlBuilder } from '$lib/exchanges/url-builder'; 
 import type { ExchangeP2PAd, P2POrder } from '$lib/types';
 
@@ -76,7 +76,7 @@ function createP2POrderStore() {
 					maxLimit: Number(ad.maxSingleTransAmount) || 0,
 					paymentMethods: ad.paymentMethods || [],
 					terms: ad.terms || ad.remarks || ad.remark || '',
-					tradeUrl: exchange.p2pLink,
+					tradeUrl: getDynamicLink(exchange.key, filters.type, filters.token, filters.fiat, ad.advNo, ad.advertiser?.userId),
 					isNewUserOnly: ad.isNewUserOnly ?? false
 				}));
 

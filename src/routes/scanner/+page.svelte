@@ -9,13 +9,16 @@
 	import type { P2POrder } from '$lib/types';
 	
 	// 🌟 Added Download, BookOpen, and Zap icons for the new Dock
-	import { Settings2, RefreshCw, Activity, Heart, Copy, Check, X, Download, BookOpen, Zap } from 'lucide-svelte';
+	import { Settings2, RefreshCw, Activity, Heart, Calculator } from 'lucide-svelte';
 	
 	import { slide, fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
 	import SideGuide from '$lib/components/SideGuide.svelte';
 	import OtcBoard from '$lib/components/OtcBoard.svelte';
+	import DonationPopup from '$lib/components/DonationPopup.svelte';
+	import BottomDock from '$lib/components/BottomDock.svelte';
+	import ArbitrageCalculator from '$lib/components/ArbitrageCalculator.svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
 	const currentFilters = $derived(filterState.current);
@@ -23,8 +26,8 @@
 	let viewMode: 'cards' | 'table' = $state('cards');
 	let showFilters = $state(false);
 	let showDonation = $state(false);
-	let copiedCoin = $state('');
 	
+	let isCalculatorOpen = $state(false);
 	let isOtcBoardOpen = $state(false);
 	// 🌟 NEW: Guide State for the dock
 	let isGuideOpen = $state(false); 
@@ -81,12 +84,6 @@
 	// --- PWA Install State ---
 	let deferredPrompt: any = null;
 	let showInstallButton = $state(false);
-
-	function copyAddress(address: string, coin: string) {
-		navigator.clipboard.writeText(address);
-		copiedCoin = coin;
-		setTimeout(() => { copiedCoin = ''; }, 2000);
-	}
 
 	$effect(() => {
 		const type = currentFilters.type;
@@ -150,8 +147,15 @@
 
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+
+	<!-- SEO Optimization -->
+	<title>Live {currentFilters.type || 'BUY'} {currentFilters.selectedToken || 'USDT'} to {currentFilters.fiat || 'USD'} P2P Rates | P2P Terminal</title>
+	<meta name="description" content="Compare real-time P2P crypto spreads for {currentFilters.selectedToken || 'USDT'} against {currentFilters.fiat || 'USD'}. Find the best rates across major global exchanges instantly." />
+	<meta property="og:title" content="Live {currentFilters.selectedToken || 'USDT'} P2P Rates" />
+	<meta property="og:description" content="Find the best {currentFilters.type || 'BUY'} rates across Binance, OKX, and Bybit instantly." />
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <style>
@@ -200,9 +204,9 @@
 	<div class="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
 </div>
 
-<div class="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8 space-y-5 sm:space-y-8">
+<main class="mx-auto max-w-screen-2xl px-4 pt-1 sm:pt-2 pb-6 sm:px-6 lg:px-8 space-y-5 sm:space-y-8">
 	
-	<div class="w-full relative flex items-center justify-center bg-white/60 backdrop-blur-xl border border-zinc-200/60 rounded-2xl p-2 md:p-3 shadow-sm min-h-[100px] overflow-hidden">
+	<div class="w-full relative flex items-center justify-center bg-white/30 backdrop-blur-xl border border-white/40 rounded-2xl p-2 md:p-3 shadow-lg shadow-black/5 min-h-[100px] overflow-hidden">
 		<span class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest absolute z-0">Advertisement</span>
 		<ins class="adsbygoogle relative z-10"
 			style="display:block; width:100%; max-height:120px;"
@@ -212,77 +216,83 @@
 			data-full-width-responsive="true"></ins>
 	</div>
 
-	<div class="flex flex-col gap-3 sm:gap-5 lg:flex-row lg:items-end lg:justify-between">
-		
-		<div class="space-y-1.5 sm:space-y-3 w-full lg:w-auto">
-			<div class="flex items-center justify-between w-full lg:justify-start lg:gap-4">
-				<div class="flex items-center gap-2 sm:gap-3">
-					<h2 class="text-2xl font-black tracking-tight text-zinc-900 sm:text-4xl">Market</h2>
+	<div class="relative z-10 rounded-2xl border border-white/40 bg-white/50 backdrop-blur-3xl p-3 sm:p-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all">
+		<div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between w-full">
+			
+			<div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full lg:w-auto">
+				<div class="flex items-center justify-between w-full sm:w-auto">
+					<h1 class="sr-only">Live {currentFilters.type || 'BUY'} {currentFilters.selectedToken || 'USDT'} to {currentFilters.fiat || 'USD'} P2P Market Scanner</h1>
 					{#if currentFilters.selectedToken}
-						<span class="rounded-lg bg-blue-50 border border-blue-200 text-blue-700 px-2 py-0.5 sm:px-3.5 sm:py-1 text-[10px] sm:text-[11px] font-bold shadow-sm tracking-wide uppercase mt-0.5">{currentFilters.type} {currentFilters.selectedToken}</span>
+						<div class="flex items-center gap-2">
+							<span class="rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black text-white shadow-[0_0_15px_rgba(59,130,246,0.3)] tracking-wider uppercase border border-blue-400/50">
+								{currentFilters.type} {currentFilters.selectedToken}
+							</span>
+						</div>
 					{/if}
+					
+					<button
+						class="md:hidden flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-50 to-rose-100 border border-rose-200 text-rose-500 shadow-sm transition-all hover:scale-105 active:scale-95"
+						onclick={() => (showDonation = true)}
+						aria-label="Support the Dev"
+					>
+						<Heart class="size-4" />
+					</button>
 				</div>
 				
+				{#if $p2pOrderStore.marketRate || $p2pOrderStore.usdRate}
+					<div class="flex items-center gap-2 text-[10px] sm:text-xs font-medium text-zinc-500 overflow-x-auto hide-scrollbar pb-1 sm:pb-0 w-full sm:w-auto whitespace-nowrap">
+						<Activity class="size-3.5 sm:size-4 text-blue-500 shrink-0" /> 
+						<span class="shrink-0 font-bold uppercase tracking-wider text-[9px] sm:text-[10px]">Rates:</span>
+						
+						{#if $p2pOrderStore.usdRate && $p2pOrderStore.fiat !== 'USD'}
+							<span class="shrink-0 bg-white/80 backdrop-blur-md px-2 py-1 rounded-lg border border-zinc-200/60 shadow-sm">1 USD = <strong class="text-zinc-800">{$p2pOrderStore.usdRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} {$p2pOrderStore.fiat}</strong></span>
+						{/if}
+
+						{#if $p2pOrderStore.marketRate && $p2pOrderStore.token !== 'USD'}
+							<span class="shrink-0 bg-white/80 backdrop-blur-md px-2 py-1 rounded-lg border border-zinc-200/60 shadow-sm">1 {$p2pOrderStore.token} = <strong class="text-zinc-800">{$p2pOrderStore.marketRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} {$p2pOrderStore.fiat}</strong></span>
+						{/if}
+					</div>
+				{/if}
+			</div>
+
+			<div class="flex items-center gap-2 w-full lg:w-auto">
+				
 				<button
-					class="md:hidden flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-50 border border-rose-200 text-rose-500 shadow-sm transition-transform active:scale-95"
+					class="hidden md:flex h-10 sm:h-11 items-center justify-center gap-2 rounded-xl border border-rose-200/60 bg-gradient-to-b from-white/90 to-white/50 backdrop-blur-md px-4 sm:px-5 text-sm font-black text-rose-600 shadow-[0_4px_12px_-4px_rgba(225,29,72,0.2)] transition-all hover:from-white hover:to-rose-50 hover:border-rose-300 hover:shadow-[0_4px_16px_-4px_rgba(225,29,72,0.4)] hover:-translate-y-0.5 active:scale-95 active:translate-y-0"
 					onclick={() => (showDonation = true)}
 				>
 					<Heart class="size-4" />
+					<span>Support</span>
+				</button>
+
+				<button
+					class={cn("flex-[1.2] md:flex-none flex h-10 sm:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-3 sm:px-6 text-[11px] sm:text-sm font-bold shadow-sm transition-all hover:-translate-y-0.5 active:scale-95 active:translate-y-0", showFilters ? "bg-zinc-900 text-white border-zinc-800 shadow-[0_8px_16px_-6px_rgba(0,0,0,0.3)]" : "bg-gradient-to-b from-white/90 to-white/50 backdrop-blur-md border-zinc-200/60 text-zinc-700 hover:bg-white hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.1)]")}
+					onclick={() => (showFilters = !showFilters)}
+				>
+					<Settings2 class="size-3.5 sm:size-4" />
+					<span>Filters</span>
+				</button>
+
+				<div class="flex h-10 sm:h-11 flex-[1.5] md:flex-none items-center rounded-xl border border-zinc-200/50 bg-zinc-400/10 backdrop-blur-md p-1 shadow-inner">
+					<button
+						class={cn('flex-1 rounded-lg h-full text-[10px] sm:text-sm font-bold transition-all duration-300', viewMode === 'cards' ? 'bg-white shadow-[0_2px_8px_-2px_rgba(0,0,0,0.12)] text-zinc-900 scale-100' : 'text-zinc-500 hover:text-zinc-700 scale-95 hover:bg-white/50')}
+						onclick={() => (viewMode = 'cards')}
+					>Cards</button>
+					<button
+						class={cn('flex-1 rounded-lg h-full text-[10px] sm:text-sm font-bold transition-all duration-300', viewMode === 'table' ? 'bg-white shadow-[0_2px_8px_-2px_rgba(0,0,0,0.12)] text-zinc-900 scale-100' : 'text-zinc-500 hover:text-zinc-700 scale-95 hover:bg-white/50')}
+						onclick={() => viewMode = 'table'}
+					>Table</button>
+				</div>
+
+				<button
+					class="flex h-10 w-11 sm:h-11 sm:w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200/60 bg-gradient-to-b from-white/90 to-white/50 backdrop-blur-md shadow-sm transition-all hover:bg-white hover:-translate-y-0.5 hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.1)] active:scale-95 active:translate-y-0 disabled:opacity-50 text-zinc-700"
+					onclick={() => { if (currentFilters.selectedToken && currentFilters.fiat) p2pOrderStore.fetchOrders({ type: currentFilters.type, token: currentFilters.selectedToken, fiat: currentFilters.fiat }); }}
+					disabled={$p2pOrderStore.isLoading}
+					aria-label="Refresh Data"
+				>
+					<RefreshCw class={cn("size-4 sm:size-4.5", $p2pOrderStore.isLoading && "animate-spin text-blue-600")} />
 				</button>
 			</div>
-			
-			{#if $p2pOrderStore.marketRate || $p2pOrderStore.usdRate}
-				<div class="flex items-center gap-2 text-[10px] sm:text-xs font-medium text-zinc-500 overflow-x-auto hide-scrollbar pb-1 w-full whitespace-nowrap">
-					<Activity class="size-3.5 text-blue-500 shrink-0" /> 
-					<span class="shrink-0 font-bold uppercase tracking-wider text-[9px] sm:text-[10px]">Rates:</span>
-					
-					{#if $p2pOrderStore.usdRate && $p2pOrderStore.fiat !== 'USD'}
-						<span class="shrink-0 bg-white/60 px-1.5 py-0.5 rounded border border-zinc-200/50">1 USD = <strong class="text-zinc-800">{$p2pOrderStore.usdRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} {$p2pOrderStore.fiat}</strong></span>
-					{/if}
-
-					{#if $p2pOrderStore.marketRate && $p2pOrderStore.token !== 'USD'}
-						<span class="shrink-0 bg-white/60 px-1.5 py-0.5 rounded border border-zinc-200/50">1 {$p2pOrderStore.token} = <strong class="text-zinc-800">{$p2pOrderStore.marketRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} {$p2pOrderStore.fiat}</strong></span>
-					{/if}
-				</div>
-			{/if}
-		</div>
-
-		<div class="flex items-center gap-2 w-full lg:w-auto">
-			
-			<button
-				class="hidden md:flex h-11 items-center justify-center gap-2 rounded-xl border border-rose-200/60 bg-white/80 backdrop-blur-md px-4 text-sm font-bold text-rose-600 shadow-sm transition-all hover:bg-rose-50 hover:border-rose-300 active:scale-95"
-				onclick={() => (showDonation = true)}
-			>
-				<Heart class="size-4" />
-				<span>Support</span>
-			</button>
-
-			<button
-				class={cn("flex-[1.2] md:flex-none flex h-9 sm:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-2 sm:px-5 text-[11px] sm:text-sm font-bold shadow-sm transition-all active:scale-95", showFilters ? "bg-zinc-900 text-white border-zinc-900 shadow-zinc-900/10" : "bg-white/80 backdrop-blur-md border-zinc-200/60 text-zinc-700 hover:bg-white")}
-				onclick={() => (showFilters = !showFilters)}
-			>
-				<Settings2 class="size-3.5 sm:size-4" />
-				<span>Filters</span>
-			</button>
-
-			<div class="flex h-9 sm:h-11 flex-[1.5] md:flex-none items-center rounded-xl border border-zinc-200/60 bg-white/80 backdrop-blur-md p-1 shadow-sm">
-				<button
-					class={cn('flex-1 rounded-lg h-full text-[10px] sm:text-sm font-bold transition-all active:scale-95', viewMode === 'cards' ? 'bg-white shadow-sm text-zinc-900' : 'text-zinc-500 hover:text-zinc-800')}
-					onclick={() => (viewMode = 'cards')}
-				>Cards</button>
-				<button
-					class={cn('flex-1 rounded-lg h-full text-[10px] sm:text-sm font-bold transition-all active:scale-95', viewMode === 'table' ? 'bg-white shadow-sm text-zinc-900' : 'text-zinc-500 hover:text-zinc-800')}
-					onclick={() => viewMode = 'table'}
-				>Table</button>
-			</div>
-			
-			<button
-				class="flex h-9 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl border border-zinc-200/60 bg-white/80 backdrop-blur-md shadow-sm transition-all hover:bg-white active:scale-95 disabled:opacity-50 text-zinc-700"
-				onclick={() => { if (currentFilters.selectedToken && currentFilters.fiat) p2pOrderStore.fetchOrders({ type: currentFilters.type, token: currentFilters.selectedToken, fiat: currentFilters.fiat }); }}
-				disabled={$p2pOrderStore.isLoading}
-			>
-				<RefreshCw class={cn("size-3.5 sm:size-4", $p2pOrderStore.isLoading && "animate-spin text-blue-600")} />
-			</button>
 		</div>
 	</div>
 
@@ -400,103 +410,19 @@
 		</p>
 	</article>
 
-</div>
+</main>
 
-{#if showDonation}
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4" onclick={(e) => { if (e.target === e.currentTarget) showDonation = false; }} transition:fade={{ duration: 200 }}>
-        <div class="w-full max-w-md rounded-[24px] border border-white/60 bg-white/90 backdrop-blur-2xl p-6 shadow-2xl" transition:fly={{ y: 20, duration: 300, easing: cubicOut }}>
-            <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2 text-rose-600">
-                    <Heart class="size-5 fill-current" />
-                    <h3 class="text-xl font-black text-zinc-900">Support the Dev</h3>
-                </div>
-                <button class="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-200 hover:text-zinc-800 transition-colors" onclick={() => (showDonation = false)}>
-                    <X class="size-5" />
-                </button>
-            </div>
-            <p class="text-sm text-zinc-600 mb-6 font-medium leading-relaxed">
-                If this terminal helped you capture a profitable spread, consider supporting the server costs to keep it 100% free and ad-light.
-            </p>
-            <div class="space-y-3">
-                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-blue-300">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">USDT (TRC20 Network)</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9</code>
-                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('TR6EdNsQhXnZ8dRb3dZqveJRPxZftvSyr9', 'USDT')}>
-                            {#if copiedCoin === 'USDT'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
-                        </button>
-                    </div>
-                </div>
-                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-orange-300">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">Bitcoin (BTC)</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_BTC_ADDRESS</code>
-                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_BTC_ADDRESS', 'BTC')}>
-                            {#if copiedCoin === 'BTC'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
-                        </button>
-                    </div>
-                </div>
-                <div class="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3 transition-colors hover:border-zinc-400">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <span class="text-[11px] font-bold text-zinc-800 uppercase tracking-wider">Ripple (XRP)</span>
-                        <span class="text-[9px] font-bold text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-100">Include Memo if required</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap rounded-lg bg-white px-2.5 py-2 text-xs text-zinc-600 border border-zinc-200 shadow-inner">YOUR_XRP_ADDRESS</code>
-                        <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 transition-all active:scale-95 shadow-sm" onclick={() => copyAddress('YOUR_XRP_ADDRESS', 'XRP')}>
-                            {#if copiedCoin === 'XRP'} <Check class="size-4 text-green-500" /> {:else} <Copy class="size-4" /> {/if}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{/if}
+<ArbitrageCalculator 
+	bind:isOpen={isCalculatorOpen} 
+	fiat={currentFilters.fiat} 
+	token={currentFilters.selectedToken} 
+	initialBuyPrice={$p2pOrderStore.marketRate ? $p2pOrderStore.marketRate * 0.99 : 0}
+	initialSellPrice={$p2pOrderStore.marketRate ? $p2pOrderStore.marketRate * 1.01 : 0}
+/>
+
+<DonationPopup bind:isOpen={showDonation} />
 
 <SideGuide bind:isOpen={isGuideOpen} onDonateClick={() => (showDonation = true)} />
 <OtcBoard bind:isOpen={isOtcBoardOpen} />
 
-<div class="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-[90] flex items-center p-1.5 rounded-full bg-zinc-900/85 backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.6)]">
-
-	{#if showInstallButton}
-		<button 
-			class="group flex items-center gap-2 px-3 md:px-4 py-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all duration-300 text-[11px] md:text-xs font-bold active:scale-95"
-			onclick={installPWA}
-			title="Install Web App"
-		>
-			<Download class="size-4 md:size-4 group-hover:-translate-y-0.5 transition-transform duration-300" />
-			<span class="hidden md:inline whitespace-nowrap">Install App</span>
-		</button>
-
-		<div class="w-px h-5 bg-white/10 mx-1"></div>
-	{/if}
-
-	<button 
-		class="group flex items-center gap-2 px-3 md:px-4 py-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-all duration-300 text-[11px] md:text-xs font-bold active:scale-95"
-		onclick={() => isGuideOpen = true}
-		title="Platform Guide"
-	>
-		<BookOpen class="size-4 md:size-4 group-hover:-translate-y-0.5 transition-transform duration-300" />
-		<span class="hidden md:inline whitespace-nowrap">User Guide</span>
-	</button>
-
-	<div class="w-px h-5 bg-white/10 ml-1 mr-2 md:mx-2"></div>
-
-	<button 
-		onclick={() => isOtcBoardOpen = true}
-		class="group flex items-center gap-2 md:gap-2.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-4 md:px-5 py-2.5 text-[11px] md:text-sm font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] active:scale-95 border border-blue-400/50 relative overflow-hidden"
-	>
-		<span class="relative flex h-2 w-2 md:h-2.5 md:w-2.5 shrink-0">
-		  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
-		  <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.8)]"></span>
-		</span>
-
-		<span class="relative z-10 tracking-wide drop-shadow-sm whitespace-nowrap">OTC Nexus</span>
-
-		<Zap class="size-3.5 md:size-4 fill-white text-white drop-shadow-md group-hover:rotate-12 group-hover:scale-110 transition-all duration-300" />
-	</button>
-</div>
+<BottomDock {showInstallButton} onInstall={installPWA} onOpenGuide={() => (isGuideOpen = true)} onOpenCalculator={() => (isCalculatorOpen = true)} onOpenOtc={() => (isOtcBoardOpen = true)} />
