@@ -245,7 +245,7 @@
 	<div class="w-full relative flex items-center justify-center bg-white/30 backdrop-blur-xl border border-white/40 rounded-2xl p-2 md:p-3 shadow-lg shadow-black/5 min-h-[100px] overflow-hidden">
 		<span class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest absolute z-0">Advertisement</span>
 		<ins class="adsbygoogle relative z-10"
-			style="display:block; width:100%; max-height:120px;"
+			style="display:block; width:100%; min-height:100px; max-height:120px;"
 			data-ad-client="ca-pub-5684719528000331"
 			data-ad-slot="9054339491"
 			data-ad-format="horizontal"

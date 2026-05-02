@@ -21,7 +21,6 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>Crypto P2P Comparison</title>
 </svelte:head>
 
 <ModeWatcher />

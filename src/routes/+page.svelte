@@ -151,7 +151,7 @@
 			<span class="absolute top-3 left-4 text-[9px] font-black uppercase tracking-widest text-zinc-400">Sponsored</span>
 			<div class="w-full h-full rounded-2xl bg-white/50 border border-zinc-100 flex items-center justify-center overflow-hidden">
 				<ins class="adsbygoogle"
-					style="display:block; text-align:center; width:100%; height:100%;"
+					style="display:block; text-align:center; width:100%; height:100%; min-height:250px;"
 					data-ad-layout="in-article"
 					data-ad-format="fluid"
 					data-ad-client="ca-pub-5684719528000331"
