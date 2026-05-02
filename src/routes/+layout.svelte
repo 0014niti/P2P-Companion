@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { page } from '$app/stores'; // <-- 1. Added page store for the canonical URL
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/header.svelte';
 	import '@fontsource-variable/outfit';
@@ -20,6 +21,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<title>Crypto P2P Comparison</title>
 </svelte:head>
 
 <ModeWatcher />
