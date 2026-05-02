@@ -61,7 +61,7 @@
 </script>
 
 <svelte:head>
-	<title>P2P Terminal by P2P Companion | Live Crypto Price Comparison & USDT Spreads</title>
+	<title>P2P Terminal | Live Crypto Price Comparison & Spreads</title>
 	<meta name="description" content="A 100% free, unbiased P2P comparison tool by P2P Companion. Experience premium data analytics while comparing real-time USDT rates across Binance, OKX, and Bybit." />
 	
 	<meta name="keywords" content="compare P2P crypto prices, best USDT P2P rate, Binance vs OKX spread, live P2P fiat calculator, USDT comparison NGN TRY ARS PHP" />

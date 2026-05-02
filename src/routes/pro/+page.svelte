@@ -60,7 +60,7 @@
                 <div class="flex items-center justify-center size-16 rounded-full bg-blue-600/10 border border-blue-500/20 mb-4">
                     <Lock class="size-8 text-blue-400" />
                 </div>
-                <h1 class="text-3xl font-black text-white tracking-tight">Pro Access</h1>
+                <h2 class="text-3xl font-black text-white tracking-tight">Pro Access</h2>
                 <p class="text-zinc-400 mt-1">Enter your access code to continue.</p>
             </div>
 
