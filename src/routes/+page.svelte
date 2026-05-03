@@ -86,7 +86,7 @@
 				"@type": "Organization",
 				"name": "P2P Companion"
 			}
-		})}
+		}, null, 2)}
 	</script>
 
 	<script type="application/ld+json">
@@ -101,7 +101,7 @@
 					"text": faq.answer
 				}
 			}))
-		})}
+		}, null, 2)}
 	</script>
 </svelte:head>
 
