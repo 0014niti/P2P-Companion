@@ -25,18 +25,19 @@
         if (isOpen) {
             if (buyPrice === 0) buyPrice = initialBuyPrice;
             if (sellPrice === 0) sellPrice = initialSellPrice;
-            
-            // Initialize AdSense when drawer opens
-            setTimeout(() => {
-                try {
-                    // @ts-ignore
-                    (window.adsbygoogle = window.adsbygoogle || []).push({});
-                } catch (e) {
-                    console.error("AdSense Error: ", e);
-                }
-            }, 100);
         }
     });
+
+    function loadAd(node: HTMLElement) {
+        setTimeout(() => {
+            try {
+                // @ts-ignore
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+            } catch (e) {
+                // Silently ignore if already filled
+            }
+        }, 350);
+    }
 
     const cryptoAmount = $derived(buyPrice > 0 ? investment / buyPrice : 0);
     const revenue = $derived(cryptoAmount * sellPrice);
@@ -65,7 +66,7 @@
                 <div class="w-full bg-white/60 backdrop-blur-md border border-white/60 rounded-2xl p-2 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] relative overflow-hidden">
                     <span class="absolute top-1 left-2 text-[8px] font-black uppercase tracking-widest text-zinc-400 z-10">Sponsored</span>
                     <div class="min-h-[100px] w-full flex items-center justify-center pt-3 relative z-0">
-                        <ins class="adsbygoogle" style="display:block; width:100%; min-height:100px;" data-ad-client="ca-pub-5684719528000331" data-ad-slot="9284297997" data-ad-format="rectangle, horizontal" data-full-width-responsive="true"></ins>
+                        <ins use:loadAd class="adsbygoogle" style="display:block; width:100%; min-height:100px;" data-ad-client="ca-pub-5684719528000331" data-ad-slot="9284297997" data-ad-format="rectangle, horizontal" data-full-width-responsive="true"></ins>
                     </div>
                 </div>
 
