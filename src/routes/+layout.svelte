@@ -22,7 +22,7 @@
 	<link rel="icon" href={favicon} />
 	{#if !dev}
 		<!-- Cloudflare Web Analytics -->
-		<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: "44ec1e0d3c2149539cd0349ca921085f" })}></script><!--End Cloudflare Web Analytics-->
+		<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: "5f18d97f7db84781bfe0e57cb738fadd" })}></script><!--End Cloudflare Web Analytics-->
 	{/if}
 </svelte:head>
 
