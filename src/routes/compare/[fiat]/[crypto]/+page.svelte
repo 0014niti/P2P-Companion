@@ -8,7 +8,9 @@
                 <title>{metaTitle}</title>
                     <meta name="description" content={metaDescription} />
                         <meta name="keywords" content="buy {crypto} with {fiat}, {fiat} {crypto} P2P, {crypto} arbitrage {fiat}, Binance {fiat} P2P, OKX {fiat} crypto" />
-                        </svelte:head>
+                            
+                                <link rel="canonical" href="https://p2pcompanion.com/compare/{fiat.toLowerCase()}/{crypto.toLowerCase()}" />
+                                </svelte:head>
 
                         <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-12 lg:py-20 mb-24">
                             
