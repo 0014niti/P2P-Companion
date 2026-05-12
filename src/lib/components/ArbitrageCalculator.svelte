@@ -60,15 +60,7 @@
                     <X class="size-5" />
                 </button>
             </div>
-
-            <div class="flex-1 overflow-y-auto p-5 space-y-6 hide-scrollbar">
-                <!-- Ad Slot: Monetizes the tool natively -->
-                <div class="w-full bg-white/60 backdrop-blur-md border border-white/60 rounded-2xl p-2 text-center shadow-[0_4px_20px_rgba(0,0,0,0.03)] relative overflow-hidden">
-                    <span class="absolute top-1 left-2 text-[8px] font-black uppercase tracking-widest text-zinc-400 z-10">Sponsored</span>
-                    <div class="min-h-[100px] w-full flex items-center justify-center pt-3 relative z-0">
-                        <ins use:loadAd class="adsbygoogle" style="display:block; width:100%; min-height:100px;" data-ad-client="ca-pub-5684719528000331" data-ad-slot="9284297997" data-ad-format="rectangle, horizontal" data-full-width-responsive="true"></ins>
-                    </div>
-                </div>
+            
 
                 <!-- Calculator Inputs -->
                 <div class="space-y-4">
