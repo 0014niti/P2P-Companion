@@ -24,7 +24,7 @@ export const GET: RequestHandler = async () => {
                                                                                             for (const fiat of fiats) {
                                                                                                         xml += `
                                                                                                                     <url>
-                                                                                                                                    <loc>${siteUrl}/spreads/${fiat}/${crypto}</loc>
+                                                                                                                                    <loc>${siteUrl}/compare/${fiat}/${crypto}</loc>
                                                                                                                                                     <changefreq>daily</changefreq>
                                                                                                                                                                     <priority>0.7</priority>
                                                                                                                                                                                 </url>`;

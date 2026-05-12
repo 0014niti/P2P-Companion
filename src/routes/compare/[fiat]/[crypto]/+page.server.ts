@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
                                                     return {
                                                             fiat,
                                                                     crypto,
-                                                                            metaTitle: `Live ${crypto} to ${fiat} Best p2p rates | cheapest Rates Today`,
-                                                                                    metaDescription: `Compare live ${crypto}/${fiat} P2P rates across Binance, OKX, Bitget, kucoin, MEXC and Bybit. Find the highest profitable trades and cheapest buying price  instantly without an account.`
+                                                                            metaTitle: `Buy ${crypto} with ${fiat} | Compare Best P2P Rates Today`,
+                                                                                    metaDescription: `Looking to buy ${crypto} with ${fiat}? Compare live P2P rates across Binance, OKX, and Bybit to find the cheapest prices instantly without an account.`
                                                                                         };
                                                                                         };
