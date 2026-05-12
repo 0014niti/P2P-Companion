@@ -60,7 +60,6 @@
                     <X class="size-5" />
                 </button>
             </div>
-            
 
                 <!-- Calculator Inputs -->
                 <div class="space-y-4">
@@ -86,7 +85,6 @@
                         ✨ More features coming to <a href="/pro" target="_blank" rel="noopener" class="text-blue-600 hover:text-blue-700 hover:underline">Pro Version</a>
                     </span>
                 </div>
-            </div>
         </div>
     </div>
 {/if}
