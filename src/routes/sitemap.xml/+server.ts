@@ -7,16 +7,16 @@ export const GET: RequestHandler = async () => {
                 const fiats = ['ngn', 'try', 'ars', 'usd', 'eur', 'gbp', 'php', 'vnd', 'inr', 'rub', 'brl', 'zar'];
                     const cryptos = ['usdt', 'btc', 'eth'];
 
-                        // Start XML string
-                            let xml = `<?xml version="1.0" encoding="UTF-8" ?>`;
-                                xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
+                        // Start XML string cleanly
+                            let xml = `<?xml version="1.0" encoding="UTF-8" ?>\n`;
+                                xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
-                                    // Add static pages
+                                    // Add static pages (CORRECTED </loc> tags)
                                         xml += `
-                                                <url><loc>${siteUrl}/</url><priority>1.0</priority></url>
-                                                        <url><loc>${siteUrl}/terminal</url><priority>0.9</priority></url>
-                                                                <url><loc>${siteUrl}/pro</url><priority>0.8</priority></url>
-                                                                        <url><loc>${siteUrl}/markets</url><priority>0.8</priority></url>
+                                                <url><loc>${siteUrl}/</loc><priority>1.0</priority></url>
+                                                        <url><loc>${siteUrl}/terminal</loc><priority>0.9</priority></url>
+                                                                <url><loc>${siteUrl}/pro</loc><priority>0.8</priority></url>
+                                                                        <url><loc>${siteUrl}/markets</loc><priority>0.8</priority></url>
                                                                             `;
 
                                                                                 // Loop through arrays and generate URLs for every combination
@@ -31,10 +31,10 @@ export const GET: RequestHandler = async () => {
                                                                                                                                                                                         }
                                                                                                                                                                                             }
 
-                                                                                                                                                                                                xml += `</urlset>`;
+                                                                                                                                                                                                xml += `\n</urlset>`;
 
-                                                                                                                                                                                                    // Return the XML with correct headers so the browser/bots read it properly
-                                                                                                                                                                                                        return new Response(xml, {
+                                                                                                                                                                                                    // Return the XML, using .trim() to ensure no blank lines at the top of the file
+                                                                                                                                                                                                        return new Response(xml.trim(), {
                                                                                                                                                                                                                 headers: {
                                                                                                                                                                                                                             'Content-Type': 'application/xml',
                                                                                                                                                                                                                                         'Cache-Control': 'max-age=0, s-maxage=3600'
