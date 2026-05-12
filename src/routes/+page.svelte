@@ -56,7 +56,7 @@
 		},
 		{
 			question: 'Which exchanges and currencies are supported?',
-			answer: 'We currently aggregate data from Binance, OKX, and Bybit. Our engine covers over 50 fiat currencies, including USD, EUR, GBP, RUB, GN, TRY, ARS, PHP, VND, INR, RUB,and more, allowing for global market analysis.'
+			answer: 'We currently aggregate data from Binance, OKX, and Bybit. Our engine covers over 50 fiat currencies, including USD, EUR, GBP, RUB, GN, TRY, ARS, PHP, VND, INR, RUB, and more, allowing for global market analysis.'
 		}
 	];
 </script>
@@ -64,7 +64,6 @@
 <svelte:head>
 	<title>P2P Terminal | Live Crypto Price Comparison & Spreads</title>
 	<meta name="description" content="A 100% free, unbiased P2P comparison tool by P2P Companion. Experience premium data analytics while comparing real-time USDT rates across Binance, OKX, and Bybit." />
-	
 	<meta name="keywords" content="compare P2P crypto prices, best USDT P2P rate, Binance vs OKX spread, live P2P fiat calculator, USDT comparison NGN TRY ARS PHP" />
 	
 	<script type="application/ld+json">
@@ -112,7 +111,6 @@
 	<div class="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:16px_28px] [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
 </div>
 
-<!-- Floating Bottom CTA Dock -->
 <div class="fixed bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-[90] flex items-center p-2 gap-2 rounded-full bg-white/20 dark:bg-zinc-900/40 backdrop-blur-3xl border border-white/50 dark:border-zinc-800/60 shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-300">
 	<button
 		onclick={toggleMode}
@@ -200,6 +198,91 @@
             </div>
         </div>
 
+		<div class="lg:col-span-12 relative rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl shadow-xl shadow-slate-200/30 dark:shadow-none overflow-hidden mt-2 mb-2">
+            
+            <div class="p-6 lg:p-8 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight text-zinc-950 dark:text-white">Live Global Order Book</h2>
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm font-medium mt-1">Real-time USDT spread visualization.</p>
+                </div>
+                <div class="hidden sm:flex gap-2">
+                    <span class="px-3 py-1 rounded-lg bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-xs font-bold text-zinc-600 dark:text-zinc-300">USD</span>
+                    <span class="px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 text-xs font-bold text-blue-700 dark:text-blue-400">USDT</span>
+                </div>
+            </div>
+
+            <div class="relative w-full">
+                <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-3 bg-zinc-50/50 dark:bg-zinc-800/30 border-b border-zinc-200/50 dark:border-zinc-800/50 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                    <div class="col-span-2 md:col-span-1">Merchant</div>
+                    <div class="hidden md:block">Exchange</div>
+                    <div>Price</div>
+                    <div>Available</div>
+                    <div class="text-right">Action</div>
+                </div>
+
+                <div class="flex flex-col">
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-colors">
+                        <div class="col-span-2 md:col-span-1 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                            <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">FastTrade_Pro</span>
+                        </div>
+                        <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                            <div class="size-4 rounded-full bg-[#FCD535] flex items-center justify-center"><span class="text-black text-[6px] font-black">BNB</span></div>
+                            Binance
+                        </div>
+                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.002 USD</div>
+                        <div class="text-xs font-medium text-zinc-500">4,500 USDT</div>
+                        <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold">Buy</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 blur-[1px] opacity-90 select-none">
+                        <div class="col-span-2 md:col-span-1 flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
+                            <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">CryptoWhale99</span>
+                        </div>
+                        <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">
+                            <div class="size-4 rounded-full bg-black flex items-center justify-center"><span class="text-white text-[6px] font-black">OKX</span></div>
+                            OKX
+                        </div>
+                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.004 USD</div>
+                        <div class="text-xs font-medium text-zinc-500">12,000 USDT</div>
+                        <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 blur-sm opacity-60 select-none">
+                        <div class="col-span-2 md:col-span-1 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-zinc-300"></div><span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">GlobalAssets</span></div>
+                        <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">Bybit</div>
+                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.005 USD</div>
+                        <div class="text-xs font-medium text-zinc-500">850 USDT</div>
+                        <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-4 items-center blur-md opacity-30 select-none">
+                        <div class="col-span-2 md:col-span-1 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-zinc-300"></div><span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">SecureExchange</span></div>
+                        <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">KuCoin</div>
+                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.008 USD</div>
+                        <div class="text-xs font-medium text-zinc-500">2,100 USDT</div>
+                        <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
+                    </div>
+                </div>
+
+                <div class="absolute inset-0 top-1/3 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80 flex flex-col items-center justify-end pb-10 z-10">
+                    <div class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/60 dark:border-zinc-700 p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-md text-center transform transition-transform hover:scale-[1.02] duration-300">
+                        <div class="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4 border border-blue-200 dark:border-blue-800/50 shadow-inner">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 dark:text-blue-400"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-black text-zinc-900 dark:text-white mb-2">Unlock Full Market Data</h3>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-6 font-medium">View the complete order book, compare spreads across 6+ exchanges, and analyze 50+ local fiat currencies instantly.</p>
+                        <a href="/terminal" class="w-full py-4 rounded-xl text-sm font-black text-white bg-blue-600 hover:bg-blue-700 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all active:scale-95 flex items-center justify-center gap-2">
+                            Launch Free Terminal
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        </a>
+                        <p class="text-[10px] font-bold text-zinc-400 mt-4 uppercase tracking-widest">No Account Required</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="lg:col-span-7 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-8 shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col justify-center">
             <h2 class="text-2xl font-black tracking-tight text-zinc-950 dark:text-white mb-6">Terminal Advantages</h2>
             <div class="flex flex-col gap-6">
@@ -280,33 +363,33 @@
         </div>
 
         <article class="lg:col-span-12 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-10 shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col justify-center space-y-6">
-		            <div>
-					                <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-2">Understanding Crypto P2P Arbitrage & Market Spreads</h2>
-									                <p class="text-zinc-500 dark:text-zinc-400 text-sm font-medium">A comprehensive guide to leveraging global peer-to-peer cryptocurrency data.</p>
-													            </div>
-																            
-																			            <div class="grid md:grid-cols-2 gap-8">
-																						                <div class="space-y-4">
-																										                    <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">How Does P2P Arbitrage Work?</h3>
-																															                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
-																																				                        Cryptocurrency prices are not universally identical. While spot market prices for assets like Bitcoin (BTC) or Tether (USDT) remain relatively stable globally, the Peer-to-Peer (P2P) markets fluctuate independently based on regional supply, local banking regulations, and fiat currency volatility. P2P arbitrage is the practice of identifying these price inefficiencies across different centralized exchanges (such as Binance, OKX, and Bybit) and capitalizing on the spread.
-																																										                    </p>
-																																															                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
-																																																				                        For example, if the demand for USDT is exceptionally high in a specific fiat market, a merchant might sell USDT on Binance at a premium while simultaneously buying it at a lower rate on OKX. Our terminal aggregates these live order books so you can spot these opportunities instantly.
-																																																										                    </p>
-																																																															                </div>
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-2">Understanding Crypto P2P Arbitrage & Market Spreads</h2>
+                <p class="text-zinc-500 dark:text-zinc-400 text-sm font-medium">A comprehensive guide to leveraging global peer-to-peer cryptocurrency data.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">How Does P2P Arbitrage Work?</h3>
+                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+                        Cryptocurrency prices are not universally identical. While spot market prices for assets like Bitcoin (BTC) or Tether (USDT) remain relatively stable globally, the Peer-to-Peer (P2P) markets fluctuate independently based on regional supply, local banking regulations, and fiat currency volatility. P2P arbitrage is the practice of identifying these price inefficiencies across different centralized exchanges (such as Binance, OKX, and Bybit) and capitalizing on the spread.
+                    </p>
+                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+                        For example, if the demand for USDT is exceptionally high in a specific fiat market, a merchant might sell USDT on Binance at a premium while simultaneously buying it at a lower rate on OKX. Our terminal aggregates these live order books so you can spot these opportunities instantly.
+                    </p>
+                </div>
 
-																																																																			                <div class="space-y-4">
-																																																																							                    <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">Why Use a Data Aggregator?</h3>
-																																																																												                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
-																																																																																	                        Traditionally, finding profitable P2P spreads required traders to open multiple browser tabs, log into various exchange accounts, and manually calculate maker/taker fees against current exchange rates. This manual process is slow, resulting in missed opportunities as order books shift rapidly.
-																																																																																							                    </p>
-																																																																																												                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
-																																																																																																	                        Our <strong>100% free-to-use</strong> comparison terminal solves this by fetching raw, unbiased data directly from the exchanges. Without requiring any accounts or logins, the terminal calculates the optimal buy and sell limits, highlights trusted merchants, and provides complete transparency into the liquidity of over 50 global fiat currencies.
-																																																																																																							                    </p>
-																																																																																																												                </div>
-																																																																																																																            </div>
-																																																																																																																			        </article>
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">Why Use a Data Aggregator?</h3>
+                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+                        Traditionally, finding profitable P2P spreads required traders to open multiple browser tabs, log into various exchange accounts, and manually calculate maker/taker fees against current exchange rates. This manual process is slow, resulting in missed opportunities as order books shift rapidly.
+                    </p>
+                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+                        Our <strong>100% free-to-use</strong> comparison terminal solves this by fetching raw, unbiased data directly from the exchanges. Without requiring any accounts or logins, the terminal calculates the optimal buy and sell limits, highlights trusted merchants, and provides complete transparency into the liquidity of over 50 global fiat currencies.
+                    </p>
+                </div>
+            </div>
+        </article>
 
         <div class="lg:col-span-7 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-8 shadow-xl shadow-slate-200/30 dark:shadow-none">
             <h2 class="text-2xl font-black tracking-tight text-zinc-950 dark:text-white mb-6">FAQ</h2>
@@ -331,7 +414,7 @@
 
 	<section class="mt-12 text-center opacity-60">
 		<p class="text-xs text-zinc-500 font-medium">
-			Global Data Coverage: Instantly compare P2P rates for NGN (Naira), TRY (Lira), ARS (Peso), PHP (Peso), VND (Dong), INR (Rupee), RUB (Ruble), USD (US Dollar), EUR (Euro), GBP (Pound Sterling),	and 50+ regional fiat currencies.
+			Global Data Coverage: Instantly compare P2P rates for NGN (Naira), TRY (Lira), ARS (Peso), PHP (Peso), VND (Dong), INR (Rupee), RUB (Ruble), USD (US Dollar), EUR (Euro), GBP (Pound Sterling), and 50+ regional fiat currencies.
 		</p>
 	</section>
 
