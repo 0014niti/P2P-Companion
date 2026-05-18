@@ -29,7 +29,7 @@ import {
                                                                                                                                                 const crypto = 'USDT';
                                                                                                                                                         const buyExchange = 'Bybit';
                                                                                                                                                                 const sellExchange = 'Binance';
-                                                                                                                                                                        const lowestAsk = 1450.50; 
+                                                                                                                                                                        const lowestAsk = 1451.00; 
                                                                                                                                                                                 const highestBid = 1480.00; 
                                                                                                                                                                                         const spreadMargin = (((highestBid - lowestAsk) / lowestAsk) * 100).toFixed(2);
 
