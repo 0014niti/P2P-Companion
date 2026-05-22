@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { Lock, ArrowRight, BarChart3, Bot, AlertTriangle, Heart } from 'lucide-svelte';
+    import { Lock, ArrowRight, BarChart3, Bot, AlertTriangle, Heart, Zap, LineChart, Shield } from 'lucide-svelte';
     import { fly } from 'svelte/transition';
 
     // --- Config ---
@@ -14,7 +14,6 @@
 
     // --- Lifecycle ---
     onMount(() => {
-        // Check if user is already authenticated in this session
         if (sessionStorage.getItem(SESSION_KEY) === 'true') {
             isAuthenticated = true;
         }
@@ -28,7 +27,6 @@
             errorMessage = '';
         } else {
             errorMessage = 'Invalid Access Code.';
-            // Shake animation on error
             const form = document.getElementById('login-form');
             form?.classList.add('animate-shake');
             setTimeout(() => form?.classList.remove('animate-shake'), 500);
@@ -37,8 +35,8 @@
 </script>
 
 <svelte:head>
-    <title>Pro Analytics | P2P Terminal</title>
-    <meta name="robots" content="noindex, nofollow" />
+    <title>Pro Analytics & Arbitrage Tools | P2P Terminal</title>
+    <meta name="description" content="Unlock advanced peer-to-peer crypto arbitrage tools, historical spread analysis, and automated market signals with P2P Companion Pro." />
     <style>
         @keyframes shake {
             10%, 90% { transform: translate3d(-1px, 0, 0); }
@@ -46,62 +44,88 @@
             30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-        .animate-shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        .animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
     </style>
 </svelte:head>
 
 {#if !isAuthenticated}
-    <!-- LOCK SCREEN -->
-    <div class="flex min-h-screen items-center justify-center p-4" transition:fly={{ y: 20, duration: 500 }}>
-        <div id="login-form" class="w-full max-w-sm">
-            <div class="flex flex-col items-center text-center mb-8">
-                <div class="flex items-center justify-center size-16 rounded-full bg-blue-600/10 border border-blue-500/20 mb-4">
-                    <Lock class="size-8 text-blue-400" />
+    <div class="mx-auto max-w-screen-xl px-4 py-12 lg:py-20" transition:fly={{ y: 20, duration: 500 }}>
+        <div class="grid lg:grid-cols-2 gap-16 items-center mb-24">
+            <div id="login-form" class="w-full max-w-md mx-auto bg-zinc-900/50 border border-zinc-800 p-8 rounded-3xl shadow-2xl">
+                <div class="flex flex-col items-center text-center mb-8">
+                    <div class="flex items-center justify-center size-16 rounded-full bg-blue-600/10 border border-blue-500/20 mb-4">
+                        <Lock class="size-8 text-blue-400" />
+                    </div>
+                    <h2 class="text-3xl font-black text-white tracking-tight">Pro Access</h2>
+                    <p class="text-zinc-400 mt-2">Enter your beta access code to continue.</p>
                 </div>
-                <h2 class="text-3xl font-black text-white tracking-tight">Pro Access</h2>
-                <p class="text-zinc-400 mt-1">Enter your access code to continue.</p>
+
+                <form on:submit|preventDefault={handleLogin} class="space-y-4">
+                    <input
+                        bind:value={enteredCode}
+                        type="password"
+                        placeholder="••••••••••••"
+                        class="block w-full rounded-xl border-2 bg-zinc-800/50 px-5 py-3.5 text-center text-lg font-bold text-white tracking-widest border-zinc-700/80 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none"
+                    />
+                    <button type="submit" class="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-4 text-base font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] active:scale-95">
+                        Unlock Analytics
+                        <ArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
+                    </button>
+                </form>
+
+                {#if errorMessage}
+                    <p class="mt-4 text-center text-sm font-bold text-rose-500">{errorMessage}</p>
+                {/if}
             </div>
 
-            <form on:submit|preventDefault={handleLogin} class="space-y-4">
-                <input
-                    bind:value={enteredCode}
-                    type="password"
-                    placeholder="••••••••••••"
-                    class="block w-full rounded-xl border-2 bg-zinc-800/50 px-5 py-3.5 text-center text-lg font-bold text-white tracking-widest border-zinc-700/80 transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 outline-none"
-                />
-                <button type="submit" class="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-4 text-base font-black text-white shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] active:scale-95">
-                    Unlock Analytics
-                    <ArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
-                </button>
-            </form>
+            <div class="text-zinc-300">
+                <h1 class="text-4xl sm:text-5xl font-black text-white mb-6">Advanced Tools for <span class="text-blue-500">P2P Merchants</span></h1>
+                <p class="text-lg leading-relaxed mb-6">
+                    P2P Companion Pro is designed for high-volume cryptocurrency merchants and institutional traders who require split-second market intelligence. While our free terminal provides excellent spot-checks, Pro users gain access to our deep-data pipeline.
+                </p>
+                <p class="text-lg leading-relaxed mb-8">
+                    Stop manually refreshing exchange order books. Our automated systems track liquidity depth, calculate cross-exchange maker/taker fees in real-time, and identify fleeting arbitrage opportunities across fiat markets globally.
+                </p>
+                <div class="flex gap-4">
+                    <a href="/terminal" class="px-6 py-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-bold transition-colors">Try Free Terminal</a>
+                </div>
+            </div>
+        </div>
 
-            {#if errorMessage}
-                <p class="mt-4 text-center text-sm font-bold text-rose-500">{errorMessage}</p>
-            {/if}
-            
-            <div class="text-center mt-8">
-                 <a href="/terminal" class="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">&larr; Back to Free Terminal</a>
+        <div class="border-t border-zinc-800 pt-16">
+            <h2 class="text-3xl font-black text-center text-white mb-12">Why Upgrade to Pro?</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
+                    <Zap class="size-8 text-amber-400 mb-4" />
+                    <h3 class="text-xl font-bold text-white mb-3">Live Arbitrage Signals</h3>
+                    <p class="text-zinc-400 leading-relaxed">Receive instant algorithmic alerts when a profitable spread opens between major exchanges like Binance, Bybit, and OKX. Our system calculates net profit margins after standard maker fees.</p>
+                </div>
+                <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
+                    <LineChart class="size-8 text-blue-400 mb-4" />
+                    <h3 class="text-xl font-bold text-white mb-3">Historical Spread Charts</h3>
+                    <p class="text-zinc-400 leading-relaxed">Visualize premium fluctuations over time. Analyze historical fiat-to-crypto premiums to predict market trends during local banking hours or macroeconomic news events.</p>
+                </div>
+                <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
+                    <Shield class="size-8 text-emerald-400 mb-4" />
+                    <h3 class="text-xl font-bold text-white mb-3">Deep Order Book Access</h3>
+                    <p class="text-zinc-400 leading-relaxed">Go beyond the first page of advertisements. Pro allows you to analyze massive liquidity walls and identify large institutional orders that might move the local P2P peg.</p>
+                </div>
             </div>
         </div>
     </div>
+
 {:else}
-    <!-- PREMIUM ANALYTICS PAGE -->
     <main class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-8 text-white" transition:fly={{ y: 20, duration: 500 }}>
         <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
             <div>
-                <h1 class="text-4xl font-black tracking-tighter text-white">
-                    Premium Analytics
-                </h1>
+                <h1 class="text-4xl font-black tracking-tighter text-white">Premium Analytics</h1>
                 <p class="text-zinc-400 mt-1">Curated data signals & historical spread analysis.</p>
             </div>
-        <a href="/terminal" class="mt-4 sm:mt-0 text-sm font-bold text-zinc-400 hover:text-white transition-colors flex items-center gap-2">
-            &larr; Back to Terminal
+            <a href="/terminal" class="mt-4 sm:mt-0 text-sm font-bold text-zinc-400 hover:text-white transition-colors flex items-center gap-2">
+                &larr; Back to Terminal
             </a>
         </header>
 
-        <!-- Under Construction & Support Notice -->
         <div class="mb-8 rounded-2xl border border-amber-400/30 bg-amber-500/10 p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div class="flex-shrink-0 size-10 rounded-full bg-amber-500/10 border border-amber-400/20 flex items-center justify-center">
                 <AlertTriangle class="size-5 text-amber-400" />
@@ -118,9 +142,7 @@
             </a>
         </div>
 
-        <!-- Mock Data UI -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Arbitrage Signal -->
             <div class="lg:col-span-1 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 space-y-4">
                 <div class="flex items-center gap-2">
                     <Bot class="size-5 text-blue-400" />
@@ -143,7 +165,6 @@
                 <p class="text-xs text-zinc-500 italic">Live signal detection coming in V2. This is mock data.</p>
             </div>
 
-            <!-- Historical Chart -->
             <div class="lg:col-span-2 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-5 space-y-4">
                 <div class="flex items-center gap-2">
                     <BarChart3 class="size-5 text-blue-400" />
@@ -152,7 +173,7 @@
                 <div class="h-64 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center">
                     <p class="text-zinc-500 font-medium">Chart component placeholder</p>
                 </div>
-                 <p class="text-xs text-zinc-500 italic">Historical data ingestion and charting coming in V2. This is a UI placeholder.</p>
+                <p class="text-xs text-zinc-500 italic">Historical data ingestion and charting coming in V2. This is a UI placeholder.</p>
             </div>
         </div>
     </main>
