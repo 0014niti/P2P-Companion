@@ -6,6 +6,7 @@ export const GET: RequestHandler = async () => {
     // Arrays must match the ones defined earlier
     const fiats = ['ngn', 'try', 'ars', 'usd', 'eur', 'gbp', 'php', 'vnd', 'inr', 'rub', 'brl', 'zar'];
     const cryptos = ['usdt', 'btc', 'eth'];
+    const payments = ['bank-transfer', 'revolut', 'skrill', 'paypal', 'wise', 'perfect-money', 'advcash'];
 
     // Start XML string cleanly
     let xml = `<?xml version="1.0" encoding="UTF-8" ?>\n`;
@@ -31,6 +32,15 @@ export const GET: RequestHandler = async () => {
             <changefreq>daily</changefreq>
             <priority>0.7</priority>
         </url>`;
+
+            for (const payment of payments) {
+                xml += `
+        <url>
+            <loc>${siteUrl}/compare/${fiat}/${crypto}/${payment}</loc>
+            <changefreq>weekly</changefreq>
+            <priority>0.6</priority>
+        </url>`;
+            }
         }
     }
 
