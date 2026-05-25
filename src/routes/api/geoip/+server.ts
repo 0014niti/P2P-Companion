@@ -12,8 +12,12 @@ export async function GET({ request }) {
 
     if (clientIp) {
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 4000); // 4-second timeout
+
             // Use a free GeoIP API (ip-api.com is good for non-commercial use, check their terms)
-            const geoIpResponse = await fetch(`http://ip-api.com/json/${clientIp}`);
+            const geoIpResponse = await fetch(`http://ip-api.com/json/${clientIp}`, { signal: controller.signal });
+            clearTimeout(timeoutId);
             const geoIpData = await geoIpResponse.json();
 
             if (geoIpData.status === 'success' && geoIpData.countryCode) {
