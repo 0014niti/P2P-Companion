@@ -1,7 +1,9 @@
 <script lang="ts">
+    import SeoTextAndFaq from '$lib/components/SeoTextAndFaq.svelte';
+
     // Extract the dynamic data passed from +page.server.ts
     let { data } = $props();
-    const { fiat, crypto, metaTitle, metaDescription } = data;
+    const { fiat, crypto, metaTitle, metaDescription, monthYear } = data;
 </script>
 
 <svelte:head>
@@ -63,6 +65,8 @@
             In many regions, the P2P price of {crypto} trades at a premium compared to the standard global spot rate. This premium is typically driven by high local demand for digital assets as a hedge against local currency depreciation, or by strict capital controls that make traditional foreign exchange difficult. When using our {crypto}/{fiat} terminal, always factor in maker/taker fees and the historical reputation of the merchant you are transacting with to ensure a safe and secure exchange.
         </p>
     </article>
+
+    <SeoTextAndFaq {crypto} {fiat} {monthYear} />
 </div>
 
 <style>

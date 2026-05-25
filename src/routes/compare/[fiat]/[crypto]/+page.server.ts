@@ -19,10 +19,15 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
                                             'Cache-Control': 'max-age=600, s-maxage=3600'
                                                 });
 
+                                                    // Generate dynamic date for fresh SEO titles
+                                                    const date = new Date();
+                                                    const monthYear = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+
                                                     return {
                                                             fiat,
                                                                     crypto,
-                                                                            metaTitle: `Buy ${crypto} with ${fiat} | Compare Best P2P Rates Today`,
-                                                                                    metaDescription: `Looking to buy ${crypto} with ${fiat}? Compare live P2P rates across Binance, OKX, and Bybit to find the cheapest prices instantly without an account.`
+                                                                            monthYear,
+                                                                            metaTitle: `Buy ${crypto} with ${fiat} | Compare Best P2P Rates Today (${monthYear})`,
+                                                                                    metaDescription: `Looking to buy ${crypto} with ${fiat}? Compare live P2P rates across Binance, OKX, and Bybit to find the cheapest prices instantly. Updated ${monthYear}.`
                                                                                         };
                                                                                         };
