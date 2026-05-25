@@ -74,14 +74,15 @@
             <p class="mb-4 leading-relaxed">
                 Welcome to the ultimate comparison tool for buying and selling <strong>{cName}</strong> using <strong>{fName}</strong>. 
                 As of <strong>{monthYear}</strong>, peer-to-peer (P2P) trading remains one of the most cost-effective and flexible ways 
-                to enter or exit the cryptocurrency market. Instead of relying on a single exchange's order book, our aggregator 
-                monitors active advertisements across major global exchanges in real-time.
+                to enter or exit the cryptocurrency market.
             </p>
-            <p class="mb-6 leading-relaxed">
-                Whether you are looking for arbitrage opportunities, trying to bypass high credit card fees, or simply searching for 
-                merchants supporting local payment methods like bank transfers or mobile money, the live data above helps you identify 
-                the most competitive exchange rates without needing to juggle multiple browser tabs.
-            </p>
+
+            <h3 class="text-xl font-bold mt-8 mb-4">Why Use Our Aggregator?</h3>
+            <ul class="list-none space-y-3 mb-8">
+                <li class="flex items-start gap-3"><span class="text-blue-500 font-bold">1.</span> <span><strong>Discover Arbitrage:</strong> Spot profitable margins between the highest buying price and lowest selling price across multiple platforms.</span></li>
+                <li class="flex items-start gap-3"><span class="text-blue-500 font-bold">2.</span> <span><strong>Bypass High Fees:</strong> Avoid steep credit card processing fees by transacting directly with local merchants.</span></li>
+                <li class="flex items-start gap-3"><span class="text-blue-500 font-bold">3.</span> <span><strong>Find Local Methods:</strong> Easily locate merchants that support your exact local bank transfers, mobile money, and regional fintech apps.</span></li>
+            </ul>
         </div>
 
         <div class="faq-section mt-10">

@@ -39,7 +39,9 @@
 			<div class="max-w-screen-xl mx-auto px-4">
 				<div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-6">
 					<p>© {new Date().getFullYear()} P2P Companion. All rights reserved.</p>
-					<div class="flex items-center gap-6">
+					<div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+						<a href="/about" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About Us</a>
+						<a href="/guides" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Guides</a>
 						<a href="/privacy" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</a>
 						<a href="/terms" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</a>
 						<a href="mailto:p2pcompanion@proton.me" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</a>

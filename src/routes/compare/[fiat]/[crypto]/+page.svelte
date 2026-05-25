@@ -46,17 +46,33 @@
         </p>
 
         <div class="grid md:grid-cols-2 gap-8 my-10">
-            <div class="bg-white/40 dark:bg-zinc-800/40 p-6 rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50">
-                <h3 class="text-xl font-black text-zinc-900 dark:text-zinc-100 mb-3">How to secure the best {crypto} rate</h3>
-                <p class="text-[15px] text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                    Buying {crypto} on a single exchange often means you are missing out on hidden liquidity. By utilizing an aggregator, you can filter by your preferred local {fiat} payment methods (such as bank transfers or mobile money wallets) to cross-reference the lowest possible entry price across the entire market simultaneously.
-                </p>
+            <div class="bg-white/60 dark:bg-zinc-800/60 p-6 md:p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm">
+                <h3 class="text-xl font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg text-sm leading-none">🎯</span> Secure the Best Rate
+                </h3>
+                <ul class="space-y-4 text-zinc-700 dark:text-zinc-300 text-[15px] leading-relaxed">
+                    <li class="flex items-start gap-2.5">
+                        <svg class="size-5 text-blue-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span><strong>Cross-Reference Liquidity:</strong> Compare Binance, OKX, and Bybit simultaneously instead of relying on a single exchange's order book.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <svg class="size-5 text-blue-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span><strong>Filter Payment Methods:</strong> Check margins specific to your preferred local {fiat} banks or mobile money providers.</span>
+                    </li>
+                </ul>
             </div>
-            <div class="bg-white/40 dark:bg-zinc-800/40 p-6 rounded-2xl border border-zinc-200/50 dark:border-zinc-700/50">
-                <h3 class="text-xl font-black text-zinc-900 dark:text-zinc-100 mb-3">Arbitrage Opportunities for {fiat}</h3>
-                <p class="text-[15px] text-zinc-700 dark:text-zinc-300 leading-relaxed">
-                    If you are a P2P merchant, the {fiat} market frequently presents cross-exchange arbitrage gaps. By continuously monitoring the spread between the lowest ask (buying price) on one exchange and the highest bid (selling price) on another, merchants can identify highly profitable margins and execute risk-managed trades.
+            <div class="bg-white/60 dark:bg-zinc-800/60 p-6 md:p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm">
+                <h3 class="text-xl font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
+                    <span class="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-lg text-sm leading-none">📈</span> {fiat} Arbitrage Potential
+                </h3>
+                <p class="text-[15px] text-zinc-700 dark:text-zinc-300 leading-relaxed mb-4">
+                    If you are a P2P merchant, the {fiat} market frequently presents cross-exchange arbitrage gaps. Our tool helps you:
                 </p>
+                <ul class="space-y-2 text-zinc-700 dark:text-zinc-300 text-[15px]">
+                    <li class="flex items-center gap-2">• Identify profitable spread margins.</li>
+                    <li class="flex items-center gap-2">• Monitor the lowest Ask vs the highest Bid.</li>
+                    <li class="flex items-center gap-2">• Execute informed, risk-managed trades globally.</li>
+                </ul>
             </div>
         </div>
 
