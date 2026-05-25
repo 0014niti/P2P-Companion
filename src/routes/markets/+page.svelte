@@ -33,7 +33,23 @@
         </ul>
                                             </div>
 
-                                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- NEW: Regional Fiat Dashboards Section -->
+    <div class="mb-16">
+        <h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6 flex items-center gap-2"><span class="text-emerald-500">🌍</span> Regional Fiat Dashboards</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {#each fiats as fiat}
+                <a href={`/fiat/${fiat.toLowerCase()}`} class="flex flex-col items-center justify-center p-4 bg-white/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md transition-all group active:scale-95">
+                    <span class="text-lg font-black text-zinc-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{fiat}</span>
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-zinc-500 mt-1">Dashboard &rarr;</span>
+                </a>
+            {/each}
+        </div>
+    </div>
+
+    <!-- EXISTING: Specific Pair Markets -->
+    <div class="mb-8">
+        <h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-6 flex items-center gap-2"><span class="text-blue-500">⚖️</span> Compare Specific Pairs</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                                         {#each cryptos as crypto}
                                                                     <div class="bg-white/50 dark:bg-zinc-900/50 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
                                                                                     <h2 class="text-xl font-black mb-4 flex items-center gap-2 text-blue-600">
@@ -49,4 +65,5 @@
                                                                                                                                                                                                                                                                                         </div>
                                                                                                                                                                                                                                                                                                 {/each}
                                                                                                                                                                                                                                                                                                     </div>
+    </div>
                                                                                                                                                                                                                                                                                                     </div>

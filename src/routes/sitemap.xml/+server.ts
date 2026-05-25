@@ -23,6 +23,16 @@ export const GET: RequestHandler = async () => {
         <url><loc>${siteUrl}/guides/p2p-arbitrage-explained</loc><priority>0.7</priority></url>
     `;
 
+    // Add fiat dashboards
+    for (const fiat of fiats) {
+        xml += `
+        <url>
+            <loc>${siteUrl}/fiat/${fiat}</loc>
+            <changefreq>daily</changefreq>
+            <priority>0.8</priority>
+        </url>`;
+    }
+
     // Loop through arrays and generate URLs for every combination
     for (const crypto of cryptos) {
         for (const fiat of fiats) {
