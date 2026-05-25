@@ -165,10 +165,32 @@
 			</div>
 		</div>
 
+		<!-- NEW: How it works (Mobile Friendly Stacking Grid) -->
+		<div class="lg:col-span-12 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-10 shadow-xl shadow-slate-200/30 dark:shadow-none mb-4">
+			<h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-8 text-center sm:text-left">How It Works</h2>
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
+				<div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+					<div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-black flex items-center justify-center text-xl mb-4 shadow-sm border border-blue-200 dark:border-blue-800">1</div>
+					<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Select Your Market</h3>
+					<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">Choose from over 50 local fiat currencies and select your desired crypto asset (USDT, BTC, ETH) to instantly load the global order book.</p>
+				</div>
+				<div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+					<div class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-black flex items-center justify-center text-xl mb-4 shadow-sm border border-indigo-200 dark:border-indigo-800">2</div>
+					<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Compare Spreads</h3>
+					<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">Our engine cross-references live data from Binance, Bybit, and OKX so you can spot the cheapest buying rates or the most profitable selling premiums.</p>
+				</div>
+				<div class="flex flex-col items-center sm:items-start text-center sm:text-left">
+					<div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-black flex items-center justify-center text-xl mb-4 shadow-sm border border-emerald-200 dark:border-emerald-800">3</div>
+					<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Execute Safely</h3>
+					<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">Filter out unverified merchants, double-check local payment methods, and proceed to the exchange to conduct your P2P trade securely in escrow.</p>
+				</div>
+			</div>
+		</div>
+
         <div class="lg:col-span-12 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-8 shadow-xl shadow-slate-200/30 dark:shadow-none">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 text-center sm:text-left">
-                <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white">Supported Exchanges</h2>
-                <p class="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Aggregating live order books globally.</p>
+            <div class="mb-8 text-center sm:text-left">
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-3">Supported Exchanges</h2>
+                <p class="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto sm:mx-0">We track and aggregate peer-to-peer liquidity from the world's most trusted centralized exchanges. By monitoring platforms with strict KYC (Identity Verification) and built-in escrow services like Binance, OKX, and Bybit, we ensure you have access to the safest and most liquid global markets.</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-0.5">
@@ -361,6 +383,26 @@
                 </a>
             </div>
         </div>
+
+		<!-- NEW: Scam Warning Box -->
+		<div class="lg:col-span-12 rounded-[32px] border border-rose-100/60 dark:border-rose-900/40 bg-rose-50/40 dark:bg-rose-950/20 backdrop-blur-2xl p-6 lg:p-10 shadow-xl shadow-rose-100/10 dark:shadow-none my-4">
+			<div class="flex flex-col md:flex-row gap-6 lg:gap-8 items-center md:items-start">
+				<div class="flex-shrink-0 bg-white dark:bg-rose-900/50 p-4 rounded-full border border-rose-200 dark:border-rose-800 shadow-sm">
+					<svg class="w-8 h-8 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+				</div>
+				<div class="w-full">
+					<h2 class="text-2xl sm:text-3xl font-black tracking-tight text-rose-950 dark:text-rose-50 mb-3 text-center md:text-left">Avoiding P2P Scams</h2>
+					<p class="text-rose-800/90 dark:text-rose-200/80 text-sm sm:text-base leading-relaxed mb-6 text-center md:text-left max-w-4xl">
+						While our terminal aggregates the best global spreads, safety is your responsibility. Always follow the Golden Rules of P2P trading to protect your assets from malicious actors:
+					</p>
+					<ul class="space-y-4 text-sm sm:text-base text-rose-900/90 dark:text-rose-100/90 bg-white/40 dark:bg-zinc-900/40 p-5 sm:p-6 rounded-2xl border border-rose-100 dark:border-rose-900/50">
+						<li class="flex items-start gap-3"><span class="font-black text-rose-500 mt-1">•</span> <span><strong>Never release crypto early:</strong> Verify fiat funds have definitively cleared in your actual bank app. Never trust SMS notifications or email receipts.</span></li>
+						<li class="flex items-start gap-3"><span class="font-black text-rose-500 mt-1">•</span> <span><strong>Stay on platform:</strong> Keep all communication inside the exchange's built-in chat so support can read it. Avoid external apps like WhatsApp or Telegram.</span></li>
+						<li class="flex items-start gap-3"><span class="font-black text-rose-500 mt-1">•</span> <span><strong>No third-party payments:</strong> Ensure the buyer's bank account name exactly matches their exchange KYC (Verified Identity) name to prevent chargeback fraud.</span></li>
+					</ul>
+				</div>
+			</div>
+		</div>
 
         <article class="lg:col-span-12 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-10 shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col justify-center space-y-6">
             <div>

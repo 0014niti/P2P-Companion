@@ -21,6 +21,7 @@ export const GET: RequestHandler = async () => {
         <url><loc>${siteUrl}/about</loc><priority>0.8</priority></url>
         <url><loc>${siteUrl}/guides</loc><priority>0.8</priority></url>
         <url><loc>${siteUrl}/guides/p2p-arbitrage-explained</loc><priority>0.7</priority></url>
+        <url><loc>${siteUrl}/arbitrage</loc><priority>0.9</priority></url>
     `;
 
     // Add fiat dashboards

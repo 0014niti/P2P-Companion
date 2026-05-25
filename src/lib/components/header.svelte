@@ -32,9 +32,15 @@
 					</div>
 				</a>
 
-				<a href="/markets" class="text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-white/50 dark:bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm active:scale-95">
-					Live Markets
-				</a>
+				<div class="flex items-center gap-2 sm:gap-4">
+					<a href="/markets" class="hidden sm:inline-block text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-white/50 dark:bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm active:scale-95">
+						Live Markets
+					</a>
+					<a href="/arbitrage" class="text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 px-3.5 py-1.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all active:scale-95 flex items-center gap-1.5">
+						<svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+						Scanner
+					</a>
+				</div>
 
 			</div>
 		</div>

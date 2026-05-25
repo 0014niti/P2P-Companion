@@ -13,7 +13,7 @@
 	import { page } from '$app/stores';
 	
 	// 🌟 Added Download, BookOpen, and Zap icons for the new Dock
-	import { Settings2, RefreshCw, Activity, Heart, Calculator, Sun, Moon, LayoutGrid, List } from 'lucide-svelte';
+	import { Settings2, RefreshCw, Activity, Heart, Calculator, Sun, Moon, LayoutGrid, List, ShieldCheck, ChevronDown } from 'lucide-svelte';
 	import { toggleMode } from 'mode-watcher';
 	
 	import { slide, fade, fly } from 'svelte/transition';
@@ -459,20 +459,101 @@
 		{/if}
 	</div>
 
-	<article class="mt-8 sm:mt-12 rounded-2xl border border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-zinc-900/60 backdrop-blur-xl p-5 sm:p-8 shadow-sm mb-20">
-		<h2 class="text-xl sm:text-2xl font-black tracking-tight text-zinc-900 dark:text-white mb-3 sm:mb-4">Global P2P Market Intelligence & Price Comparison</h2>
-		<p class="text-sm sm:text-base text-zinc-700 dark:text-zinc-400 mb-5 sm:mb-6 leading-relaxed">
-			Welcome to the premier data terminal designed for everyday traders and analysts. Our infrastructure aggregates real-time Peer-to-Peer (P2P) order books across major centralized exchanges, allowing you to instantly compare USDT pricing dynamics and identify the best available rates across different fiat currencies.
-		</p>
-		<h3 class="text-lg sm:text-xl font-bold text-zinc-800 dark:text-zinc-200 mb-2 sm:mb-3">Understanding P2P Price Differences</h3>
-		<p class="text-sm sm:text-base text-zinc-700 dark:text-zinc-400 mb-5 sm:mb-6 leading-relaxed">
-			Cryptocurrency valuations are not universally fixed. Depending on regional demand, local payment gateways, and exchange-specific liquidity, the price of stablecoins like USDT can vary significantly between platforms such as Binance, OKX, and Bybit. By tracking the variance between platforms where fiat demand is low versus where it is high, users can map precise market spreads.
-		</p>
-		<h3 class="text-lg sm:text-xl font-bold text-zinc-800 dark:text-zinc-200 mb-2 sm:mb-3">Why Compare USDT Prices Globally?</h3>
-		<p class="text-sm sm:text-base text-zinc-700 dark:text-zinc-400 leading-relaxed">
-			Manually auditing order books across multiple fragmented exchanges is inefficient and prone to data latency. This terminal automates the comparison process, providing a unified, live stream of the most competitive maker and taker rates. Whether looking for the highest fiat off-ramp rate or analyzing global liquidity, unbiased data ensures optimal capital efficiency.
-		</p>
-	</article>
+	<!-- SEO & AdSense Optimized Content Section -->
+	<div class="mt-12 sm:mt-16 mb-24 max-w-6xl mx-auto w-full">
+		<!-- Main Educational Article -->
+		<div class="rounded-[32px] border border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-zinc-900/60 backdrop-blur-xl p-6 sm:p-10 shadow-xl shadow-zinc-200/20 dark:shadow-none mb-8">
+			<header class="text-center max-w-3xl mx-auto mb-10">
+				<span class="inline-block px-4 py-1.5 rounded-full bg-blue-100/80 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest mb-4">Market Analysis</span>
+				<h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-zinc-900 dark:text-white mb-6">How to Read the Live P2P Order Book</h2>
+				<p class="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed">
+					Welcome to the premier data terminal designed for everyday traders and analysts. Our infrastructure aggregates real-time Peer-to-Peer (P2P) order books across major centralized exchanges.
+				</p>
+			</header>
+
+			<!-- Contextual Image (Pulled from Unsplash via optimized URL) -->
+			<figure class="my-8 sm:my-12 rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800 relative group">
+				<img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&q=80&w=1200&h=500" alt="Abstract visualization of a cryptocurrency trading terminal and global market liquidity" class="w-full object-cover h-48 sm:h-72 md:h-[400px] transition-transform duration-700 group-hover:scale-105" />
+				<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+				<figcaption class="absolute bottom-4 sm:bottom-6 left-4 right-4 text-center text-sm sm:text-base text-white/90 font-medium drop-shadow-md">Visualizing real-time global crypto liquidity flows.</figcaption>
+			</figure>
+
+			<div class="grid md:grid-cols-2 gap-8 md:gap-12">
+				<div>
+					<h3 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white mb-4">Understanding P2P Price Differences</h3>
+					<p class="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px] sm:text-base">
+						Cryptocurrency valuations are not universally fixed. Depending on regional fiat demand, local payment gateways, and exchange-specific liquidity, the price of stablecoins like <strong>Tether (USDT)</strong> or <strong>Bitcoin (BTC)</strong> can vary significantly between platforms such as Binance, OKX, and Bybit. By tracking the variance between platforms where fiat demand is low versus where it is high, users can map precise market spreads and arbitrage opportunities.
+					</p>
+				</div>
+				<div>
+					<h3 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white mb-4">Why Compare Prices Globally?</h3>
+					<p class="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px] sm:text-base">
+						Manually auditing order books across multiple fragmented exchanges is highly inefficient and prone to data latency. This terminal automates the comparison process, providing a unified, live stream of the most competitive maker and taker rates. Whether you are looking for the highest fiat off-ramp rate or analyzing global liquidity, accessing unbiased data ensures absolute capital efficiency.
+					</p>
+				</div>
+			</div>
+
+			<hr class="my-10 sm:my-12 border-zinc-200 dark:border-zinc-800" />
+
+			<h3 class="text-2xl font-black text-center mb-8 text-zinc-900 dark:text-white">Pro Trading Tips</h3>
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+				<div class="p-6 sm:p-8 bg-blue-50 dark:bg-blue-900/10 rounded-3xl border border-blue-100 dark:border-blue-800/30 hover:shadow-md transition-all group">
+					<div class="w-12 h-12 bg-blue-100 dark:bg-blue-800/50 rounded-2xl flex items-center justify-center mb-5 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+						<Activity class="w-6 h-6" />
+					</div>
+					<h4 class="font-black text-blue-900 dark:text-blue-100 mb-3 text-lg">Identifying the "Best Rate"</h4>
+					<p class="text-sm sm:text-[15px] text-blue-800/80 dark:text-blue-200/80 leading-relaxed">Our engine automatically highlights the absolute cheapest place to buy or the most profitable place to sell using a pulsing beacon, saving you manual calculation time. Keep an eye out for the glowing cards at the top of the grid.</p>
+				</div>
+				<div class="p-6 sm:p-8 bg-emerald-50 dark:bg-emerald-900/10 rounded-3xl border border-emerald-100 dark:border-emerald-800/30 hover:shadow-md transition-all group">
+					<div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-800/50 rounded-2xl flex items-center justify-center mb-5 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+						<ShieldCheck class="w-6 h-6" />
+					</div>
+					<h4 class="font-black text-emerald-900 dark:text-emerald-100 mb-3 text-lg">Merchant Verification</h4>
+					<p class="text-sm sm:text-[15px] text-emerald-800/80 dark:text-emerald-200/80 leading-relaxed">Always check a merchant's completion rate (indicated by the shield icon next to their name). A slightly worse price with a 99% completion rate is often significantly safer and faster than a good price from a brand new user.</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- FAQ Accordion (Boosts AdSense Approval & SEO) -->
+		<div class="rounded-[32px] border border-zinc-200/60 dark:border-zinc-800/60 bg-white/80 dark:bg-zinc-900/60 backdrop-blur-xl p-6 sm:p-10 shadow-sm">
+			<h3 class="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mb-8 text-center sm:text-left">Frequently Asked Questions</h3>
+			<div class="space-y-4">
+				<details class="group rounded-2xl bg-zinc-50/80 dark:bg-zinc-800/30 border border-zinc-200/60 dark:border-zinc-700/50 p-5 open:bg-white dark:open:bg-zinc-800/80 transition-all duration-300 shadow-sm hover:border-blue-200 dark:hover:border-blue-800/50">
+					<summary class="font-black text-zinc-900 dark:text-zinc-100 cursor-pointer list-none flex justify-between items-center text-base sm:text-lg">
+						How often do the prices update?
+						<span class="transition-transform duration-300 group-open:rotate-180 bg-zinc-200/50 dark:bg-zinc-700/50 p-1.5 rounded-full text-zinc-500">
+							<ChevronDown class="w-5 h-5" />
+						</span>
+					</summary>
+					<p class="text-zinc-600 dark:text-zinc-400 mt-4 text-[15px] leading-relaxed border-t border-zinc-100 dark:border-zinc-700/50 pt-4">
+						Prices are fetched in real-time directly from the respective exchanges the moment you load the terminal or press the refresh button. Because P2P markets are highly volatile and merchant liquidity can dry up instantly, we highly recommend refreshing the data right before executing a cross-exchange trade to ensure the spread is still available.
+					</p>
+				</details>
+				<details class="group rounded-2xl bg-zinc-50/80 dark:bg-zinc-800/30 border border-zinc-200/60 dark:border-zinc-700/50 p-5 open:bg-white dark:open:bg-zinc-800/80 transition-all duration-300 shadow-sm hover:border-blue-200 dark:hover:border-blue-800/50">
+					<summary class="font-black text-zinc-900 dark:text-zinc-100 cursor-pointer list-none flex justify-between items-center text-base sm:text-lg">
+						Are the listed fees included in the price?
+						<span class="transition-transform duration-300 group-open:rotate-180 bg-zinc-200/50 dark:bg-zinc-700/50 p-1.5 rounded-full text-zinc-500">
+							<ChevronDown class="w-5 h-5" />
+						</span>
+					</summary>
+					<p class="text-zinc-600 dark:text-zinc-400 mt-4 text-[15px] leading-relaxed border-t border-zinc-100 dark:border-zinc-700/50 pt-4">
+						The prices shown in the terminal are the raw Ask and Bid prices listed directly by the merchants. However, calculating true net profit requires you to account for Maker/Taker fees imposed by the specific exchange (e.g., Binance vs Bybit), as well as any transaction fees incurred from your local payment method (such as domestic bank transfer fees). Use the built-in Arbitrage Calculator in the dock below to factor in these costs accurately.
+					</p>
+				</details>
+				<details class="group rounded-2xl bg-zinc-50/80 dark:bg-zinc-800/30 border border-zinc-200/60 dark:border-zinc-700/50 p-5 open:bg-white dark:open:bg-zinc-800/80 transition-all duration-300 shadow-sm hover:border-blue-200 dark:hover:border-blue-800/50">
+					<summary class="font-black text-zinc-900 dark:text-zinc-100 cursor-pointer list-none flex justify-between items-center text-base sm:text-lg">
+						Is P2P Companion affiliated with these exchanges?
+						<span class="transition-transform duration-300 group-open:rotate-180 bg-zinc-200/50 dark:bg-zinc-700/50 p-1.5 rounded-full text-zinc-500">
+							<ChevronDown class="w-5 h-5" />
+						</span>
+					</summary>
+					<p class="text-zinc-600 dark:text-zinc-400 mt-4 text-[15px] leading-relaxed border-t border-zinc-100 dark:border-zinc-700/50 pt-4">
+						No, P2P Companion is a completely independent, student-led data aggregator. We are not officially affiliated with, endorsed by, or sponsored by Binance, OKX, Bybit, or KuCoin. Our overarching goal is simply to provide unbiased, cross-platform liquidity data to democratize access to the global crypto economy without requiring users to log in or compromise their privacy.
+					</p>
+				</details>
+			</div>
+		</div>
+	</div>
 
 </main>
 

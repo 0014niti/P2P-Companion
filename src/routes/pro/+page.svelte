@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import { Lock, ArrowRight, BarChart3, Bot, AlertTriangle, Heart, Zap, LineChart, Shield } from 'lucide-svelte';
+    import { Lock, ArrowRight, BarChart3, Bot, AlertTriangle, Heart, Zap, LineChart, Shield, Key, Bell, Check, X } from 'lucide-svelte';
     import { fly } from 'svelte/transition';
 
     // --- Config ---
@@ -11,6 +11,10 @@
     let isAuthenticated = $state(false);
     let enteredCode = $state('');
     let errorMessage = $state('');
+
+    // --- Mock Data States ---
+    let tradeVolume = $state(5000);
+    let estimatedMonthlyProfit = $derived(Math.round(tradeVolume * 30 * 0.015)); // Assuming 1.5% average arbitrage spread
 
     // --- Lifecycle ---
     onMount(() => {
@@ -174,6 +178,109 @@
                     <p class="text-zinc-500 font-medium">Chart component placeholder</p>
                 </div>
                 <p class="text-xs text-zinc-500 italic">Historical data ingestion and charting coming in V2. This is a UI placeholder.</p>
+            </div>
+        </div>
+
+        <!-- Interactive ROI Estimator -->
+        <div class="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 sm:p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                <div class="flex-1 w-full">
+                    <h2 class="text-2xl font-black text-white mb-2">Estimated Pro ROI</h2>
+                    <p class="text-zinc-400 mb-6 text-sm leading-relaxed">Calculate your potential monthly profit based on a conservative 1.5% average cross-exchange arbitrage spread discovered by our Pro algorithms.</p>
+                    
+                    <label class="flex justify-between text-sm font-bold text-zinc-300 mb-4">
+                        Daily Trade Volume: <span class="text-emerald-400">${tradeVolume.toLocaleString()}</span>
+                    </label>
+                    <input type="range" min="500" max="50000" step="500" bind:value={tradeVolume} class="w-full accent-emerald-500 bg-zinc-800 h-2 rounded-lg appearance-none cursor-pointer" />
+                    <div class="flex justify-between text-xs text-zinc-600 mt-2 font-medium">
+                        <span>$500</span>
+                        <span>$50,000+</span>
+                    </div>
+                </div>
+                <div class="md:w-64 w-full bg-zinc-950 border border-emerald-500/30 rounded-2xl p-6 text-center shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+                    <p class="text-zinc-500 text-[11px] font-bold uppercase tracking-widest mb-2">Est. Monthly Profit</p>
+                    <p class="text-4xl font-black text-emerald-400">+${estimatedMonthlyProfit.toLocaleString()}</p>
+                    <p class="text-[10px] text-zinc-600 mt-2">Assuming full capture of signals</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- API & Webhook Mockups -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div class="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 relative overflow-hidden group">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-blue-500/10 rounded-xl"><Bell class="size-5 text-blue-400" /></div>
+                    <h3 class="text-lg font-bold text-zinc-200">Webhook Signals</h3>
+                </div>
+                <p class="text-sm text-zinc-400 mb-5 leading-relaxed">Connect your Telegram or Discord bot to receive instant payload alerts when a high-margin spread opens.</p>
+                <div class="space-y-3 opacity-60 pointer-events-none select-none">
+                    <input type="text" value="https://discord.com/api/webhooks/..." readonly class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-zinc-500 font-mono" />
+                    <button class="w-full py-3 bg-zinc-800 text-zinc-500 font-bold rounded-xl border border-zinc-700">Save Endpoint</button>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-950/40 backdrop-blur-[2px]"><span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-xl">Coming in V2</span></div>
+            </div>
+            
+            <div class="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 relative overflow-hidden group">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-purple-500/10 rounded-xl"><Key class="size-5 text-purple-400" /></div>
+                    <h3 class="text-lg font-bold text-zinc-200">Developer API Keys</h3>
+                </div>
+                <p class="text-sm text-zinc-400 mb-5 leading-relaxed">Access our raw, normalized order book JSON data directly from your own automated Python or Node.js trading scripts.</p>
+                <div class="space-y-3 opacity-60 pointer-events-none select-none">
+                    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 flex items-center justify-between">
+                        <span class="text-zinc-600 font-mono text-sm blur-[4px]">sk_live_1234567890abcdef</span>
+                        <span class="text-[10px] font-bold text-zinc-600 bg-zinc-900 px-2 py-1 rounded border border-zinc-800">Hidden</span>
+                    </div>
+                    <button class="w-full py-3 bg-zinc-800 text-zinc-500 font-bold rounded-xl border border-zinc-700">Generate New Key</button>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-950/40 backdrop-blur-[2px]"><span class="bg-purple-500/20 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider shadow-xl">Coming in V2</span></div>
+            </div>
+        </div>
+
+        <!-- Feature Comparison Table -->
+        <div class="mt-12 mb-8 rounded-[32px] border border-zinc-800 bg-zinc-900/40 overflow-hidden shadow-2xl">
+            <div class="px-6 py-8 border-b border-zinc-800 text-center">
+                <h2 class="text-2xl font-black text-white">Compare Access Tiers</h2>
+                <p class="text-zinc-400 mt-2">See exactly what you unlock as a Pro Supporter.</p>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-zinc-900/80 text-[11px] uppercase tracking-widest font-black text-zinc-500">
+                            <th class="p-5 pl-6 md:pl-8 border-b border-zinc-800 w-1/2">Market Features</th>
+                            <th class="p-5 border-b border-zinc-800 text-center w-1/4">Free Terminal</th>
+                            <th class="p-5 pr-6 md:pr-8 border-b border-zinc-800 text-center w-1/4 text-blue-400">Pro Beta</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm text-zinc-400 divide-y divide-zinc-800/50">
+                        <tr class="hover:bg-zinc-800/30 transition-colors">
+                            <td class="p-5 pl-6 md:pl-8 text-white font-medium">Real-Time Global Order Book</td>
+                            <td class="p-5 text-center"><Check class="size-5 text-zinc-500 mx-auto" /></td>
+                            <td class="p-5 text-center"><Check class="size-5 text-blue-400 mx-auto" /></td>
+                        </tr>
+                        <tr class="hover:bg-zinc-800/30 transition-colors">
+                            <td class="p-5 pl-6 md:pl-8 text-white font-medium">Arbitrage Route Scanner</td>
+                            <td class="p-5 text-center text-zinc-500 font-bold text-xs">Top 3 Only</td>
+                            <td class="p-5 text-center text-emerald-400 font-bold text-xs">Unlimited</td>
+                        </tr>
+                        <tr class="hover:bg-zinc-800/30 transition-colors">
+                            <td class="p-5 pl-6 md:pl-8 text-white font-medium">Automated Trading Signals</td>
+                            <td class="p-5 text-center"><X class="size-5 text-zinc-700 mx-auto" /></td>
+                            <td class="p-5 text-center"><Check class="size-5 text-blue-400 mx-auto" /></td>
+                        </tr>
+                        <tr class="hover:bg-zinc-800/30 transition-colors">
+                            <td class="p-5 pl-6 md:pl-8 text-white font-medium">Historical Spread Analytics</td>
+                            <td class="p-5 text-center"><X class="size-5 text-zinc-700 mx-auto" /></td>
+                            <td class="p-5 text-center"><Check class="size-5 text-blue-400 mx-auto" /></td>
+                        </tr>
+                        <tr class="hover:bg-zinc-800/30 transition-colors bg-zinc-900/20">
+                            <td class="p-5 pl-6 md:pl-8 text-white font-medium flex items-center gap-2">Webhook / API Pipeline <span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[9px] font-bold uppercase">V2</span></td>
+                            <td class="p-5 text-center"><X class="size-5 text-zinc-700 mx-auto" /></td>
+                            <td class="p-5 text-center"><Check class="size-5 text-blue-400 mx-auto" /></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </main>
