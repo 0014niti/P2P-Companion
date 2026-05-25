@@ -10,6 +10,7 @@
 	import type { P2POrder } from '$lib/types';
 	import Toast from '$lib/components/Toast.svelte';
 	import { toastStore } from '$lib/toast';
+	import { page } from '$app/stores';
 	
 	// 🌟 Added Download, BookOpen, and Zap icons for the new Dock
 	import { Settings2, RefreshCw, Activity, Heart, Calculator, Sun, Moon, LayoutGrid, List } from 'lucide-svelte';
@@ -146,20 +147,30 @@
 			showInstallButton = true;
 		});
 
+		// Extract params from URL if navigated via a specific pair link
+		const urlFiat = $page.url.searchParams.get('fiat')?.toUpperCase();
+		const urlCrypto = $page.url.searchParams.get('crypto')?.toUpperCase();
+
 		const savedExchanges = localStorage.getItem('activeExchanges');
 		const savedFiat = localStorage.getItem('selectedFiat');
 		const savedToken = localStorage.getItem('selectedToken');
 
-		if (savedFiat) {
+		if (urlFiat) {
+			filterState.current.fiat = urlFiat;
+			initialFiatLoaded = true; // Pair loaded from the URL
+		} else if (savedFiat) {
 			filterState.current.fiat = savedFiat;
 			initialFiatLoaded = true; // Fiat loaded from local storage
 		}
-		if (savedToken) {
+
+		if (urlCrypto) {
+			filterState.current.selectedToken = urlCrypto;
+		} else if (savedToken) {
 			filterState.current.selectedToken = savedToken;
 		}
 
 		// If no fiat saved in local storage, try to detect from IP
-		if (!savedFiat) {
+		if (!urlFiat && !savedFiat) {
 			fetch('/api/geoip')
 				.then((res) => res.json())
 				.then((data) => (filterState.current.fiat = data.fiat))
