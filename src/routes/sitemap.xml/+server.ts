@@ -22,6 +22,7 @@ export const GET: RequestHandler = async () => {
         <url><loc>${siteUrl}/guides</loc><priority>0.8</priority></url>
         <url><loc>${siteUrl}/guides/p2p-arbitrage-explained</loc><priority>0.7</priority></url>
         <url><loc>${siteUrl}/arbitrage</loc><priority>0.9</priority></url>
+        <url><loc>${siteUrl}/blog</loc><priority>0.9</priority></url>
     `;
 
     // Add fiat dashboards
@@ -53,6 +54,20 @@ export const GET: RequestHandler = async () => {
         </url>`;
             }
         }
+    }
+
+    // Add dynamic blog posts
+    try {
+        const posts = import.meta.glob('/src/posts/*.md', { query: '?raw', import: 'default', eager: true });
+        for (const path in posts) {
+            const slug = path.split('/').pop()?.replace('.md', '');
+            if (slug) {
+                xml += `
+        <url><loc>${siteUrl}/blog/${slug}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`;
+            }
+        }
+    } catch (e) {
+        // Ignore if no posts exist
     }
 
     xml += `\n</urlset>`;
