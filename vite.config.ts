@@ -6,5 +6,8 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit()
-	]
+	],
+	ssr: {
+		external: ['@resvg/resvg-js', 'satori']
+	}
 });
