@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ShieldAlert } from 'lucide-svelte';
 </script>
 
 <div class="sticky top-2 sm:top-4 z-50 w-full px-3 sm:px-6 lg:px-8 flex justify-center pointer-events-none pb-2 sm:pb-4 animate-float">
@@ -35,6 +36,10 @@
 				<div class="flex items-center gap-2 sm:gap-4">
 					<a href="/markets" class="hidden sm:inline-block text-xs sm:text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-white/50 dark:bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm active:scale-95">
 						Live Markets
+					</a>
+					<a href="/scam-check" class="hidden sm:flex items-center gap-1.5 text-xs sm:text-sm font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 transition-colors bg-rose-50/50 dark:bg-rose-900/20 px-3 py-1.5 rounded-lg border border-rose-200/50 dark:border-rose-800/50 shadow-sm active:scale-95" title="Verify Merchant Reputation">
+						<ShieldAlert class="size-4" />
+						Scam Check
 					</a>
 					<a href="/arbitrage" class="text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 px-3.5 py-1.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all active:scale-95 flex items-center gap-1.5">
 						<svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>

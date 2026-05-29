@@ -86,6 +86,70 @@
 		return bestExchange;
 	});
 
+	// --- 3. Live Premium Heatmap State ---
+	const premiumHeatmap = $derived.by(() => {
+		if (!$p2pOrderStore.marketRate || !$p2pOrderStore.orders) return [];
+		const filterType = String(currentFilters.type || '').toUpperCase();
+		const isBuy = filterType === 'BUY';
+
+		return visibleExchanges.map(exchange => {
+			const ads = ordersByExchange.get(exchange.name) || [];
+			if (ads.length === 0) return { exchange: exchange.name, premium: null, colorClass: 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400' };
+
+			const bestPrice = isBuy 
+				? Math.min(...ads.map(ad => Number(ad.price) || Infinity))
+				: Math.max(...ads.map(ad => Number(ad.price) || -Infinity));
+
+			if (bestPrice === Infinity || bestPrice === -Infinity) return { exchange: exchange.name, premium: null, colorClass: 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-400' };
+
+			const premium = ((bestPrice - $p2pOrderStore.marketRate!) / $p2pOrderStore.marketRate!) * 100;
+			
+			let colorClass = 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500';
+			if (premium <= 0) colorClass = 'bg-blue-500 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]';
+			else if (premium <= 1) colorClass = 'bg-emerald-500 border-emerald-400 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]';
+			else if (premium <= 3) colorClass = 'bg-amber-500 border-amber-400 text-white shadow-[0_0_15px_rgba(245,158,11,0.3)]';
+			else colorClass = 'bg-rose-500 border-rose-400 text-white shadow-[0_0_15px_rgba(225,29,72,0.3)]';
+
+			return { exchange: exchange.name, premium, colorClass };
+		});
+	});
+
+	// --- 4. 7-Day Trend Sparkline State ---
+	let sparklineData = $state<number[]>([]);
+	const sparklinePath = $derived.by(() => {
+		if (sparklineData.length < 2) return '';
+		const min = Math.min(...sparklineData);
+		const max = Math.max(...sparklineData);
+		const range = max - min || 1;
+		const width = 40;
+		const height = 16;
+		return sparklineData.map((val, i) => {
+			const x = (i / (sparklineData.length - 1)) * width;
+			const y = height - ((val - min) / range) * height;
+			return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
+		}).join(' ');
+	});
+	const sparklineTrend = $derived.by(() => {
+		if (sparklineData.length < 2) return 'neutral';
+		return sparklineData[sparklineData.length - 1] >= sparklineData[0] ? 'up' : 'down';
+	});
+
+	async function fetchSparkline(token: string, fiat: string) {
+		sparklineData = [];
+		try {
+			const symbol = `${token}${fiat}`.toUpperCase();
+			// Fetch 7 daily candles from the public Binance spot API
+			const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=7`);
+			if (!res.ok) return;
+			const data = await res.json();
+			if (Array.isArray(data)) {
+				sparklineData = data.map(candle => parseFloat(candle[4])); // Index 4 is the Closing Price
+			}
+		} catch (e) {
+			// Silently fail if the pair doesn't exist on Spot market
+		}
+	}
+
 	// --- PWA Install State ---
 	let deferredPrompt: any = null;
 	let showInstallButton = $state(false);
@@ -99,6 +163,7 @@
 		// Only fetch orders once the initial fiat has been loaded (either from local storage or GeoIP)
 		if (token && fiat && initialFiatLoaded) {
 			p2pOrderStore.fetchOrders({ type, token, fiat });
+			fetchSparkline(token, fiat);
 		}
 	});
 
@@ -296,6 +361,16 @@
 						{#if $p2pOrderStore.marketRate && $p2pOrderStore.token !== 'USD'}
 							<span class="shrink-0 bg-white/80 dark:bg-zinc-800/80 backdrop-blur-md px-2 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 shadow-sm">1 {$p2pOrderStore.token} = <strong class="text-zinc-800 dark:text-zinc-200">{$p2pOrderStore.marketRate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })} {$p2pOrderStore.fiat}</strong></span>
 						{/if}
+
+						<!-- NEW: 7-Day Sparkline -->
+						{#if sparklineData.length > 1}
+							<div class="flex items-center gap-2 ml-1 shrink-0 bg-white/50 dark:bg-zinc-800/50 backdrop-blur-md px-2 py-1 rounded-lg border border-zinc-200/60 dark:border-zinc-700/60 shadow-sm" title="7-Day Spot Market Trend">
+								<span class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">7D</span>
+								<svg width="40" height="16" viewBox="0 -2 40 20" class="overflow-visible">
+									<path d={sparklinePath} fill="none" stroke={sparklineTrend === 'up' ? '#10b981' : '#e11d48'} stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={sparklineTrend === 'up' ? 'drop-shadow-[0_2px_4px_rgba(16,185,129,0.4)]' : 'drop-shadow-[0_2px_4px_rgba(225,29,72,0.4)]'} />
+								</svg>
+							</div>
+						{/if}
 					</div>
 				{/if}
 			</div>
@@ -380,6 +455,34 @@
 			</button>
 		{/each}
 	</div>
+
+	<!-- NEW: Live Premium Heatmap -->
+	{#if premiumHeatmap.length > 0}
+		<div in:fly={{ y: -10, duration: 300, delay: 50 }} class="w-full mt-2 mb-4 sm:mb-6">
+			<div class="flex items-center gap-2 mb-3 px-1">
+				<span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5"><Activity class="size-3" /> Premium Heatmap</span>
+				<div class="h-px flex-1 bg-zinc-200/50 dark:bg-zinc-800/50"></div>
+				<div class="flex items-center gap-3 text-[9px] font-bold text-zinc-400 hidden sm:flex">
+					<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> &le; 0%</div>
+					<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> 0-1%</div>
+					<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> 1-3%</div>
+					<div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> &gt; 3%</div>
+				</div>
+			</div>
+			<div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2">
+				{#each premiumHeatmap as item}
+					<div class="flex-1 min-w-[80px] sm:min-w-[120px] flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl border transition-all duration-500 {item.colorClass}">
+						<span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider mb-0.5 opacity-90">{item.exchange}</span>
+						{#if item.premium !== null}
+							<span class="text-sm sm:text-lg font-black tracking-tighter">{item.premium > 0 ? '+' : ''}{item.premium.toFixed(2)}%</span>
+						{:else}
+							<span class="text-xs sm:text-sm font-bold opacity-50">N/A</span>
+						{/if}
+					</div>
+				{/each}
+			</div>
+		</div>
+	{/if}
 
 	<div class="relative w-full">
 		{#if viewMode === 'cards'}
@@ -510,6 +613,9 @@
 					</div>
 					<h4 class="font-black text-emerald-900 dark:text-emerald-100 mb-3 text-lg">Merchant Verification</h4>
 					<p class="text-sm sm:text-[15px] text-emerald-800/80 dark:text-emerald-200/80 leading-relaxed">Always check a merchant's completion rate (indicated by the shield icon next to their name). A slightly worse price with a 99% completion rate is often significantly safer and faster than a good price from a brand new user.</p>
+					<a href="/scam-check" class="mt-4 inline-flex items-center gap-2 text-sm font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300">
+						Verify Merchant Rep <span class="text-lg leading-none">&rarr;</span>
+					</a>
 				</div>
 			</div>
 		</div>

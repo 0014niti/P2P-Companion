@@ -400,6 +400,10 @@
 						<li class="flex items-start gap-3"><span class="font-black text-rose-500 mt-1">•</span> <span><strong>Stay on platform:</strong> Keep all communication inside the exchange's built-in chat so support can read it. Avoid external apps like WhatsApp or Telegram.</span></li>
 						<li class="flex items-start gap-3"><span class="font-black text-rose-500 mt-1">•</span> <span><strong>No third-party payments:</strong> Ensure the buyer's bank account name exactly matches their exchange KYC (Verified Identity) name to prevent chargeback fraud.</span></li>
 					</ul>
+					<a href="/scam-check" class="mt-6 inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black shadow-md shadow-rose-500/20 transition-all active:scale-95">
+						<svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+						Verify a Merchant ID
+					</a>
 				</div>
 			</div>
 		</div>

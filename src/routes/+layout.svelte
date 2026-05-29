@@ -20,6 +20,18 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	
+	<!-- Default SEO Meta Tags -->
+	<meta property="og:url" content="https://p2pcompanion.com/" />
+	<meta property="og:title" content="P2P Companion | Compare Live USDT P2P Prices" />
+	<meta property="og:description" content="100% Free global P2P comparison tool. Analyze live USDT crypto prices and market spreads across Binance, OKX, and Bybit." />
+	<meta property="og:image" content="https://p2pcompanion.com/og-image.jpg" />
+
+	<meta property="twitter:url" content="https://p2pcompanion.com/" />
+	<meta property="twitter:title" content="P2P Terminal | Compare Live USDT P2P Prices" />
+	<meta property="twitter:description" content="100% Free global P2P comparison tool. Analyze live USDT crypto prices and market spreads across Binance, OKX, and Bybit." />
+	<meta property="twitter:image" content="https://p2pcompanion.com/og-image.jpg" />
+
 	{#if !dev}
 		<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: "5f18d97f7db84781bfe0e57cb738fadd" })}></script>
 	{/if}
