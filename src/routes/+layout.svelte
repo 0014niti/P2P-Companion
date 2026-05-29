@@ -31,6 +31,7 @@
 	<meta property="twitter:title" content="P2P Terminal | Compare Live USDT P2P Prices" />
 	<meta property="twitter:description" content="100% Free global P2P comparison tool. Analyze live USDT crypto prices and market spreads across Binance, OKX, and Bybit." />
 	<meta property="twitter:image" content="https://p2pcompanion.com/og-image.jpg" />
+	<link rel="alternate" type="application/rss+xml" title="P2P Terminal Blog RSS Feed" href="/rss.xml" />
 
 	{#if !dev}
 		<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: "5f18d97f7db84781bfe0e57cb738fadd" })}></script>
