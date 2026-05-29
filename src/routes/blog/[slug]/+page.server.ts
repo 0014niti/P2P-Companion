@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 		throw error(404, 'Post not found');
 	}
 
-	const raw = await modulestargetPath as string;
+	const raw = await modules[targetPath]() as string;
 	const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
 	
 	if (!match) {
