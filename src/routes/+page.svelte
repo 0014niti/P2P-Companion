@@ -234,16 +234,16 @@
             </div>
 
             <div class="relative w-full">
-                <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-3 bg-zinc-50/50 dark:bg-zinc-800/30 border-b border-zinc-200/50 dark:border-zinc-800/50 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3 bg-zinc-50/50 dark:bg-zinc-800/30 border-b border-zinc-200/50 dark:border-zinc-800/50 text-[10px] font-black uppercase tracking-widest text-zinc-500">
                     <div class="col-span-2 md:col-span-1">Merchant</div>
                     <div class="hidden md:block">Exchange</div>
                     <div>Price</div>
-                    <div>Available</div>
+                    <div class="hidden sm:block">Available</div>
                     <div class="text-right">Action</div>
                 </div>
 
                 <div class="flex flex-col">
-                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-colors">
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-colors">
                         <div class="col-span-2 md:col-span-1 flex items-center gap-2">
                             <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
                             <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">FastTrade_Pro</span>
@@ -253,11 +253,11 @@
                             Binance
                         </div>
                         <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.002 USD</div>
-                        <div class="text-xs font-medium text-zinc-500">4,500 USDT</div>
+                        <div class="text-xs font-medium text-zinc-500 hidden sm:block">4,500 USDT</div>
                         <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold">Buy</span></div>
                     </div>
 
-                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 blur-[1px] opacity-90 select-none">
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 blur-[1px] opacity-90 select-none">
                         <div class="col-span-2 md:col-span-1 flex items-center gap-2">
                             <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
                             <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">CryptoWhale99</span>
@@ -267,23 +267,23 @@
                             OKX
                         </div>
                         <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.004 USD</div>
-                        <div class="text-xs font-medium text-zinc-500">12,000 USDT</div>
+                        <div class="text-xs font-medium text-zinc-500 hidden sm:block">12,000 USDT</div>
                         <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
                     </div>
 
-                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 blur-sm opacity-60 select-none">
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 blur-sm opacity-60 select-none">
                         <div class="col-span-2 md:col-span-1 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-zinc-300"></div><span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">GlobalAssets</span></div>
                         <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">Bybit</div>
                         <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.005 USD</div>
-                        <div class="text-xs font-medium text-zinc-500">850 USDT</div>
+                        <div class="text-xs font-medium text-zinc-500 hidden sm:block">850 USDT</div>
                         <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
                     </div>
 
-                    <div class="grid grid-cols-4 md:grid-cols-5 gap-4 px-6 lg:px-8 py-4 items-center blur-md opacity-30 select-none">
+                    <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 items-center blur-md opacity-30 select-none">
                         <div class="col-span-2 md:col-span-1 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-zinc-300"></div><span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">SecureExchange</span></div>
                         <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">KuCoin</div>
                         <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.008 USD</div>
-                        <div class="text-xs font-medium text-zinc-500">2,100 USDT</div>
+                        <div class="text-xs font-medium text-zinc-500 hidden sm:block">2,100 USDT</div>
                         <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
                     </div>
                 </div>
@@ -467,7 +467,7 @@
 	{#if showInstallButton}
 		<button 
 			onclick={installPWA} 
-			class="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-white/30 backdrop-blur-2xl border border-white/50 px-5 py-3 text-sm font-bold text-zinc-800 shadow-[0_8px_32px_rgba(0,0,0,0.1)] transition-all hover:bg-white/50 hover:scale-105 active:scale-95 duration-500"
+			class="fixed bottom-24 md:bottom-6 right-6 z-[100] flex items-center gap-2 rounded-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/50 dark:border-zinc-700/50 px-5 py-3 text-sm font-bold text-zinc-800 dark:text-zinc-200 shadow-[0_8px_32px_rgba(0,0,0,0.15)] transition-all hover:bg-white hover:scale-105 active:scale-95 duration-500"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
 			Install App

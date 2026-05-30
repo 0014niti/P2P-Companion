@@ -375,7 +375,7 @@
 				{/if}
 			</div>
 
-			<div class="flex items-center gap-2 w-full lg:w-auto">
+			<div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto mt-2 lg:mt-0">
 				
 				<button
 					class="flex h-10 w-11 sm:h-11 sm:w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200/60 dark:border-zinc-700/60 bg-gradient-to-b from-white/90 to-white/50 dark:from-zinc-800/90 dark:to-zinc-800/50 backdrop-blur-md shadow-sm transition-all hover:bg-white dark:hover:bg-zinc-800 hover:-translate-y-0.5 hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.1)] active:scale-95 active:translate-y-0 text-zinc-700 dark:text-zinc-400"
@@ -395,14 +395,14 @@
 				</button>
 
 				<button
-					class={cn("flex-[1.2] md:flex-none flex h-10 sm:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-3 sm:px-6 text-[11px] sm:text-sm font-bold shadow-sm transition-all hover:-translate-y-0.5 active:scale-95 active:translate-y-0", showFilters ? "bg-zinc-900 text-white border-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-200 shadow-[0_8px_16px_-6px_rgba(0,0,0,0.3)]" : "bg-gradient-to-b from-white/90 to-white/50 dark:from-zinc-800/90 dark:to-zinc-800/50 backdrop-blur-md border-zinc-200/60 dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800 hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.1)]")}
+					class={cn("flex-grow md:flex-none flex h-10 sm:h-11 items-center justify-center gap-1.5 sm:gap-2 rounded-xl border px-3 sm:px-6 text-[11px] sm:text-sm font-bold shadow-sm transition-all hover:-translate-y-0.5 active:scale-95 active:translate-y-0", showFilters ? "bg-zinc-900 text-white border-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-200 shadow-[0_8px_16px_-6px_rgba(0,0,0,0.3)]" : "bg-gradient-to-b from-white/90 to-white/50 dark:from-zinc-800/90 dark:to-zinc-800/50 backdrop-blur-md border-zinc-200/60 dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800 hover:shadow-[0_8px_16px_-6px_rgba(0,0,0,0.1)]")}
 					onclick={() => (showFilters = !showFilters)}
 				>
 					<Settings2 class="size-3.5 sm:size-4" />
 					<span>Filters</span>
 				</button>
 
-				<div class="flex h-10 sm:h-11 flex-[1.5] md:flex-none items-center rounded-xl border border-zinc-200/50 dark:border-zinc-700/50 bg-zinc-400/10 dark:bg-zinc-800/50 backdrop-blur-md p-1 shadow-inner">
+				<div class="flex h-10 sm:h-11 flex-grow min-w-[120px] md:flex-none items-center rounded-xl border border-zinc-200/50 dark:border-zinc-700/50 bg-zinc-400/10 dark:bg-zinc-800/50 backdrop-blur-md p-1 shadow-inner">
 					<button
 						class={cn('flex-1 flex items-center justify-center gap-1.5 rounded-lg h-full text-[10px] sm:text-sm font-bold transition-all duration-300', viewMode === 'cards' ? 'bg-white dark:bg-zinc-700 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.12)] text-zinc-900 dark:text-white scale-100' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 scale-95 hover:bg-white/50 dark:hover:bg-zinc-700/50')}
 						onclick={() => (viewMode = 'cards')}
