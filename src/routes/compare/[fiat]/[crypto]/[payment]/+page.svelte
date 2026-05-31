@@ -1,20 +1,19 @@
 <script lang="ts">
     import SeoTextAndFaq from '$lib/components/SeoTextAndFaq.svelte';
 
-    // Extract the dynamic data passed from +page.server.ts
     let { data } = $props();
-    const { fiat, crypto, metaTitle, metaDescription, monthYear } = data;
+    const { fiat, crypto, payment, formattedPayment, metaTitle, metaDescription, monthYear } = data;
 </script>
 
 <svelte:head>
     <title>{metaTitle}</title>
     <meta name="description" content={metaDescription} />
-    <meta name="keywords" content="buy {crypto} with {fiat}, {fiat} {crypto} P2P, {crypto} arbitrage {fiat}, Binance {fiat} P2P, OKX {fiat} crypto, best crypto rates" />
-    <link rel="canonical" href="https://p2pcompanion.com/compare/{fiat.toLowerCase()}/{crypto.toLowerCase()}" />
+    <meta name="keywords" content="buy {crypto} with {formattedPayment}, {formattedPayment} {fiat} P2P, {crypto} arbitrage {fiat}, Binance {formattedPayment} crypto" />
+    <link rel="canonical" href="https://p2pcompanion.com/compare/{fiat.toLowerCase()}/{crypto.toLowerCase()}/{payment}" />
 
     <!-- Dynamic OpenGraph Overrides -->
-    <meta property="og:image" content="https://p2pcompanion.com/api/og?fiat={fiat}&crypto={crypto}" />
-    <meta property="twitter:image" content="https://p2pcompanion.com/api/og?fiat={fiat}&crypto={crypto}" />
+    <meta property="og:image" content="https://p2pcompanion.com/api/og?fiat={fiat}&crypto={crypto}&payment={payment}" />
+    <meta property="twitter:image" content="https://p2pcompanion.com/api/og?fiat={fiat}&crypto={crypto}&payment={payment}" />
 
     <!-- Structured Data for SEO Rich Snippets -->
     <script type="application/ld+json">
@@ -23,10 +22,10 @@
             "@type": "WebPage",
             "name": metaTitle,
             "description": metaDescription,
-            "url": `https://p2pcompanion.com/compare/${fiat.toLowerCase()}/${crypto.toLowerCase()}`,
+            "url": `https://p2pcompanion.com/compare/${fiat.toLowerCase()}/${crypto.toLowerCase()}/${payment}`,
             "mainEntity": {
                 "@type": "Article",
-                "headline": `How to Buy ${crypto} with ${fiat}`,
+                "headline": `How to Buy ${crypto} with ${formattedPayment} in ${fiat}`,
                 "description": metaDescription,
                 "author": { "@type": "Organization", "name": "P2P Companion" }
             }
@@ -40,7 +39,8 @@
                 { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://p2pcompanion.com/" },
                 { "@type": "ListItem", "position": 2, "name": "Live Markets", "item": "https://p2pcompanion.com/markets" },
                 { "@type": "ListItem", "position": 3, "name": `${fiat}`, "item": `https://p2pcompanion.com/fiat/${fiat.toLowerCase()}` },
-                { "@type": "ListItem", "position": 4, "name": `${crypto}/${fiat}`, "item": `https://p2pcompanion.com/compare/${fiat.toLowerCase()}/${crypto.toLowerCase()}` }
+                { "@type": "ListItem", "position": 4, "name": `${crypto}/${fiat}`, "item": `https://p2pcompanion.com/compare/${fiat.toLowerCase()}/${crypto.toLowerCase()}` },
+                { "@type": "ListItem", "position": 5, "name": `${formattedPayment}`, "item": `https://p2pcompanion.com/compare/${fiat.toLowerCase()}/${crypto.toLowerCase()}/${payment}` }
             ]
         })}
     </script>
@@ -54,10 +54,10 @@
         </span>
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-zinc-900 dark:text-white mb-6 tracking-tight leading-tight">
             {crypto} / {fiat} <br />
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600">P2P Spreads & Analysis</span>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600">via {formattedPayment}</span>
         </h1>
         <p class="text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto font-medium text-lg leading-relaxed">
-            Compare real-time peer-to-peer liquidity for {crypto} using {fiat}. Find the cheapest buying rates and highest selling limits across global centralized exchanges.
+            Compare real-time peer-to-peer liquidity for {crypto} using {formattedPayment} ({fiat}). Find the cheapest buying rates and highest selling limits across global centralized exchanges.
         </p>
     </div>
 
@@ -72,10 +72,10 @@
     </div>
 
     <article class="max-w-4xl mx-auto prose dark:prose-invert prose-blue lg:prose-lg">
-        <h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-4">Comprehensive Guide to Trading {crypto} with {fiat}</h2>
+        <h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-4">Comprehensive Guide to Trading {crypto} with {formattedPayment}</h2>
         
         <p class="text-zinc-700 dark:text-zinc-300 leading-relaxed mb-6">
-            Navigating the peer-to-peer (P2P) cryptocurrency markets can be complex, especially when looking for the most cost-effective ways to exchange <strong>{fiat}</strong> for <strong>{crypto}</strong>. Because global liquidity is fragmented across multiple centralized exchanges like Binance, Bybit, and OKX, the spot price of {crypto} can vary significantly depending on local banking demands, inflation rates, and regional regulatory environments.
+            Navigating the peer-to-peer (P2P) cryptocurrency markets can be complex, especially when looking for the most cost-effective ways to exchange <strong>{fiat}</strong> for <strong>{crypto}</strong> using <strong>{formattedPayment}</strong>. Because global liquidity is fragmented across multiple centralized exchanges like Binance, Bybit, and OKX, the spot price of {crypto} can vary significantly depending on local banking demands, inflation rates, and regional regulatory environments.
         </p>
 
         <div class="grid md:grid-cols-2 gap-8 my-10">
@@ -86,20 +86,20 @@
                 <ul class="space-y-4 text-zinc-700 dark:text-zinc-300 text-[15px] leading-relaxed">
                     <li class="flex items-start gap-2.5">
                         <svg class="size-5 text-blue-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span><strong>Cross-Reference Liquidity:</strong> Compare Binance, OKX, and Bybit simultaneously instead of relying on a single exchange's order book.</span>
+                        <span><strong>Cross-Reference Liquidity:</strong> Compare Binance, OKX, and Bybit simultaneously to find the cheapest {formattedPayment} offers instead of relying on a single exchange's order book.</span>
                     </li>
                     <li class="flex items-start gap-2.5">
                         <svg class="size-5 text-blue-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <span><strong>Filter Payment Methods:</strong> Check margins specific to your preferred local {fiat} banks or mobile money providers.</span>
+                        <span><strong>Verify Margins:</strong> Using {formattedPayment} may carry a different premium compared to other local {fiat} banks. Always check the dynamic margins.</span>
                     </li>
                 </ul>
             </div>
             <div class="bg-white/60 dark:bg-zinc-800/60 p-6 md:p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm">
                 <h3 class="text-xl font-black text-zinc-900 dark:text-white mb-4 flex items-center gap-2">
-                    <span class="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-lg text-sm leading-none">📈</span> {fiat} Arbitrage Potential
+                    <span class="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 rounded-lg text-sm leading-none">📈</span> Arbitrage Potential
                 </h3>
                 <p class="text-[15px] text-zinc-700 dark:text-zinc-300 leading-relaxed mb-4">
-                    If you are a P2P merchant, the {fiat} market frequently presents cross-exchange arbitrage gaps. Our tool helps you:
+                    If you are a P2P merchant, the {formattedPayment} market frequently presents cross-exchange arbitrage gaps. Our tool helps you:
                 </p>
                 <ul class="space-y-2 text-zinc-700 dark:text-zinc-300 text-[15px]">
                     <li class="flex items-center gap-2">• Identify profitable spread margins.</li>
@@ -109,9 +109,9 @@
             </div>
         </div>
 
-        <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-4">Understanding the {crypto} Premium</h3>
+        <h3 class="text-xl font-bold text-zinc-900 dark:text-white mb-4">Understanding the {formattedPayment} Premium</h3>
         <p class="text-zinc-700 dark:text-zinc-300 leading-relaxed mb-6">
-            In many regions, the P2P price of {crypto} trades at a premium compared to the standard global spot rate. This premium is typically driven by high local demand for digital assets as a hedge against local currency depreciation, or by strict capital controls that make traditional foreign exchange difficult. When using our {crypto}/{fiat} terminal, always factor in maker/taker fees and the historical reputation of the merchant you are transacting with to ensure a safe and secure exchange.
+            In many regions, certain payment methods like {formattedPayment} may trade at a premium or discount compared to the standard global spot rate. This premium is typically driven by high local demand for digital assets, transaction fees associated with the specific payment gateway, or by strict capital controls that make traditional foreign exchange difficult. When using our {crypto}/{fiat} terminal, always factor in maker/taker fees and the historical reputation of the merchant you are transacting with to ensure a safe and secure exchange.
         </p>
     </article>
 

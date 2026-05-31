@@ -1,10 +1,11 @@
 import type { RequestHandler } from './$types';
+import fiatList from '$lib/data/binance-fiat-list.json';
 
 export const GET: RequestHandler = async () => {
     const siteUrl = 'https://p2pcompanion.com';
         
-    // Arrays must match the ones defined earlier
-    const fiats = ['ngn', 'try', 'ars', 'usd', 'eur', 'gbp', 'php', 'vnd', 'inr', 'rub', 'brl', 'zar'];
+    // Dynamically pull all fiats!
+    const fiats = fiatList.map(f => f.currencyCode.toLowerCase());
     const cryptos = ['usdt', 'btc', 'eth'];
     const payments = ['bank-transfer', 'revolut', 'skrill', 'paypal', 'wise', 'perfect-money', 'advcash'];
 
@@ -28,31 +29,16 @@ export const GET: RequestHandler = async () => {
 
     // Add fiat dashboards
     for (const fiat of fiats) {
-        xml += `
-        <url>
-            <loc>${siteUrl}/fiat/${fiat}</loc>
-            <changefreq>daily</changefreq>
-            <priority>0.8</priority>
-        </url>`;
+        xml += `<url><loc>${siteUrl}/fiat/${fiat}</loc><changefreq>daily</changefreq><priority>0.8</priority></url>\n`;
     }
 
     // Loop through arrays and generate URLs for every combination
     for (const crypto of cryptos) {
         for (const fiat of fiats) {
-            xml += `
-        <url>
-            <loc>${siteUrl}/compare/${fiat}/${crypto}</loc>
-            <changefreq>daily</changefreq>
-            <priority>0.7</priority>
-        </url>`;
+            xml += `<url><loc>${siteUrl}/compare/${fiat}/${crypto}</loc><changefreq>daily</changefreq><priority>0.7</priority></url>\n`;
 
             for (const payment of payments) {
-                xml += `
-        <url>
-            <loc>${siteUrl}/compare/${fiat}/${crypto}/${payment}</loc>
-            <changefreq>weekly</changefreq>
-            <priority>0.6</priority>
-        </url>`;
+                xml += `<url><loc>${siteUrl}/compare/${fiat}/${crypto}/${payment}</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>\n`;
             }
         }
     }
