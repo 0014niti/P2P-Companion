@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/header.svelte';
 	import '@fontsource-variable/outfit';
+	import CommandPalette from '$lib/components/CommandPalette.svelte';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import { ModeWatcher } from 'mode-watcher';
 	import '../app.css';
@@ -42,6 +43,7 @@
 
 <QueryClientProvider client={queryClient}>
 	<div class="min-h-screen flex flex-col">
+		<CommandPalette />
 		<Header />
 		
 		<main class="flex-grow w-full">

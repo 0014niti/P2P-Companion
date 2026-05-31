@@ -11,6 +11,7 @@
 	import Toast from '$lib/components/Toast.svelte';
 	import { toastStore } from '$lib/toast';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	
 	// 🌟 Added Download, BookOpen, and Zap icons for the new Dock
 	import { Settings2, RefreshCw, Activity, Heart, Calculator, Sun, Moon, LayoutGrid, List, ShieldCheck, ChevronDown } from 'lucide-svelte';
@@ -23,7 +24,6 @@
 	import OtcBoard from '$lib/components/OtcBoard.svelte';
 	import DonationPopup from '$lib/components/DonationPopup.svelte';
 	import BottomDock from '$lib/components/BottomDock.svelte';
-	import ArbitrageCalculator from '$lib/components/ArbitrageCalculator.svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
 	const currentFilters = $derived(filterState.current);
@@ -32,7 +32,6 @@
 	let showFilters = $state(false);
 	let showDonation = $state(false);
 	
-	let isCalculatorOpen = $state(false);
 	let isOtcBoardOpen = $state(false);
 	// 🌟 NEW: Guide State for the dock
 	let isGuideOpen = $state(false); 
@@ -665,17 +664,19 @@
 
 <Toast />
 
-<ArbitrageCalculator 
-	bind:isOpen={isCalculatorOpen} 
-	fiat={currentFilters.fiat} 
-	token={currentFilters.selectedToken} 
-	initialBuyPrice={$p2pOrderStore.marketRate ? $p2pOrderStore.marketRate * 0.99 : 0}
-	initialSellPrice={$p2pOrderStore.marketRate ? $p2pOrderStore.marketRate * 1.01 : 0}
-/>
-
 <DonationPopup bind:isOpen={showDonation} />
 
 <SideGuide bind:isOpen={isGuideOpen} onDonateClick={() => (showDonation = true)} />
 <OtcBoard bind:isOpen={isOtcBoardOpen} />
 
-<BottomDock {showInstallButton} onInstall={installPWA} onOpenGuide={() => (isGuideOpen = true)} onOpenCalculator={() => (isCalculatorOpen = true)} onOpenOtc={() => (isOtcBoardOpen = true)} />
+<BottomDock 
+	{showInstallButton} 
+	onInstall={installPWA} 
+	onOpenGuide={() => (isGuideOpen = true)} 
+	onOpenCalculator={() => {
+		const buy = $p2pOrderStore.marketRate ? ($p2pOrderStore.marketRate * 0.99).toFixed(3) : 1.00;
+		const sell = $p2pOrderStore.marketRate ? ($p2pOrderStore.marketRate * 1.01).toFixed(3) : 1.02;
+		goto(`/calculator?fiat=${currentFilters.fiat || 'USD'}&crypto=${currentFilters.selectedToken || 'USDT'}&buy=${buy}&sell=${sell}`);
+	}} 
+	onOpenOtc={() => (isOtcBoardOpen = true)} 
+/>
