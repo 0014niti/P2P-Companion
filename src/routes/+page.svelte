@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { ChevronDown, Sun, Moon } from 'lucide-svelte';
 	import { toggleMode } from 'mode-watcher';
+	import { i18n } from '$lib/i18n/index.svelte.ts';
 	
 	let deferredPrompt: any = null;
 	let showInstallButton = $state(false);
@@ -142,14 +143,13 @@
 			</div>
 			<span class="inline-flex items-center gap-1.5 w-fit rounded-full bg-blue-50/80 border border-blue-200/60 text-blue-700 px-3 py-1 text-[10px] font-bold tracking-widest uppercase mb-4">
 				<span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span></span>
-				Live Market Data
+				{i18n.t('home.liveMarketData')}
 			</span>
 			<h1 class="text-3xl sm:text-4xl lg:text-4xl xl:text-5xl font-black tracking-tighter text-zinc-950 dark:text-white leading-[1.1] mb-4 animate-fade-in-up">
-				Compare Every <br/>
-				<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-700 animate-gradient-text">Crypto Price Spread.</span>
+				{@html i18n.t('home.heroTitle')}
 			</h1>
 			<p class="text-zinc-700 dark:text-zinc-300 text-base sm:text-lg font-medium max-w-lg">
-				Instantly compare real-time USDT order books across top global exchanges. Find the best P2P rates and uncover fiat inefficiencies with realtime and unbiased data.
+				{i18n.t('home.heroSub')}
 			</p>
 		</div>
 

@@ -2,6 +2,7 @@
 	import { ShieldAlert, Menu, X, Search } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { i18n } from '$lib/i18n/index.svelte.ts';
 
 	let isMobileMenuOpen = $state(false);
 </script>
@@ -41,32 +42,51 @@
 				<div class="hidden md:flex items-center gap-4">
 					<button onclick={() => window.dispatchEvent(new KeyboardEvent('keydown', {key: 'k', metaKey: true}))} class="flex items-center gap-3 text-sm font-bold text-zinc-400 dark:text-zinc-500 bg-zinc-100/50 dark:bg-zinc-800/50 hover:bg-white dark:hover:bg-zinc-800 hover:text-zinc-800 dark:hover:text-zinc-200 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm transition-all active:scale-95 group">
 						<Search class="size-4" />
-						<span class="hidden lg:inline-block">Search...</span>
+						<span class="hidden lg:inline-block">{i18n.t('nav.search')}</span>
 						<span class="flex items-center gap-0.5 px-1.5 py-0.5 rounded-md bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-[9px] uppercase tracking-widest shadow-inner group-hover:border-blue-300 dark:group-hover:border-blue-700 transition-colors">
 							<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></svg> K
 						</span>
 					</button>
 					<a href="/blog" class="text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-white/50 dark:bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm active:scale-95">
-						Blog
+						{i18n.t('nav.blog')}
 					</a>
 					<a href="/markets" class="text-sm font-bold text-zinc-600 dark:text-zinc-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors bg-white/50 dark:bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm active:scale-95">
-						Live Markets
+						{i18n.t('nav.liveMarkets')}
 					</a>
 					<a href="/scam-check" class="flex items-center gap-1.5 text-sm font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 transition-colors bg-rose-50/50 dark:bg-rose-900/20 px-3 py-1.5 rounded-lg border border-rose-200/50 dark:border-rose-800/50 shadow-sm active:scale-95" title="Verify Merchant Reputation">
 						<ShieldAlert class="size-4" />
-						Scam Check
+						{i18n.t('nav.scamCheck')}
 					</a>
+					
+					<select 
+						value={i18n.locale} 
+						onchange={(e) => i18n.setLocale(e.currentTarget.value as any)}
+						class="text-xs font-bold text-zinc-600 dark:text-zinc-300 bg-white/50 dark:bg-zinc-800/50 px-2 py-1.5 rounded-lg border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm outline-none cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 transition-colors uppercase"
+					>
+						<option value="en">EN</option>
+						<option value="es">ES</option>
+						<option value="ru">RU</option>
+					</select>
 					<a href="/arbitrage" class="text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 px-3.5 py-1.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all active:scale-95 flex items-center gap-1.5">
 						<svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-						Scanner
+						{i18n.t('nav.scanner')}
 					</a>
 				</div>
 
 				<!-- Mobile Nav Toggle -->
 				<div class="flex md:hidden items-center gap-2">
+					<select 
+						value={i18n.locale} 
+						onchange={(e) => i18n.setLocale(e.currentTarget.value as any)}
+						class="text-[10px] font-bold text-zinc-600 dark:text-zinc-300 bg-white/50 dark:bg-zinc-800/50 px-1.5 py-1 rounded-md border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm outline-none cursor-pointer transition-colors uppercase"
+					>
+						<option value="en">EN</option>
+						<option value="es">ES</option>
+						<option value="ru">RU</option>
+					</select>
 					<a href="/arbitrage" class="text-[11px] font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1" onclick={() => isMobileMenuOpen = false}>
 						<svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-						Scanner
+						{i18n.t('nav.scanner')}
 					</a>
 					<button onclick={() => isMobileMenuOpen = !isMobileMenuOpen} aria-label="Toggle Menu" class="p-1.5 rounded-lg bg-zinc-100/50 dark:bg-zinc-800/50 border border-zinc-200/50 dark:border-zinc-700/50 text-zinc-700 dark:text-zinc-300 active:scale-95 transition-all">
 						{#if isMobileMenuOpen}
