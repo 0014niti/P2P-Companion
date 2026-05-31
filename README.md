@@ -7,4 +7,4 @@ Current Exchanges Supported
 - OKX
 - MEXC
 - kucoin
-
+- Remitio

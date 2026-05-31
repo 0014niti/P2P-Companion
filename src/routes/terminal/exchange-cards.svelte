@@ -39,6 +39,30 @@
 				: [...expandedAds, advNo]
 		);
 	};
+
+	const handleTradeClick = (e: MouseEvent, webUrl: string, exchangeKey: string) => {
+		// Detect if the user is on a mobile device
+		if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+			e.preventDefault();
+			let appUrl = '';
+			
+			// Apply specific deep link intent schemes
+			switch (exchangeKey.toLowerCase()) {
+				case 'binance': appUrl = 'binance://'; break;
+				case 'okx': appUrl = 'okx://'; break;
+				case 'bybit': appUrl = 'bybitapp://'; break;
+				case 'kucoin': appUrl = 'kucoin://'; break;
+			}
+
+			if (appUrl) {
+				window.location.href = appUrl;
+				// Fallback to web browser if the app is not installed
+				setTimeout(() => { window.open(webUrl, '_blank', 'noopener,noreferrer'); }, 600);
+			} else {
+				window.open(webUrl, '_blank', 'noopener,noreferrer');
+			}
+		}
+	};
 </script>
 
 <div class="relative h-full {isBestRate ? 'z-10' : 'z-0'} transition-all duration-500">
@@ -73,10 +97,12 @@
 				/>
 				<span class="font-black text-base truncate tracking-tight text-zinc-900 dark:text-zinc-100">{exchange.name}</span>
 			</CardTitle>
+			{@const tradeUrl = getDynamicLink(exchange.key, filterType, $p2pOrderStore.token || 'USDT', $p2pOrderStore.fiat || 'USD')}
 			<a
-				href={getDynamicLink(exchange.key, filterType, $p2pOrderStore.token || 'USDT', $p2pOrderStore.fiat || 'USD')}
+				href={tradeUrl}
 				target="_blank"
 				rel="noopener noreferrer"
+				onclick={(e) => handleTradeClick(e, tradeUrl, exchange.key)}
 				class="text-[11px] font-bold text-blue-700 dark:text-blue-400 flex items-center gap-1 bg-gradient-to-b from-white to-blue-50 dark:from-zinc-800 dark:to-blue-900/20 border border-blue-200/80 dark:border-blue-800/50 px-3.5 py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:to-blue-100 dark:hover:to-blue-900/40 hover:shadow active:scale-95"
 				title={`Trade on ${exchange.name}`}
 			>
@@ -174,6 +200,7 @@
 											href={ad.tradeUrl || '#'}
 											target="_blank"
 											rel="noopener noreferrer"
+											onclick={(e) => { if (ad.tradeUrl) handleTradeClick(e, ad.tradeUrl, exchange.key); }}
 											class="flex w-full items-center justify-center gap-1.5 rounded-lg bg-blue-50/50 hover:bg-blue-100 border border-blue-200/60 dark:bg-blue-900/20 dark:border-blue-800/50 dark:hover:bg-blue-900/40 py-2 text-[11px] font-bold text-blue-700 dark:text-blue-400 transition-all shadow-sm active:scale-95"
 										>
 											Proceed to Trade ↗
@@ -185,6 +212,7 @@
 					{/each}
 				</div>
 			{:else}
+				{@const fallbackUrl = getDynamicLink(exchange.key, filterType, $p2pOrderStore.token || 'USDT', $p2pOrderStore.fiat || 'USD')}
 				<!-- Smart Fallback: Redirects user to the exchange if API is blocked or empty -->
 				<div class="flex flex-col items-center justify-center py-8 px-4 text-center space-y-3 bg-zinc-50/50 dark:bg-zinc-800/30 m-3 rounded-2xl border border-dashed border-zinc-200/80 dark:border-zinc-700/50">
 					<div class="p-2.5 bg-white dark:bg-zinc-800 rounded-full shadow-sm border border-zinc-100 dark:border-zinc-700 text-rose-500">
@@ -197,9 +225,10 @@
 						</p>
 					</div>
 					<a
-						href={getDynamicLink(exchange.key, filterType, $p2pOrderStore.token || 'USDT', $p2pOrderStore.fiat || 'USD')}
+						href={fallbackUrl}
 						target="_blank"
 						rel="noopener noreferrer"
+						onclick={(e) => handleTradeClick(e, fallbackUrl, exchange.key)}
 						class="mt-2 px-5 py-2 bg-zinc-900 text-white text-[11px] font-bold rounded-full shadow-md hover:bg-zinc-800 hover:scale-105 transition-all active:scale-95"
 					>
 						Check {exchange.name} directly ↗
