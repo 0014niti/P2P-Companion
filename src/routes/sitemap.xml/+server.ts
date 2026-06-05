@@ -1,45 +1,44 @@
 import type { RequestHandler } from './$types';
 import fiatList from '$lib/data/binance-fiat-list.json';
 
+// Optional: If your fiat list and routes don't change often, uncomment the next line to build this once at deploy time!
+// export const prerender = true;
+
 export const GET: RequestHandler = async () => {
     const siteUrl = 'https://p2pcompanion.com';
         
     // Dynamically pull all fiats!
     const fiats = fiatList.map(f => f.currencyCode.toLowerCase());
     const cryptos = ['usdt', 'btc', 'eth'];
-    const payments = ['bank-transfer', 'revolut', 'skrill', 'paypal', 'wise', 'perfect-money', 'advcash'];
 
-    // Start XML string cleanly
-    let xml = `<?xml version="1.0" encoding="UTF-8" ?>\n`;
-    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    // Using an array for string building is much more CPU/Memory efficient than += string concatenation for large loops
+    const urls: string[] = [];
 
-    // Add static pages (CORRECTED </loc> tags)
-    xml += `
-        <url><loc>${siteUrl}/</loc><priority>1.0</priority></url>
-        <url><loc>${siteUrl}/terminal</loc><priority>0.9</priority></url>
-        <url><loc>${siteUrl}/pro</loc><priority>0.8</priority></url>
-        <url><loc>${siteUrl}/markets</loc><priority>0.8</priority></url>
-        <url><loc>${siteUrl}/about</loc><priority>0.8</priority></url>
-        <url><loc>${siteUrl}/guides</loc><priority>0.8</priority></url>
-        <url><loc>${siteUrl}/guides/p2p-arbitrage-explained</loc><priority>0.7</priority></url>
-        <url><loc>${siteUrl}/arbitrage</loc><priority>0.9</priority></url>
-        <url><loc>${siteUrl}/blog</loc><priority>0.9</priority></url>
-        <url><loc>${siteUrl}/calculator</loc><priority>0.8</priority></url>
-    `;
+    // Add static pages
+    urls.push(
+        `<url><loc>${siteUrl}/</loc><priority>1.0</priority></url>`,
+        `<url><loc>${siteUrl}/terminal</loc><priority>0.9</priority></url>`,
+        `<url><loc>${siteUrl}/pro</loc><priority>0.8</priority></url>`,
+        `<url><loc>${siteUrl}/markets</loc><priority>0.8</priority></url>`,
+        `<url><loc>${siteUrl}/about</loc><priority>0.8</priority></url>`,
+        `<url><loc>${siteUrl}/guides</loc><priority>0.8</priority></url>`,
+        `<url><loc>${siteUrl}/guides/p2p-arbitrage-explained</loc><priority>0.7</priority></url>`,
+        `<url><loc>${siteUrl}/arbitrage</loc><priority>0.9</priority></url>`,
+        `<url><loc>${siteUrl}/blog</loc><priority>0.9</priority></url>`,
+        `<url><loc>${siteUrl}/calculator</loc><priority>0.8</priority></url>`
+    );
 
     // Add fiat dashboards
     for (const fiat of fiats) {
-        xml += `<url><loc>${siteUrl}/fiat/${fiat}</loc><changefreq>daily</changefreq><priority>0.8</priority></url>\n`;
+        urls.push(`<url><loc>${siteUrl}/fiat/${fiat}</loc><changefreq>daily</changefreq><priority>0.8</priority></url>`);
     }
 
-    // Loop through arrays and generate URLs for every combination
+    // Loop through core combinations ONLY. 
+    // We removed the payment methods loop to prevent Google from penalizing the site for "Thin Content" 
+    // (empty combinations with no active merchants). Focus search engine crawl budget on the core pairs.
     for (const crypto of cryptos) {
         for (const fiat of fiats) {
-            xml += `<url><loc>${siteUrl}/compare/${fiat}/${crypto}</loc><changefreq>daily</changefreq><priority>0.7</priority></url>\n`;
-
-            for (const payment of payments) {
-                xml += `<url><loc>${siteUrl}/compare/${fiat}/${crypto}/${payment}</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>\n`;
-            }
+            urls.push(`<url><loc>${siteUrl}/compare/${fiat}/${crypto}</loc><changefreq>daily</changefreq><priority>0.7</priority></url>`);
         }
     }
 
@@ -49,17 +48,18 @@ export const GET: RequestHandler = async () => {
         for (const path in posts) {
             const slug = path.split('/').pop()?.replace('.md', '');
             if (slug) {
-                xml += `
-        <url><loc>${siteUrl}/blog/${slug}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`;
+                urls.push(`<url><loc>${siteUrl}/blog/${slug}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
             }
         }
     } catch (e) {
         // Ignore if no posts exist
     }
 
-    xml += `\n</urlset>`;
+    const xml = `<?xml version="1.0" encoding="UTF-8" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.join('\n')}
+</urlset>`;
 
-    // Return the XML, using .trim() to ensure no blank lines at the top of the file
     return new Response(xml.trim(), {
         headers: {
             'Content-Type': 'application/xml',
