@@ -1,7 +1,9 @@
 <script lang="ts">
-    export let crypto: string;
-    export let fiat: string;
-    export let monthYear: string;
+    let { 
+        crypto, 
+        fiat, 
+        monthYear 
+    } = $props<{ crypto: string, fiat: string, monthYear: string }>();
 
     // Generate full names for better readability
     const cryptoNames: Record<string, string> = {
@@ -25,45 +27,47 @@
         'ZAR': 'South African Rand (ZAR)'
     };
 
-    $: cName = cryptoNames[crypto] || crypto;
-    $: fName = fiatNames[fiat] || fiat;
+    let cName = $derived(cryptoNames[crypto] || crypto);
+    let fName = $derived(fiatNames[fiat] || fiat);
 
     // Structured JSON-LD Data for Google Rich Snippets
-    $: jsonLd = {
+    let jsonLd = $derived({
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
             {
                 "@type": "Question",
-                "name": `What is the cheapest way to buy  with ?`,
+                "name": `What is the cheapest way to buy ${cName} with ${fName}?`,
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": `The cheapest way to buy  with  varies by the minute based on P2P market liquidity. By checking our live aggregated table above, you can compare merchants across major exchanges like Binance, Bybit, and OKX to secure the lowest spread.`
+                    "text": `The cheapest way to buy ${cName} with ${fName} varies by the minute based on P2P market liquidity. By checking our live aggregated table above, you can compare merchants across major exchanges like Binance, Bybit, and OKX to secure the lowest spread.`
                 }
             },
             {
                 "@type": "Question",
-                "name": `Is KYC required to buy  using  on P2P?`,
+                "name": `Is KYC required to buy ${cName} using ${fName} on P2P?`,
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": `Most major centralized exchanges require KYC (Identity Verification) to participate in P2P trading. However, you can use our tool to browse current / rates freely before creating an account.`
+                    "text": `Most major centralized exchanges require KYC (Identity Verification) to participate in P2P trading. However, you can use our tool to browse current ${crypto}/${fiat} rates freely before creating an account.`
                 }
             },
             {
                 "@type": "Question",
-                "name": `How do I avoid P2P scams when trading ?`,
+                "name": `How do I avoid P2P scams when trading ${fName}?`,
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": `To safely trade  for , always trade within the exchange platform so your funds are protected by escrow. Never release your  until the  has definitively cleared in your bank account, and avoid clicking external links sent by the counterparty.`
+                    "text": `To safely trade ${fName} for ${cName}, always trade within the exchange platform so your funds are protected by escrow. Never release your ${cName} until the ${fName} has definitively cleared in your bank account, and avoid clicking external links sent by the counterparty.`
                 }
             }
         ]
-    };
+    });
 </script>
 
 <svelte:head>
     <!-- Inject FAQ Structured Data for Google Rich Snippets -->
-    {@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
+    <script type="application/ld+json">
+        {@html JSON.stringify(jsonLd)}
+    </script>
 </svelte:head>
 
 <section class="seo-content-container mt-12 mb-8 px-4 text-gray-800 dark:text-gray-200">
