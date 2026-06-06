@@ -2,10 +2,6 @@ import { ImageResponse } from '@vercel/og';
 import { html } from 'satori-html';
 import type { RequestHandler } from './$types';
 
-export const config = {
-    runtime: 'edge'
-};
-
 export const GET: RequestHandler = async ({ url }) => {
     // Extract parameters from the URL or use defaults
     const fiat = url.searchParams.get('fiat') ?? 'NGN';
