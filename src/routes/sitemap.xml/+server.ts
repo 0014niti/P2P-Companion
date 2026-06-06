@@ -46,9 +46,15 @@ export const GET: RequestHandler = async () => {
     try {
         const posts = import.meta.glob('/src/posts/*.md', { query: '?raw', import: 'default', eager: true });
         for (const path in posts) {
-            const slug = path.split('/').pop()?.replace('.md', '');
+            const slug = path.split('/').pop()?.replace(/\.md.*$/i, '');
+            const content = posts[path] as string;
+            const dateMatch = content.match(/date:\s*(.*)/);
+            let lastmodStr = '';
+            if (dateMatch) {
+                lastmodStr = `<lastmod>${new Date(dateMatch[1].trim()).toISOString()}</lastmod>`;
+            }
             if (slug) {
-                urls.push(`<url><loc>${siteUrl}/blog/${slug}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
+                urls.push(`<url><loc>${siteUrl}/blog/${slug}</loc>${lastmodStr}<changefreq>weekly</changefreq><priority>0.8</priority></url>`);
             }
         }
     } catch (e) {

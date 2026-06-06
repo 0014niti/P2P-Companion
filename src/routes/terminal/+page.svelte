@@ -263,6 +263,11 @@
 	<meta name="description" content="Compare real-time P2P crypto spreads for {currentFilters.selectedToken || 'USDT'} against {currentFilters.fiat || 'USD'}. Find the best rates across major global exchanges instantly." />
 	<meta property="og:title" content="Live {currentFilters.selectedToken || 'USDT'} P2P Rates" />
 	<meta property="og:description" content="Find the best {currentFilters.type || 'BUY'} rates across Binance, OKX, and Bybit instantly." />
+	{#if premiumHeatmap.length > 0}
+		{@const bestSpread = premiumHeatmap.filter(h => h.premium !== null).sort((a, b) => b.premium! - a.premium!)[0] || { exchange: 'Exchange', premium: 0 }}
+		<meta property="og:image" content={`https://p2pcompanion.com/api/og?fiat=${currentFilters.fiat || 'USD'}&crypto=${currentFilters.selectedToken || 'USDT'}&premium=${bestSpread.premium?.toFixed(2) || '0.00'}&sell=${bestSpread.exchange}`} />
+		<meta name="twitter:image" content={`https://p2pcompanion.com/api/og?fiat=${currentFilters.fiat || 'USD'}&crypto=${currentFilters.selectedToken || 'USDT'}&premium=${bestSpread.premium?.toFixed(2) || '0.00'}&sell=${bestSpread.exchange}`} />
+	{/if}
 	<meta name="twitter:card" content="summary_large_image" />
 	<link rel="canonical" href="https://p2pcompanion.com/terminal" />
 </svelte:head>

@@ -13,6 +13,7 @@
 	import { ChevronDown, ShieldCheck, ArrowLeftRight, Clock, Wallet, Info, AlertCircle } from 'lucide-svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import ShareSpreadButton from '$lib/components/ShareSpreadButton.svelte';
 
 	let {
 		exchange,
@@ -195,16 +196,19 @@
 										</div>
 									{/if}
 
-									<div class="pt-2">
+									<div class="pt-2 flex gap-2">
 										<a
 											href={ad.tradeUrl || '#'}
 											target="_blank"
 											rel="noopener noreferrer"
 											onclick={(e) => { if (ad.tradeUrl) handleTradeClick(e, ad.tradeUrl, exchange.key); }}
-											class="flex w-full items-center justify-center gap-1.5 rounded-lg bg-blue-50/50 hover:bg-blue-100 border border-blue-200/60 dark:bg-blue-900/20 dark:border-blue-800/50 dark:hover:bg-blue-900/40 py-2 text-[11px] font-bold text-blue-700 dark:text-blue-400 transition-all shadow-sm active:scale-95"
+											class="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-blue-50/50 hover:bg-blue-100 border border-blue-200/60 dark:bg-blue-900/20 dark:border-blue-800/50 dark:hover:bg-blue-900/40 py-2 text-[11px] font-bold text-blue-700 dark:text-blue-400 transition-all shadow-sm active:scale-95"
 										>
 											Proceed to Trade ↗
 										</a>
+										{#if $p2pOrderStore.marketRate}
+											<ShareSpreadButton crypto={ad.token} fiat={ad.fiat} premium={(((Number(ad.price) - $p2pOrderStore.marketRate) / $p2pOrderStore.marketRate) * 100).toFixed(2)} buyEx="Market" sellEx={exchange.name} />
+										{/if}
 									</div>
 								</div>
 							{/if}

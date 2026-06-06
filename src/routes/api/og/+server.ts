@@ -1,77 +1,53 @@
+import { ImageResponse } from '@vercel/og';
+import { html } from 'satori-html';
 import type { RequestHandler } from './$types';
-import satori from 'satori';
-import { Resvg } from '@resvg/resvg-js';
-import { html as toReactNode } from 'satori-html';
 
-// Cache fonts in memory to avoid fetching them on every request
-let fontDataNormal: ArrayBuffer | null = null;
-let fontDataBlack: ArrayBuffer | null = null;
+export const config = {
+    runtime: 'edge'
+};
 
-export const GET: RequestHandler = async ({ url, fetch }) => {
-    const fiat = url.searchParams.get('fiat') || 'USD';
-    const crypto = url.searchParams.get('crypto') || 'USDT';
+export const GET: RequestHandler = async ({ url }) => {
+    // Extract parameters from the URL or use defaults
+    const fiat = url.searchParams.get('fiat') ?? 'NGN';
+    const crypto = url.searchParams.get('crypto') ?? 'USDT';
+    const premium = url.searchParams.get('premium') ?? '2.4';
+    const buyEx = url.searchParams.get('buy') ?? 'Binance';
+    const sellEx = url.searchParams.get('sell') ?? 'OKX';
 
-    // Satori requires TrueType (TTF) fonts for generation.
-    // We fetch the raw .ttf files securely from Fontsource via jsDelivr CDN.
-    if (!fontDataNormal) {
-        const res = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.ttf');
-        fontDataNormal = await res.arrayBuffer();
-    }
-    if (!fontDataBlack) {
-        const res = await fetch('https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-900-normal.ttf');
-        fontDataBlack = await res.arrayBuffer();
-    }
-
-    // Build the HTML template for the OG image
-    const markup = toReactNode(`
-        <div style="display: flex; height: 100%; width: 100%; align-items: center; justify-content: center; flex-direction: column; background-color: #09090b; font-family: 'Inter', sans-serif;">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #18181b; border: 2px solid #27272a; padding: 60px 100px; border-radius: 40px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);">
-                <div style="display: flex; align-items: center; justify-content: center; background-color: #2563eb; color: white; padding: 12px 32px; border-radius: 40px; font-size: 24px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px;">
-                    Live Market Data
+    // Note: Satori requires inline styles and flexbox for layout
+    const markup = html`
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; background-color: #111827; color: white; font-family: sans-serif;">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 40px;">
+                <h1 style="font-size: 72px; font-weight: bold; margin: 0; color: #60a5fa;">P2P Terminal</h1>
+                <span style="font-size: 36px; color: #9ca3af; margin-top: 10px;">Live Crypto Arbitrage Scanner</span>
+            </div>
+            
+            <div style="display: flex; background-color: #1f2937; padding: 40px 60px; border-radius: 24px; border: 2px solid #374151; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);">
+                <div style="display: flex; flex-direction: column; align-items: center; margin-right: 60px;">
+                    <span style="font-size: 32px; color: #9ca3af; text-transform: uppercase; letter-spacing: 2px;">Spread Found</span>
+                    <span style="font-size: 96px; font-weight: bold; color: #10b981; line-height: 1;">+${premium}%</span>
                 </div>
                 
-                <div style="display: flex; font-size: 110px; font-weight: 900; color: white; letter-spacing: -2px; margin-bottom: 20px;">
-                    ${crypto} / ${fiat}
-                </div>
-                
-                <div style="display: flex; font-size: 32px; font-weight: 600; color: #a1a1aa; text-align: center;">
-                    Compare Real-Time P2P Spreads
-                </div>
-                <div style="display: flex; font-size: 32px; font-weight: 600; color: #a1a1aa; text-align: center; margin-top: 10px;">
-                    across Binance, OKX, and Bybit
+                <div style="display: flex; flex-direction: column; justify-content: center; font-size: 36px; border-left: 2px solid #374151; padding-left: 60px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <span style="color: #9ca3af; width: 100px;">Buy:</span>
+                        <span style="font-weight: bold;">${crypto} on <span style="color: #f59e0b;">${buyEx}</span></span>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <span style="color: #9ca3af; width: 100px;">Sell:</span>
+                        <span style="font-weight: bold;">for ${fiat} on <span style="color: #f59e0b;">${sellEx}</span></span>
+                    </div>
                 </div>
             </div>
 
-            <div style="position: absolute; bottom: 40px; display: flex; align-items: center; justify-content: center; width: 100%;">
-                <div style="display: flex; font-size: 24px; font-weight: 900; color: #3b82f6; letter-spacing: 1px;">
-                    P2PCOMPANION.COM
-                </div>
+            <div style="display: flex; position: absolute; bottom: 40px; font-size: 24px; color: #6b7280;">
+                p2pcompanion.com
             </div>
         </div>
-    `);
+    `;
 
-    // Generate SVG via Satori
-    const svg = await satori(markup as any, {
+    return new ImageResponse(markup, {
         width: 1200,
         height: 630,
-        fonts: [
-            { name: 'Inter', data: fontDataNormal, weight: 600, style: 'normal' },
-            { name: 'Inter', data: fontDataBlack, weight: 900, style: 'normal' }
-        ],
-    });
-
-    // Convert SVG to highly optimized PNG via Resvg
-    const resvg = new Resvg(svg, {
-        fitTo: { mode: 'width', value: 1200 }
-    });
-
-    const pngBuffer = resvg.render().asPng();
-
-    return new Response(pngBuffer, {
-        headers: {
-            'Content-Type': 'image/png',
-            'Cache-Control': 'public, max-age=86400, s-maxage=86400',
-            'Access-Control-Allow-Origin': '*'
-        }
     });
 };

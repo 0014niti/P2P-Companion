@@ -4,6 +4,7 @@
 	import { p2pOrderStore } from '$lib/p2p-orders';
 	import { cn } from '$lib/utils';
 	import { ShieldCheck } from 'lucide-svelte';
+	import ShareSpreadButton from '$lib/components/ShareSpreadButton.svelte';
 
 	let {
 		orders = [],
@@ -120,14 +121,19 @@
 							</div>
 						</td>
 						<td class="px-5 py-3 text-right">
-							<a
-								href={order.p2pLink || order.tradeUrl || '#'}
-								target="_blank"
-								rel="noreferrer"
-								class="inline-flex text-[11px] font-bold text-blue-700 dark:text-blue-400 items-center gap-1 bg-gradient-to-b from-white to-blue-50 dark:from-zinc-800 dark:to-blue-900/20 border border-blue-200/80 dark:border-blue-800/50 px-3.5 py-1.5 rounded-full shadow-sm transition-all duration-300 ease-out hover:to-blue-100 dark:hover:to-blue-900/40 hover:shadow active:scale-95"
-							>
-								Trade ↗
-							</a>
+							<div class="flex items-center justify-end gap-2">
+								{#if $p2pOrderStore.marketRate}
+									<ShareSpreadButton crypto={order.token} fiat={order.fiat} premium={(((Number(order.price) - $p2pOrderStore.marketRate) / $p2pOrderStore.marketRate) * 100).toFixed(2)} buyEx="Market" sellEx={order.exchange} />
+								{/if}
+								<a
+									href={order.p2pLink || order.tradeUrl || '#'}
+									target="_blank"
+									rel="noreferrer"
+									class="inline-flex text-[11px] font-bold text-blue-700 dark:text-blue-400 items-center gap-1 bg-gradient-to-b from-white to-blue-50 dark:from-zinc-800 dark:to-blue-900/20 border border-blue-200/80 dark:border-blue-800/50 px-3.5 py-1.5 rounded-xl shadow-sm transition-all duration-300 ease-out hover:to-blue-100 dark:hover:to-blue-900/40 hover:shadow active:scale-95"
+								>
+									Trade ↗
+								</a>
+							</div>
 						</td>
 					</tr>
 				{/each}
