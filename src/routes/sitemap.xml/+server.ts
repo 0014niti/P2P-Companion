@@ -32,13 +32,9 @@ export const GET: RequestHandler = async () => {
     for (const fiat of fiats) {
         urls.push(`<url><loc>${siteUrl}/fiat/${fiat}</loc><changefreq>daily</changefreq><priority>0.8</priority></url>`);
     }
-
-    // Loop through core combinations ONLY. 
-    // We removed the payment methods loop to prevent Google from penalizing the site for "Thin Content" 
-    // (empty combinations with no active merchants). Focus search engine crawl budget on the core pairs.
     for (const crypto of cryptos) {
         for (const fiat of fiats) {
-            urls.push(`<url><loc>${siteUrl}/compare/${fiat}/${crypto}</loc><changefreq>daily</changefreq><priority>0.7</priority></url>`);
+            urls.push(`<url><loc>${siteUrl}/compare/${fiat}/${crypto}/bank-transfer</loc><changefreq>daily</changefreq><priority>0.7</priority></url>`);
         }
     }
 

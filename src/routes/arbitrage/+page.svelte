@@ -171,6 +171,19 @@
             <h4 class="font-bold text-lg text-zinc-900 dark:text-white mb-2 flex items-center gap-2"><ShieldAlert class="size-5 text-emerald-500" /> Essential Risk Management</h4>
             <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">While cross-exchange arbitrage offers lucrative opportunities, it carries inherent risks. Always account for <strong>Maker/Taker fees</strong> on the respective exchanges. Furthermore, ensure you have active KYC accounts on both target exchanges, and never release crypto assets until fiat funds have definitively cleared in your local bank account.</p>
         </div>
+        
+        <h3>The Methodology: Maker vs Taker Execution</h3>
+        <p>To successfully capture the spreads shown in our terminal, you must understand how to execute the route. Arbitrage generally relies on dual-liquidity positioning:</p>
+        <ul>
+            <li><strong>The Taker (Buying):</strong> The first step usually involves finding an unusually cheap "Sell Ad" posted by someone desperate for fiat liquidity. By clicking "Buy", you act as a Taker and instantly capture the cheap USDT.</li>
+            <li><strong>The Maker (Selling):</strong> Instead of immediately dumping your USDT to a Taker ad on the secondary exchange, the most profitable route requires you to post your own "Sell Ad" (acting as a Maker) and waiting for retail buyers to accept your high premium.</li>
+        </ul>
+        <p>This strategy minimizes your exchange fees (Maker fees are typically 0% to 0.1%) and maximizes the total fiat return to your local bank account.</p>
+        
+        <h3>Understanding the Bid/Ask Spread in P2P</h3>
+        <p>In traditional stock markets, the Bid/Ask spread is managed by high-frequency market makers. In the peer-to-peer crypto ecosystem, the spread is dictated by regional bank limits and the capital efficiency of individual merchants.</p>
+        <p>Our scanner algorithm constantly polls the highest bid (willing buyers) and lowest ask (willing sellers) across all supported platforms. When the Highest Bid on Exchange A exceeds the Lowest Ask on Exchange B, our system flags it as a positive arbitrage route. It is critical to continuously refresh the scanner, as global liquidity gaps are quickly closed by thousands of other merchants using similar data analytics platforms.</p>
+
         <h3>Unlocking Institutional Spreads with Pro</h3>
         <p>The free tier of the P2P Companion Arbitrage Finder exposes the top 3 live routes, allowing everyday traders to spot-check market inefficiencies. However, serious merchants leverage <strong>P2P Companion Pro</strong> to unlock the full depth of the order book. Pro users receive unlimited route generation, deep-dive historical spread analytics, and automated Telegram signals the moment a highly profitable gap opens between exchanges.</p>
     </article>

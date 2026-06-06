@@ -13,17 +13,13 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	
-	// 🌟 Added Download, BookOpen, and Zap icons for the new Dock
-	import { Settings2, RefreshCw, Activity, Heart, Calculator, Sun, Moon, LayoutGrid, List, ShieldCheck, ChevronDown } from 'lucide-svelte';
+	import { Settings2, RefreshCw, Activity, Heart, Sun, Moon, LayoutGrid, List, ShieldCheck, ChevronDown } from 'lucide-svelte';
 	import { toggleMode } from 'mode-watcher';
 	
 	import { slide, fade, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
-	import SideGuide from '$lib/components/SideGuide.svelte';
-	import OtcBoard from '$lib/components/OtcBoard.svelte';
 	import DonationPopup from '$lib/components/DonationPopup.svelte';
-	import BottomDock from '$lib/components/BottomDock.svelte';
 
 	const filterStateSelectedToken = $derived(filterState.current.selectedToken);
 	const currentFilters = $derived(filterState.current);
@@ -32,9 +28,6 @@
 	let showFilters = $state(false);
 	let showDonation = $state(false);
 	
-	let isOtcBoardOpen = $state(false);
-	// 🌟 NEW: Guide State for the dock
-	let isGuideOpen = $state(false); 
 
 	// --- 1. Customization: Exchange Toggles State ---
 	let activeExchanges = $state<Record<string, boolean>>({});
@@ -601,6 +594,16 @@
 			</div>
 
 			<hr class="my-10 sm:my-12 border-zinc-200 dark:border-zinc-800" />
+			
+			<div class="mb-12">
+				<h3 class="text-xl sm:text-2xl font-black text-zinc-900 dark:text-white mb-4">Decoding the Premium Heatmap</h3>
+				<p class="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px] sm:text-base mb-4">
+					At the top of the terminal, you will find our proprietary <strong>Premium Heatmap</strong>. This tool calculates the difference between the official global Spot Market rate of a stablecoin (like USDT) and the actual Peer-to-Peer street value in your selected fiat currency.
+				</p>
+				<p class="text-zinc-600 dark:text-zinc-400 leading-relaxed text-[15px] sm:text-base">
+					When the heatmap displays a highly elevated red percentage (e.g., +4%), it indicates a localized liquidity shortage. Retail users in that region are willing to pay a massive premium to secure digital assets. Savvy merchants utilize this visual heat index to determine which exchange they should route their capital to in order to maximize their fiat returns during off-ramp cycles. Conversely, blue metrics indicate a stable or discounted market, ideal for aggressively acquiring assets.
+				</p>
+			</div>
 
 			<h3 class="text-2xl font-black text-center mb-8 text-zinc-900 dark:text-white">Pro Trading Tips</h3>
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -670,18 +673,3 @@
 <Toast />
 
 <DonationPopup bind:isOpen={showDonation} />
-
-<SideGuide bind:isOpen={isGuideOpen} onDonateClick={() => (showDonation = true)} />
-<OtcBoard bind:isOpen={isOtcBoardOpen} />
-
-<BottomDock 
-	{showInstallButton} 
-	onInstall={installPWA} 
-	onOpenGuide={() => (isGuideOpen = true)} 
-	onOpenCalculator={() => {
-		const buy = $p2pOrderStore.marketRate ? ($p2pOrderStore.marketRate * 0.99).toFixed(3) : 1.00;
-		const sell = $p2pOrderStore.marketRate ? ($p2pOrderStore.marketRate * 1.01).toFixed(3) : 1.02;
-		goto(`/calculator?fiat=${currentFilters.fiat || 'USD'}&crypto=${currentFilters.selectedToken || 'USDT'}&buy=${buy}&sell=${sell}`);
-	}} 
-	onOpenOtc={() => (isOtcBoardOpen = true)} 
-/>

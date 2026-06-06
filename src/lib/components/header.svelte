@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ShieldAlert, Search, BookOpen, Activity, Zap } from 'lucide-svelte';
+	import { ShieldAlert, Search, BookOpen, Activity, Zap, Lock } from 'lucide-svelte';
 	import { i18n } from '$lib/i18n/index.svelte.ts';
 </script>
 
@@ -43,6 +43,11 @@
 							<Activity class="size-3.5 sm:size-4" />
 							<span>{i18n.t('nav.liveMarkets')}</span>
 						</a>
+
+						<button onclick={() => window.dispatchEvent(new CustomEvent('open-otc'))} class="snap-start shrink-0 flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 px-2.5 sm:px-3.5 py-1.5 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] border border-blue-400/50 transition-all active:scale-95 group">
+							<Lock class="size-3.5 sm:size-4 text-emerald-300 group-hover:scale-110 transition-transform" />
+							<span>OTC Nexus</span>
+						</button>
 
 						<a href="/arbitrage" class="snap-start shrink-0 flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 px-3 sm:px-3.5 py-1.5 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] transition-all active:scale-95">
 							<Zap class="size-3.5 sm:size-4" />

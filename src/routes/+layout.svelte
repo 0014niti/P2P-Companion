@@ -6,6 +6,11 @@
 	import CommandPalette from '$lib/components/CommandPalette.svelte';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import { ModeWatcher } from 'mode-watcher';
+	import { onMount } from 'svelte';
+	import BottomDock from '$lib/components/BottomDock.svelte';
+	import OtcBoard from '$lib/components/OtcBoard.svelte';
+	import SideGuide from '$lib/components/SideGuide.svelte';
+	import { goto } from '$app/navigation';
 	import '../app.css';
 
 	const queryClient = new QueryClient({
@@ -17,6 +22,15 @@
 	});
 
 	let { children } = $props();
+
+	let isOtcBoardOpen = $state(false);
+	let isGuideOpen = $state(false);
+
+	onMount(() => {
+		const handleOpenOtc = () => isOtcBoardOpen = true;
+		window.addEventListener('open-otc', handleOpenOtc);
+		return () => window.removeEventListener('open-otc', handleOpenOtc);
+	});
 </script>
 
 <svelte:head>
@@ -69,5 +83,14 @@
 				</div>
 			</div>
 		</footer>
+
+		<OtcBoard bind:isOpen={isOtcBoardOpen} />
+		<SideGuide bind:isOpen={isGuideOpen} />
+		<BottomDock 
+			showInstallButton={false} 
+			onOpenGuide={() => (isGuideOpen = true)} 
+			onOpenCalculator={() => goto('/calculator')} 
+			onOpenOtc={() => (isOtcBoardOpen = true)} 
+		/>
 	</div>
 </QueryClientProvider>

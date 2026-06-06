@@ -162,6 +162,18 @@
 
 		<hr class="my-10 border-zinc-200 dark:border-zinc-700" />
 		
+		<h3 class="text-2xl font-black text-zinc-900 dark:text-white mb-4">Our Verification Methodology</h3>
+		<p class="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+			P2P Companion maintains a proprietary, crowd-sourced database of flagged cryptocurrency merchants. When you submit a username from Binance, OKX, or Bybit into our scanner, our algorithm checks the exact string against hundreds of known dispute reports, frozen bank account escalations, and API chargeback flags.
+		</p>
+		<p class="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+			<strong>Why is this necessary?</strong> Centralized exchanges rely heavily on automated systems to regulate thousands of daily trades. Clever scammers bypass automated KYC bans by using purchased ("mule") accounts, allowing them to retain a seemingly perfect 100% completion rate for weeks before the exchange officially restricts them. By utilizing a real-time, community-driven database, traders can spot malicious actors before the exchange systems process the backlog of appeals.
+		</p>
+		<h4 class="text-lg font-bold text-zinc-900 dark:text-white mb-2">How You Can Protect the Network</h4>
+		<p class="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+			The strength of a crowd-sourced security tool relies on the vigilance of its users. If you encounter a merchant who attempts to conduct a trade outside of the designated platform chat, or who provides a bank account name that differs from their official KYC profile, we strongly urge you to utilize the "Report" function directly on the exchange. This flags the user's ID within the global API ecosystem, ensuring tools like ours can ingest the warning and broadcast it to the wider trading community.
+		</p>
+
 		<h3 class="text-xl font-bold">Disclaimer</h3>
 		<p class="text-sm text-zinc-500 dark:text-zinc-400 italic">
 			This tool aggregates community reports and public blacklists. It is provided for informational purposes only. A "Safe" result does not guarantee a merchant is honest, as new scammers emerge daily. Always follow the golden rules of P2P: Stay inside the platform's chat, verify KYC names, and confirm cleared funds in your actual bank account.

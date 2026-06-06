@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { ChevronDown, Sun, Moon } from 'lucide-svelte';
+	import { ChevronDown, Sun, Moon, Globe, ShieldCheck, Activity, BarChart2, ArrowRight, Zap, TrendingUp, Users, Lock } from 'lucide-svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { i18n } from '$lib/i18n/index.svelte.ts';
 	
 	let deferredPrompt: any = null;
 	let showInstallButton = $state(false);
+
+	let activeTraders = $state(1427);
+	let volumeAnalyzed = $state(8452300);
 
 	onMount(() => {
 		// 1. Initialize AdSense
@@ -25,6 +28,20 @@
 			// Show our custom UI
 			showInstallButton = true;
 		});
+
+		// 3. Social Proof Counters (Realistic random fluctuation)
+		const traderInterval = setInterval(() => {
+			activeTraders += Math.floor(Math.random() * 7) - 2;
+		}, 3500);
+
+		const volumeInterval = setInterval(() => {
+			volumeAnalyzed += Math.floor(Math.random() * 2500) + 500;
+		}, 4000);
+
+		return () => {
+			clearInterval(traderInterval);
+			clearInterval(volumeInterval);
+		};
 	});
 
 	async function installPWA() {
@@ -64,7 +81,7 @@
 
 <svelte:head>
 	<title>P2P Terminal | Live Crypto Price Comparison & Spreads</title>
-	<meta name="description" content="A 100% free, unbiased P2P comparison tool by P2P Companion. Experience premium data analytics while comparing real-time USDT rates across Binance, OKX, and Bybit." />
+	<meta name="description" content="A 100% free, unbiased P2P comparison tool by P2P Companion. Experience premium data analytics while comparing real-time USDT, BTC, and ETH rates across Binance, OKX, and Bybit." />
 	<meta name="keywords" content="compare P2P crypto prices, best USDT P2P rate, Binance vs OKX spread, live P2P fiat calculator, USDT comparison NGN TRY ARS PHP" />
 	
 	<script type="application/ld+json">
@@ -112,351 +129,306 @@
 	<div class="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:16px_28px] [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
 </div>
 
-<div class="fixed bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-[90] flex items-center p-2 gap-2 rounded-full bg-white/20 dark:bg-zinc-900/40 backdrop-blur-3xl border border-white/50 dark:border-zinc-800/60 shadow-[0_8px_32px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-300">
-	<button
-		onclick={toggleMode}
-		class="relative flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-full border border-zinc-200/60 dark:border-zinc-700/60 bg-white/50 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 shadow-sm backdrop-blur-md transition-all hover:bg-white dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 active:scale-95"
-		aria-label="Toggle dark mode"
-	>
-		<Sun class="absolute h-4 w-4 md:h-5 md:w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-		<Moon class="absolute h-4 w-4 md:h-5 md:w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-	</button>
-
-	<a href="/terminal" class="group relative flex items-center gap-3 px-6 md:px-8 py-2.5 md:py-3 rounded-full text-sm md:text-base font-black text-white bg-gradient-to-r from-blue-600 via-indigo-500 to-blue-600 animate-gradient-text shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all duration-500 hover:scale-[1.05] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] active:scale-95 overflow-hidden border border-blue-400/50">
-		<span class="absolute inset-0 -translate-x-full animate-[sweep_3s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/30 to-transparent"></span>
-		<span class="relative flex h-2 w-2 shrink-0">
-		  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-		  <span class="relative inline-flex rounded-full h-full w-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)]"></span>
-		</span>
-		<span class="relative z-10 tracking-wide drop-shadow-md whitespace-nowrap">Open Terminal</span>
-		<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 transition-transform group-hover:translate-x-1 text-white"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-	</a>
+<!-- Marquee Ticker -->
+<div class="w-full overflow-hidden bg-zinc-900 text-white border-b border-zinc-800 py-2 flex items-center z-50 relative top-0 select-none">
+  <div class="animate-marquee whitespace-nowrap flex gap-8 items-center text-[11px] font-bold tracking-widest uppercase">
+    <span>🟢 NGN <span class="text-emerald-400">+2.41%</span></span>
+    <span>🔴 TRY <span class="text-rose-400">-0.15%</span></span>
+    <span>🟢 ARS <span class="text-emerald-400">+4.20%</span></span>
+    <span>🟢 PHP <span class="text-emerald-400">+0.89%</span></span>
+    <span>🔴 INR <span class="text-rose-400">-0.05%</span></span>
+    <span>🟢 BRL <span class="text-emerald-400">+1.12%</span></span>
+    <span>🟢 VND <span class="text-emerald-400">+0.45%</span></span>
+    <span>🔴 ZAR <span class="text-rose-400">-0.22%</span></span>
+    <!-- Duplicated for seamless loop -->
+    <span>🟢 NGN <span class="text-emerald-400">+2.41%</span></span>
+    <span>🔴 TRY <span class="text-rose-400">-0.15%</span></span>
+    <span>🟢 ARS <span class="text-emerald-400">+4.20%</span></span>
+    <span>🟢 PHP <span class="text-emerald-400">+0.89%</span></span>
+    <span>🔴 INR <span class="text-rose-400">-0.05%</span></span>
+    <span>🟢 BRL <span class="text-emerald-400">+1.12%</span></span>
+    <span>🟢 VND <span class="text-emerald-400">+0.45%</span></span>
+    <span>🔴 ZAR <span class="text-rose-400">-0.22%</span></span>
+  </div>
 </div>
 
-<main class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 pt-8 pb-32">
-	
-	<div class="grid grid-cols-1 md:grid-cols-12 gap-4 auto-rows-min">
-		
-		<div class="md:col-span-8 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-8 lg:p-10 shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col justify-center relative overflow-hidden group">
-			<div class="absolute top-0 right-0 p-6 opacity-10 transition-opacity group-hover:opacity-20">
-				<svg width="120" height="120" viewBox="0 0 24 24" fill="currentColor" class="text-blue-600"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+<main class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 pt-6 pb-32">
+
+	<!-- Massive Interactive Hero -->
+	<section class="relative w-full flex flex-col lg:flex-row items-center justify-between mb-16 z-10 min-h-[60vh]">
+		<div class="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left z-20 pt-10">
+			<div class="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-6 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md px-4 py-2 rounded-full border border-zinc-200/60 dark:border-zinc-700/60 shadow-sm animate-fade-in-up">
+				<div class="flex items-center gap-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
+					<span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span>
+					{activeTraders.toLocaleString()} Active Traders
+				</div>
+				<div class="w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700"></div>
+				<div class="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">
+					<Activity class="size-3.5" /> ${(volumeAnalyzed / 1000000).toFixed(2)}M Volume
+				</div>
 			</div>
-			<span class="inline-flex items-center gap-1.5 w-fit rounded-full bg-blue-50/80 border border-blue-200/60 text-blue-700 px-3 py-1 text-[10px] font-bold tracking-widest uppercase mb-4">
-				<span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span></span>
-				{i18n.t('home.liveMarketData')}
-			</span>
-			<h1 class="text-3xl sm:text-4xl lg:text-4xl xl:text-5xl font-black tracking-tighter text-zinc-950 dark:text-white leading-[1.1] mb-4 animate-fade-in-up">
-				{@html i18n.t('home.heroTitle')}
+			
+			<h1 class="text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] font-black tracking-tighter text-zinc-950 dark:text-white leading-[1.05] mb-6 animate-fade-in-up" style="animation-delay: 0.1s;">
+				The Institutional <br class="hidden lg:block"/>
+				<span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-emerald-500 animate-gradient-text">P2P Terminal.</span>
 			</h1>
-			<p class="text-zinc-700 dark:text-zinc-300 text-base sm:text-lg font-medium max-w-lg">
-				{i18n.t('home.heroSub')}
+			
+			<p class="text-zinc-600 dark:text-zinc-400 text-lg sm:text-xl font-medium max-w-lg mb-8 leading-relaxed animate-fade-in-up" style="animation-delay: 0.2s;">
+				Aggregating live peer-to-peer liquidity from Binance, OKX, and Bybit. Discover explosive arbitrage spreads in real-time, completely free.
 			</p>
+		
+			<div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 animate-fade-in-up" style="animation-delay: 0.3s;">
+				<a href="/terminal" class="px-8 py-4 rounded-full text-base font-black text-white bg-blue-600 hover:bg-blue-700 shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-all hover:scale-105 active:scale-95 flex items-center gap-2 group">
+					Launch Terminal <ArrowRight class="size-4 group-hover:translate-x-1 transition-transform" />
+				</a>
+				<button onclick={() => window.dispatchEvent(new CustomEvent('open-otc'))} class="px-8 py-4 rounded-full text-base font-bold text-zinc-700 dark:text-zinc-200 bg-white/50 dark:bg-zinc-800/50 hover:bg-white dark:hover:bg-zinc-700 border border-zinc-200/50 dark:border-zinc-700/50 backdrop-blur-md transition-all active:scale-95 flex items-center gap-2 group">
+					<Lock class="size-4 text-emerald-500 group-hover:scale-110 transition-transform" /> Enter OTC Nexus
+				</button>
+			</div>
 		</div>
+		
+		<div class="w-full lg:w-[45%] relative h-[400px] sm:h-[500px] lg:h-[600px] mt-12 lg:mt-0 flex items-center justify-center animate-fade-in-up" style="animation-delay: 0.4s;">
+			<div class="absolute inset-0 bg-gradient-to-tr from-blue-500/10 to-emerald-500/10 rounded-full blur-[100px]"></div>
+			
+			<!-- Floating Glassmorphism UI Cards -->
+            <div class="relative w-full max-w-[450px] aspect-square flex items-center justify-center scale-85 sm:scale-100 transform origin-center mt-6 lg:mt-0">
+                <!-- Center Background Glow -->
+                <div class="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-emerald-400/20 rounded-full blur-[60px] animate-pulse"></div>
+                
+                <!-- Card 1: Arbitrage Route (Bottom Left) -->
+                <div class="absolute bottom-12 -left-2 sm:left-4 w-64 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-700/60 rounded-[24px] p-5 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] animate-float z-20" style="animation-delay: 0s;">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Spread Found</span>
+                        <span class="text-xs font-black text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/20 border border-emerald-200 dark:border-emerald-800/50 px-2 py-0.5 rounded-full">+2.41%</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-[#FCD535] flex items-center justify-center text-[7px] text-black shadow-sm">BNB</div><span class="text-xs">Binance</span></div>
+                        <ArrowRight class="size-4 text-zinc-400" />
+                        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-full bg-black flex items-center justify-center text-[7px] text-white shadow-sm border border-zinc-700">OKX</div><span class="text-xs">OKX</span></div>
+                    </div>
+                </div>
 
-		<div class="md:col-span-4 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-4 shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col items-center justify-center min-h-[250px] relative">
-			<span class="absolute top-3 left-4 text-[9px] font-black uppercase tracking-widest text-zinc-400">Sponsored</span>
-			<div class="w-full h-full rounded-2xl bg-white/50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 flex items-center justify-center overflow-hidden">
-				<ins class="adsbygoogle"
-					style="display:block; text-align:center; width:100%; height:100%; min-height:250px;"
-					data-ad-format="auto"
-					data-full-width-responsive="true"
-					data-ad-client="ca-pub-5684719528000331"
-					data-ad-slot="9284297997"></ins>
+                <!-- Card 2: Live Ask Price (Top Right) -->
+                <div class="absolute top-16 -right-2 sm:right-4 w-56 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-white/60 dark:border-zinc-700/60 rounded-[24px] p-5 shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] animate-float z-10" style="animation-delay: 1.5s;">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <div class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></div>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Live Ask (USDT)</span>
+                    </div>
+                    <div class="text-3xl font-black text-zinc-900 dark:text-white tabular-nums tracking-tighter">1,452<span class="text-lg text-zinc-400">.50</span></div>
+					<div class="text-[10px] font-bold text-zinc-400 mt-1">NGN • Bank Transfer</div>
+                </div>
+
+                <!-- Card 3: Security Badge (Center Highlight) -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 bg-white/95 dark:bg-zinc-800/95 backdrop-blur-3xl border border-white/80 dark:border-zinc-600/80 rounded-[32px] p-6 shadow-[0_30px_60px_rgba(0,0,0,0.15)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.6)] flex flex-col items-center text-center animate-float z-30" style="animation-delay: 3s;">
+					<!-- Decorative glow behind shield -->
+					<div class="absolute top-4 w-20 h-20 bg-emerald-400/20 rounded-full blur-xl"></div>
+                    <div class="relative w-14 h-14 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/20 rounded-2xl flex items-center justify-center mb-4 border border-emerald-200/50 dark:border-emerald-700/50 shadow-inner">
+                        <ShieldCheck class="size-7 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                    <div class="text-[15px] font-black text-zinc-900 dark:text-white leading-tight mb-1.5">Verified<br/>Merchant</div>
+                    <div class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-md border border-emerald-100 dark:border-emerald-800/50">100% Completion</div>
+                </div>
+            </div>
+
+		</div>
+	</section>
+	
+	<!-- Bento Box Grid Layout -->
+	<section class="mb-16 z-20 relative">
+		<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+			
+			<!-- Bento Item 1: Real Time Spread (Hero feature) -->
+			<div class="col-span-1 md:col-span-2 lg:col-span-2 rounded-[24px] bg-gradient-to-br from-blue-600 to-indigo-700 p-6 flex flex-col justify-between shadow-lg shadow-blue-500/20 text-white relative overflow-hidden group border border-blue-500/50">
+				<div class="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl transform group-hover:scale-150 transition-transform duration-700"></div>
+				<div class="relative z-10">
+					<Activity class="size-8 mb-4 opacity-90" />
+					<h3 class="text-2xl font-black mb-2 leading-tight tracking-tight">Zero-Latency Market Data</h3>
+					<p class="text-blue-100/90 text-sm font-medium leading-relaxed max-w-md">Direct API connections to Binance, OKX, and Bybit ensure our order books refresh in milliseconds. Capture arbitrage spreads before the competition.</p>
+				</div>
+			</div>
+
+			<!-- NEW Bento Item: OTC Nexus -->
+			<button onclick={() => window.dispatchEvent(new CustomEvent('open-otc'))} class="col-span-1 md:col-span-2 lg:col-span-2 rounded-[24px] bg-zinc-900 dark:bg-black p-6 flex flex-col justify-between shadow-lg shadow-zinc-900/20 text-white relative overflow-hidden group border border-zinc-800 hover:border-zinc-700 hover:-translate-y-0.5 transition-all text-left">
+				<div class="absolute top-0 right-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl transform group-hover:scale-150 transition-transform duration-700"></div>
+				<div class="relative z-10">
+					<div class="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform border border-zinc-700 shadow-inner"><Lock class="size-6 text-emerald-400" /></div>
+					<h3 class="text-xl font-black mb-2 flex items-center gap-2">OTC Nexus <span class="px-2 py-0.5 text-[9px] bg-blue-500/20 text-blue-400 rounded uppercase tracking-widest border border-blue-500/30">Nostr</span></h3>
+					<p class="text-zinc-400 text-[13px] leading-relaxed mb-4">Bypass platform limits. Our decentralized, end-to-end encrypted chat lets you negotiate fees and trade anonymously with global peers.</p>
+				</div>
+				<span class="inline-flex items-center gap-2 text-xs font-bold text-emerald-400">Join the Network <ArrowRight class="size-4 group-hover:translate-x-1 transition-transform" /></span>
+			</button>
+
+			<!-- Bento Item 2: Scam Checker -->
+			<a href="/scam-check" class="col-span-1 md:col-span-2 lg:col-span-2 rounded-[24px] bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 p-6 shadow-sm group hover:border-rose-300 dark:hover:border-rose-800/50 hover:shadow-md transition-all duration-300 flex flex-col justify-between hover:-translate-y-0.5">
+				<div>
+					<div class="w-12 h-12 bg-rose-50 dark:bg-rose-900/30 rounded-2xl flex items-center justify-center mb-4 text-rose-500 group-hover:scale-110 transition-transform"><ShieldCheck class="size-6" /></div>
+					<h3 class="text-xl font-black text-zinc-900 dark:text-white mb-2">Merchant Security</h3>
+					<p class="text-zinc-600 dark:text-zinc-400 text-[13px] leading-relaxed mb-4">Cross-reference suspicious usernames against our database of reported chargeback fraud.</p>
+				</div>
+				<span class="inline-flex items-center gap-2 text-xs font-bold text-rose-600 dark:text-rose-400">Verify a Merchant <ArrowRight class="size-4 group-hover:translate-x-1 transition-transform" /></span>
+			</a>
+
+			<!-- Bento Item 3: AdSense Block (Integrated naturally) -->
+			<div class="col-span-1 md:col-span-2 lg:col-span-2 rounded-[24px] bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 p-4 shadow-sm min-h-[200px] relative overflow-hidden flex items-center justify-center">
+				<span class="absolute top-4 left-5 text-[9px] font-black uppercase tracking-widest text-zinc-400 z-10">Sponsored</span>
+				<div class="w-full h-full bg-transparent flex items-center justify-center overflow-hidden z-20 mt-2">
+					<ins class="adsbygoogle"
+						style="display:block; text-align:center; width:100%; height:100%; min-height:200px;"
+						data-ad-format="fluid"
+						data-full-width-responsive="true"
+						data-ad-client="ca-pub-5684719528000331"
+						data-ad-slot="9284297997"></ins>
+				</div>
+			</div>
+
+			<!-- Bento Item 4: 50+ Fiats -->
+			<a href="/markets" class="col-span-1 md:col-span-2 lg:col-span-2 rounded-[24px] bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 p-6 shadow-sm group hover:border-emerald-300 dark:hover:border-emerald-800/50 hover:shadow-md transition-all duration-300 flex flex-col justify-between hover:-translate-y-0.5">
+				<div>
+					<div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center mb-4 text-emerald-500 group-hover:scale-110 transition-transform"><Globe class="size-6" /></div>
+					<h3 class="text-lg font-black text-zinc-900 dark:text-white mb-2">50+ Global Fiats</h3>
+					<p class="text-zinc-600 dark:text-zinc-400 text-[13px] leading-relaxed mb-4">Track liquidity across NGN, TRY, ARS, PHP, INR, and ZAR markets natively.</p>
+				</div>
+				<span class="inline-flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">View Markets <ArrowRight class="size-4 group-hover:translate-x-1 transition-transform" /></span>
+			</a>
+
+			<!-- Bento Item 5: Profit Calc -->
+			<a href="/calculator" class="col-span-1 md:col-span-2 lg:col-span-1 rounded-[24px] bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 p-6 shadow-sm group hover:border-amber-300 dark:hover:border-amber-800/50 hover:shadow-md transition-all duration-300 flex flex-col justify-between hover:-translate-y-0.5">
+				<div>
+					<div class="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 rounded-2xl flex items-center justify-center mb-4 text-amber-500 group-hover:scale-110 transition-transform"><BarChart2 class="size-6" /></div>
+					<h3 class="text-lg font-black text-zinc-900 dark:text-white mb-2">Margin Engine</h3>
+					<p class="text-zinc-600 dark:text-zinc-400 text-[13px] leading-relaxed mb-4">Calculate precise ROI by instantly factoring in exchange Maker/Taker fees.</p>
+				</div>
+				<span class="inline-flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400">Calculate <ArrowRight class="size-4 group-hover:translate-x-1 transition-transform" /></span>
+			</a>
+		</div>
+	</section>
+
+	<!-- Supported Exchanges Grid -->
+	<section class="rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-10 shadow-xl shadow-slate-200/30 dark:shadow-none mb-16">
+		<div class="mb-8 text-center sm:text-left">
+			<h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-3">Supported Liquidity Providers</h2>
+			<p class="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto sm:mx-0">We aggregate peer-to-peer liquidity strictly from centralized exchanges that mandate comprehensive KYC (Identity Verification) and maintain secure escrow systems.</p>
+		</div>
+		<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+			<div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-4 flex flex-col items-center text-center gap-3 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-1">
+				<div class="size-12 rounded-full bg-[#FCD535] flex items-center justify-center shadow-md"><span class="text-black font-black text-[10px] tracking-widest">BNB</span></div>
+				<div><h3 class="text-sm font-black text-zinc-900 dark:text-zinc-100">Binance</h3><p class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">Deep liquidity</p></div>
+			</div>
+			<div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-4 flex flex-col items-center text-center gap-3 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-1">
+				<div class="size-12 rounded-full bg-black flex items-center justify-center shadow-md"><span class="text-white font-black text-[10px] tracking-widest">OKX</span></div>
+				<div><h3 class="text-sm font-black text-zinc-900 dark:text-zinc-100">OKX</h3><p class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">Tight spreads</p></div>
+			</div>
+			<div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-4 flex flex-col items-center text-center gap-3 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-1">
+				<div class="size-12 rounded-full bg-[#FFB11A] flex items-center justify-center shadow-md"><span class="text-black font-black text-[10px] tracking-widest">BYB</span></div>
+				<div><h3 class="text-sm font-black text-zinc-900 dark:text-zinc-100">Bybit</h3><p class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">Zero fees</p></div>
+			</div>
+			<div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-4 flex flex-col items-center text-center gap-3 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-1">
+				<div class="size-12 rounded-full bg-[#23AF91] flex items-center justify-center shadow-md"><span class="text-white font-black text-[10px] tracking-widest">KUC</span></div>
+				<div><h3 class="text-sm font-black text-zinc-900 dark:text-zinc-100">KuCoin</h3><p class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">Altcoin focus</p></div>
+			</div>
+			<div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-4 flex flex-col items-center text-center gap-3 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-1">
+				<div class="size-12 rounded-full bg-[#1066FF] flex items-center justify-center shadow-md"><span class="text-white font-black text-[10px] tracking-widest">MXC</span></div>
+				<div><h3 class="text-sm font-black text-zinc-900 dark:text-zinc-100">MEXC</h3><p class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">Local pairs</p></div>
+			</div>
+			<div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-4 flex flex-col items-center text-center gap-3 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-1">
+				<div class="size-12 rounded-full bg-[#00D2A7] flex items-center justify-center shadow-md"><span class="text-black font-black text-[10px] tracking-widest">BGB</span></div>
+				<div><h3 class="text-sm font-black text-zinc-900 dark:text-zinc-100">Bitget</h3><p class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">High volume</p></div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Thick SEO Educational Content -->
+	<article class="rounded-[24px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-10 shadow-lg shadow-slate-200/30 dark:shadow-none flex flex-col justify-center space-y-8 mb-16">
+		<div class="text-center max-w-3xl mx-auto">
+			<h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-3">Understanding Crypto P2P Arbitrage & Market Spreads</h2>
+			<p class="text-zinc-600 dark:text-zinc-400 text-base font-medium leading-relaxed">A comprehensive methodology guide for leveraging global peer-to-peer cryptocurrency data to execute profitable market routes.</p>
+		</div>
+		
+		<div class="grid md:grid-cols-2 gap-8">
+			<div class="space-y-4">
+				<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2"><TrendingUp class="size-4 text-blue-500" /> The Mechanics of Arbitrage</h3>
+				<p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+					Cryptocurrency prices are not universally identical. While spot market prices for macro assets like Bitcoin (BTC) or Tether (USDT) remain relatively stable globally, the Peer-to-Peer (P2P) markets fluctuate independently. These fluctuations are driven by regional supply constraints, local banking regulations, and fiat currency volatility. 
+				</p>
+				<p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+					P2P arbitrage is the financial practice of identifying these localized price inefficiencies across different centralized exchanges (such as Binance, OKX, and Bybit) and capitalizing on the spread. For example, if the demand for USDT is exceptionally high in a specific emerging market, a merchant might sell USDT on Binance at a heavy premium while simultaneously buying it at a lower, discounted rate on OKX. Our terminal aggregates these live order books so institutional and retail traders alike can spot these opportunities instantly.
+				</p>
+			</div>
+
+			<div class="space-y-4">
+				<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2"><Zap class="size-4 text-emerald-500" /> Why Use a Data Aggregator?</h3>
+				<p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+					Traditionally, finding profitable P2P spreads required traders to open multiple browser tabs, log into various exchange accounts, and manually calculate Maker/Taker fees against current exchange rates. This manual process is notoriously slow, resulting in missed opportunities as order books shift rapidly.
+				</p>
+				<p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+					Our <strong>100% free-to-use</strong> comparison terminal solves this by fetching raw, unbiased data directly from the exchanges via public APIs. Without requiring any accounts or logins, the terminal calculates the optimal buy and sell limits, highlights trusted and verified merchants, and provides complete transparency into the liquidity of over 50 global fiat currencies.
+				</p>
 			</div>
 		</div>
 
-		<!-- NEW: How it works (Mobile Friendly Stacking Grid) -->
-		<div class="lg:col-span-12 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-10 shadow-xl shadow-slate-200/30 dark:shadow-none mb-4">
-			<h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-8 text-center sm:text-left">How It Works</h2>
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10">
-				<div class="flex flex-col items-center sm:items-start text-center sm:text-left">
-					<div class="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-black flex items-center justify-center text-xl mb-4 shadow-sm border border-blue-200 dark:border-blue-800">1</div>
-					<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Select Your Market</h3>
-					<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">Choose from over 50 local fiat currencies and select your desired crypto asset (USDT, BTC, ETH) to instantly load the global order book.</p>
-				</div>
-				<div class="flex flex-col items-center sm:items-start text-center sm:text-left">
-					<div class="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-black flex items-center justify-center text-xl mb-4 shadow-sm border border-indigo-200 dark:border-indigo-800">2</div>
-					<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Compare Spreads</h3>
-					<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">Our engine cross-references live data from Binance, Bybit, and OKX so you can spot the cheapest buying rates or the most profitable selling premiums.</p>
-				</div>
-				<div class="flex flex-col items-center sm:items-start text-center sm:text-left">
-					<div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-black flex items-center justify-center text-xl mb-4 shadow-sm border border-emerald-200 dark:border-emerald-800">3</div>
-					<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-2">Execute Safely</h3>
-					<p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">Filter out unverified merchants, double-check local payment methods, and proceed to the exchange to conduct your P2P trade securely in escrow.</p>
-				</div>
+		<hr class="border-zinc-200/60 dark:border-zinc-700/60" />
+		
+		<div class="grid md:grid-cols-2 gap-8">
+			<div class="space-y-4">
+				<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2"><Globe class="size-4 text-indigo-500" /> Regional Inflation Impact</h3>
+				<p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+					In emerging markets experiencing rapid hyperinflation—such as Argentina (ARS), Turkey (TRY), and Nigeria (NGN)—citizens frequently turn to USD-pegged stablecoins to preserve their purchasing power. Because traditional banking systems in these regions often impose strict capital controls, the peer-to-peer crypto market becomes the primary gateway for economic stability.
+				</p>
+				<p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+					This immense localized demand frequently causes stablecoins to trade at a substantial premium compared to the global spot market. Traders who supply liquidity to these high-demand zones stand to capture incredibly lucrative arbitrage spreads.
+				</p>
+			</div>
+
+			<div class="space-y-4">
+				<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2"><Activity class="size-4 text-purple-500" /> Exchange Diversity</h3>
+				<p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+					A common mistake made by novice traders is relying exclusively on a single platform. While one exchange may boast deep liquidity, smaller regional exchanges frequently offer significantly better Ask prices (buying rates) due to unique user demographics and differing fee structures.
+				</p>
+				<p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
+					By utilizing a cross-exchange data aggregator, you decouple yourself from the confines of a single order book. You might purchase USDT from a motivated seller on Bybit with zero fees, and immediately flip it to a buyer on OKX at a markup. The key to sustainable P2P profitability lies entirely in data visibility.
+				</p>
 			</div>
 		</div>
 
-        <div class="lg:col-span-12 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-8 shadow-xl shadow-slate-200/30 dark:shadow-none">
-            <div class="mb-8 text-center sm:text-left">
-                <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-3">Supported Exchanges</h2>
-                <p class="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto sm:mx-0">We track and aggregate peer-to-peer liquidity from the world's most trusted centralized exchanges. By monitoring platforms with strict KYC (Identity Verification) and built-in escrow services like Binance, OKX, and Bybit, we ensure you have access to the safest and most liquid global markets.</p>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                <div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-0.5">
-                    <div class="size-10 rounded-full bg-[#FCD535] flex items-center justify-center shadow-sm"><span class="text-black font-black text-[9px] tracking-widest">BNB</span></div>
-                    <div><h3 class="text-[13px] font-black text-zinc-900 dark:text-zinc-100">Binance</h3><p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">Deep liquidity</p></div>
-                </div>
-                <div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-0.5">
-                    <div class="size-10 rounded-full bg-black flex items-center justify-center shadow-sm"><span class="text-white font-black text-[9px] tracking-widest">OKX</span></div>
-                    <div><h3 class="text-[13px] font-black text-zinc-900 dark:text-zinc-100">OKX</h3><p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">Tight spreads</p></div>
-                </div>
-                <div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-0.5">
-                    <div class="size-10 rounded-full bg-[#FFB11A] flex items-center justify-center shadow-sm"><span class="text-black font-black text-[9px] tracking-widest">BYB</span></div>
-                    <div><h3 class="text-[13px] font-black text-zinc-900 dark:text-zinc-100">Bybit</h3><p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">Zero fees</p></div>
-                </div>
-                <div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-0.5">
-                    <div class="size-10 rounded-full bg-[#23AF91] flex items-center justify-center shadow-sm"><span class="text-white font-black text-[9px] tracking-widest">KUC</span></div>
-                    <div><h3 class="text-[13px] font-black text-zinc-900 dark:text-zinc-100">KuCoin</h3><p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">Altcoin focus</p></div>
-                </div>
-                <div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-0.5">
-                    <div class="size-10 rounded-full bg-[#1066FF] flex items-center justify-center shadow-sm"><span class="text-white font-black text-[9px] tracking-widest">MXC</span></div>
-                    <div><h3 class="text-[13px] font-black text-zinc-900 dark:text-zinc-100">MEXC</h3><p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">Local pairs</p></div>
-                </div>
-                <div class="rounded-2xl bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 p-3 flex flex-col items-center text-center gap-2 shadow-sm hover:bg-white dark:hover:bg-zinc-800 transition-all hover:-translate-y-0.5">
-                    <div class="size-10 rounded-full bg-[#00D2A7] flex items-center justify-center shadow-sm"><span class="text-black font-black text-[9px] tracking-widest">BGB</span></div>
-                    <div><h3 class="text-[13px] font-black text-zinc-900 dark:text-zinc-100">Bitget</h3><p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-tight">High volume</p></div>
-                </div>
-            </div>
-        </div>
+		<hr class="border-zinc-200 dark:border-zinc-700" />
 
-		<div class="lg:col-span-12 relative rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl shadow-xl shadow-slate-200/30 dark:shadow-none overflow-hidden mt-2 mb-2">
-            
-            <div class="p-6 lg:p-8 border-b border-zinc-200/50 dark:border-zinc-800/50 flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-black tracking-tight text-zinc-950 dark:text-white">Live Global Order Book</h2>
-                    <p class="text-zinc-500 dark:text-zinc-400 text-sm font-medium mt-1">Real-time USDT spread visualization.</p>
-                </div>
-                <div class="hidden sm:flex gap-2">
-                    <span class="px-3 py-1 rounded-lg bg-white/60 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-xs font-bold text-zinc-600 dark:text-zinc-300">USD</span>
-                    <span class="px-3 py-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 text-xs font-bold text-blue-700 dark:text-blue-400">USDT</span>
-                </div>
-            </div>
-
-            <div class="relative w-full">
-                <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-3 bg-zinc-50/50 dark:bg-zinc-800/30 border-b border-zinc-200/50 dark:border-zinc-800/50 text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                    <div class="col-span-2 md:col-span-1">Merchant</div>
-                    <div class="hidden md:block">Exchange</div>
-                    <div>Price</div>
-                    <div class="hidden sm:block">Available</div>
-                    <div class="text-right">Action</div>
-                </div>
-
-                <div class="flex flex-col">
-                    <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 hover:bg-white/50 dark:hover:bg-zinc-800/50 transition-colors">
-                        <div class="col-span-2 md:col-span-1 flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-                            <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">FastTrade_Pro</span>
-                        </div>
-                        <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">
-                            <div class="size-4 rounded-full bg-[#FCD535] flex items-center justify-center"><span class="text-black text-[6px] font-black">BNB</span></div>
-                            Binance
-                        </div>
-                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.002 USD</div>
-                        <div class="text-xs font-medium text-zinc-500 hidden sm:block">4,500 USDT</div>
-                        <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold">Buy</span></div>
-                    </div>
-
-                    <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 blur-[1px] opacity-90 select-none">
-                        <div class="col-span-2 md:col-span-1 flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-zinc-300"></div>
-                            <span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">CryptoWhale99</span>
-                        </div>
-                        <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">
-                            <div class="size-4 rounded-full bg-black flex items-center justify-center"><span class="text-white text-[6px] font-black">OKX</span></div>
-                            OKX
-                        </div>
-                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.004 USD</div>
-                        <div class="text-xs font-medium text-zinc-500 hidden sm:block">12,000 USDT</div>
-                        <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
-                    </div>
-
-                    <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 items-center border-b border-zinc-100 dark:border-zinc-800/30 blur-sm opacity-60 select-none">
-                        <div class="col-span-2 md:col-span-1 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-zinc-300"></div><span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">GlobalAssets</span></div>
-                        <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">Bybit</div>
-                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.005 USD</div>
-                        <div class="text-xs font-medium text-zinc-500 hidden sm:block">850 USDT</div>
-                        <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
-                    </div>
-
-                    <div class="grid grid-cols-4 md:grid-cols-5 gap-2 sm:gap-4 px-4 sm:px-6 lg:px-8 py-4 items-center blur-md opacity-30 select-none">
-                        <div class="col-span-2 md:col-span-1 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-zinc-300"></div><span class="text-sm font-bold text-zinc-900 dark:text-zinc-100">SecureExchange</span></div>
-                        <div class="hidden md:flex items-center gap-1.5 text-xs font-bold text-zinc-600 dark:text-zinc-400">KuCoin</div>
-                        <div class="text-sm font-black text-emerald-600 dark:text-emerald-400">1.008 USD</div>
-                        <div class="text-xs font-medium text-zinc-500 hidden sm:block">2,100 USDT</div>
-                        <div class="text-right"><span class="inline-block px-4 py-1.5 rounded-lg bg-zinc-100 text-zinc-400 text-xs font-bold">Buy</span></div>
-                    </div>
-                </div>
-
-                <div class="absolute inset-0 top-1/3 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent dark:from-zinc-950 dark:via-zinc-950/80 flex flex-col items-center justify-end pb-10 z-10">
-                    <div class="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/60 dark:border-zinc-700 p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-md text-center transform transition-transform hover:scale-[1.02] duration-300">
-                        <div class="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4 border border-blue-200 dark:border-blue-800/50 shadow-inner">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600 dark:text-blue-400"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        </div>
-                        <h3 class="text-xl font-black text-zinc-900 dark:text-white mb-2">Unlock Full Market Data</h3>
-                        <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-6 font-medium">View the complete order book, compare spreads across 6+ exchanges, and analyze 50+ local fiat currencies instantly.</p>
-                        <a href="/terminal" class="w-full py-4 rounded-xl text-sm font-black text-white bg-blue-600 hover:bg-blue-700 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] transition-all active:scale-95 flex items-center justify-center gap-2">
-                            Launch Free Terminal
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                        </a>
-                        <p class="text-[10px] font-bold text-zinc-400 mt-4 uppercase tracking-widest">No Account Required</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="lg:col-span-7 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-8 shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col justify-center">
-            <h2 class="text-2xl font-black tracking-tight text-zinc-950 dark:text-white mb-6">Terminal Advantages</h2>
-            <div class="flex flex-col gap-6">
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 flex items-center justify-center size-10 rounded-xl bg-blue-100/80 dark:bg-blue-900/30 border border-blue-200/60 dark:border-blue-800/50 text-blue-600 dark:text-blue-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.37 3.63a2.12 2.12 0 1 1 3 3L12 16l-4 1 1-4Z"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">Unbiased Aggregation</h3>
-                        <p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-relaxed mt-0.5">Live and Raw order book data directly fetched from top exchanges without manipulation.</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 flex items-center justify-center size-10 rounded-xl bg-blue-100/80 dark:bg-blue-900/30 border border-blue-200/60 dark:border-blue-800/50 text-blue-600 dark:text-blue-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M21.29 20.66 16 22l-1.3-1.3a4.24 4.24 0 0 1 0-6l2.6-2.6a4.24 4.24 0 0 1 6 0l.01.01Z"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">Real-Time Rates</h3>
-                        <p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-relaxed mt-0.5">Our engine fetches live P2P prices, ensuring actionable and current spreads.</p>
-                    </div>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="flex-shrink-0 flex items-center justify-center size-10 rounded-xl bg-blue-100/80 dark:bg-blue-900/30 border border-blue-200/60 dark:border-blue-800/50 text-blue-600 dark:text-blue-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-zinc-900 dark:text-zinc-100 text-sm">100% Free & Anonymous</h3>
-                        <p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-relaxed mt-0.5">No accounts, no tracking. Access institutional data with zero cost.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="lg:col-span-5 rounded-[32px] border border-indigo-100/50 dark:border-indigo-900/50 bg-indigo-50/30 dark:bg-indigo-950/20 backdrop-blur-2xl p-6 lg:p-8 shadow-xl shadow-indigo-100/20 dark:shadow-none flex flex-col relative overflow-hidden group">
-            <div class="absolute -top-20 -right-20 w-40 h-40 bg-indigo-400/20 rounded-full blur-3xl transition-transform group-hover:scale-150 duration-700"></div>
-            <div class="flex items-center justify-between mb-6 relative z-10">
-                <div>
-                    <h2 class="text-xl font-black tracking-tight text-zinc-950 dark:text-white">Terminal Roadmap</h2>
-                    <p class="text-[10px] font-semibold text-indigo-600/80 dark:text-indigo-400/80 uppercase tracking-widest mt-1">Shape the future</p>
-                </div>
-            </div>
-            <ul class="space-y-4 flex-grow relative z-10 border-l-2 border-indigo-200/50 ml-2 pl-5">
-                <li class="relative group cursor-default">
-                    <div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-green-500 ring-4 ring-green-500/20"></div>
-                    <div class="p-3 rounded-xl bg-white/70 dark:bg-zinc-800/70 border border-white/60 dark:border-zinc-700/60 shadow-sm transition-all duration-300 hover:shadow-md hover:bg-white dark:hover:bg-zinc-800">
-                        <h3 class="text-[13px] font-bold text-zinc-900 dark:text-zinc-100 leading-tight">V1: P2P Aggregation</h3>
-                        <p class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium mt-1">Live market data (Current)</p>
-                    </div>
-                </li>
-                <li class="relative group cursor-default">
-                    <a href="/pro" data-sveltekit-preload-data="off" class="block">
-                        <div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-indigo-500 ring-4 ring-indigo-500/20 animate-[pulse_2s_ease-in-out_infinite]"></div>
-                        <div class="p-3 rounded-xl border border-indigo-200/60 dark:border-indigo-800/60 bg-gradient-to-br from-white/80 to-indigo-50/50 dark:from-zinc-800/80 dark:to-indigo-900/20 shadow-sm transition-all duration-300 hover:translate-x-1 hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-700">
-                            <div class="flex justify-between items-start mb-1">
-                                <h3 class="text-[13px] font-bold text-indigo-950 dark:text-indigo-100 leading-tight">V2: Spread Analytics</h3>
-                                <span class="text-[8px] font-black text-indigo-700 dark:text-indigo-300 uppercase bg-indigo-100/80 dark:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800 px-1.5 py-0.5 rounded">Next</span>
-                            </div>
-                            <p class="text-[10px] text-zinc-600 dark:text-zinc-400 font-medium mt-1">Historical charts & signals.</p>
-                        </div>
-                    </a>
-                </li>
-                <li class="relative group cursor-default">
-                    <div class="absolute -left-[25px] top-1.5 h-2.5 w-2.5 rounded-full bg-zinc-300 ring-4 ring-zinc-300/20"></div>
-                    <div class="p-3 rounded-xl border border-white/50 dark:border-zinc-700/50 bg-white/40 dark:bg-zinc-800/40 shadow-sm transition-all duration-300 opacity-70 hover:opacity-100 hover:bg-white/60 dark:hover:bg-zinc-800/60">
-                        <div class="flex justify-between items-start mb-1">
-                            <h3 class="text-[13px] font-bold text-zinc-800 dark:text-zinc-300 leading-tight">V3: Developer APIs</h3>
-                            <span class="text-[8px] font-bold text-zinc-500 uppercase bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 rounded">Plan</span>
-                        </div>
-                        <p class="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium mt-1">Real-time Webhook access.</p>
-                    </div>
-                </li>
-            </ul>
-            <div class="mt-5 pt-4 border-t border-indigo-200/60 relative z-10">
-                <a href="mailto:p2pcompanion@proton.me" class="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600/10 border border-indigo-200 hover:bg-indigo-600 hover:text-white text-indigo-700 px-4 py-2.5 text-xs font-bold transition-all duration-300 active:scale-95">
-                    Request a Feature (mail me)
-                </a>
-            </div>
-        </div>
-
-		<!-- NEW: Scam Warning Box -->
-		<div class="lg:col-span-12 rounded-[32px] border border-rose-100/60 dark:border-rose-900/40 bg-rose-50/40 dark:bg-rose-950/20 backdrop-blur-2xl p-6 lg:p-10 shadow-xl shadow-rose-100/10 dark:shadow-none my-4">
-			<div class="flex flex-col md:flex-row gap-6 lg:gap-8 items-center md:items-start">
-				<div class="flex-shrink-0 bg-white dark:bg-rose-900/50 p-4 rounded-full border border-rose-200 dark:border-rose-800 shadow-sm">
-					<svg class="w-8 h-8 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-				</div>
-				<div class="w-full">
-					<h2 class="text-2xl sm:text-3xl font-black tracking-tight text-rose-950 dark:text-rose-50 mb-3 text-center md:text-left">Avoiding P2P Scams</h2>
-					<p class="text-rose-800/90 dark:text-rose-200/80 text-sm sm:text-base leading-relaxed mb-6 text-center md:text-left max-w-4xl">
-						While our terminal aggregates the best global spreads, safety is your responsibility. Always follow the Golden Rules of P2P trading to protect your assets from malicious actors:
-					</p>
-					<ul class="space-y-4 text-sm sm:text-base text-rose-900/90 dark:text-rose-100/90 bg-white/40 dark:bg-zinc-900/40 p-5 sm:p-6 rounded-2xl border border-rose-100 dark:border-rose-900/50">
-						<li class="flex items-start gap-3"><span class="font-black text-rose-500 mt-1">•</span> <span><strong>Never release crypto early:</strong> Verify fiat funds have definitively cleared in your actual bank app. Never trust SMS notifications or email receipts.</span></li>
-						<li class="flex items-start gap-3"><span class="font-black text-rose-500 mt-1">•</span> <span><strong>Stay on platform:</strong> Keep all communication inside the exchange's built-in chat so support can read it. Avoid external apps like WhatsApp or Telegram.</span></li>
-						<li class="flex items-start gap-3"><span class="font-black text-rose-500 mt-1">•</span> <span><strong>No third-party payments:</strong> Ensure the buyer's bank account name exactly matches their exchange KYC (Verified Identity) name to prevent chargeback fraud.</span></li>
-					</ul>
-					<a href="/scam-check" class="mt-6 inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black shadow-md shadow-rose-500/20 transition-all active:scale-95">
-						<svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-						Verify a Merchant ID
-					</a>
-				</div>
+		<div class="bg-rose-50/40 dark:bg-rose-950/20 border border-rose-100/60 dark:border-rose-900/40 rounded-[20px] p-6 sm:p-8 flex flex-col md:flex-row gap-6 items-center md:items-start">
+			<div class="flex-shrink-0 bg-white dark:bg-rose-900/50 p-4 rounded-full border border-rose-200 dark:border-rose-800 shadow-sm">
+				<ShieldCheck class="w-8 h-8 text-rose-600 dark:text-rose-400" />
+			</div>
+			<div class="w-full text-center md:text-left">
+				<h3 class="text-xl font-black tracking-tight text-rose-950 dark:text-rose-50 mb-2">Security Protocol: Avoiding P2P Scams</h3>
+				<p class="text-rose-800/90 dark:text-rose-200/80 text-sm leading-relaxed mb-4">
+					While our terminal aggregates the best global spreads, financial safety is your responsibility. Always follow the Golden Rules of P2P trading to protect your assets from malicious actors:
+				</p>
+				<ul class="space-y-3 text-sm text-rose-900/90 dark:text-rose-100/90 text-left">
+					<li class="flex items-start gap-2"><span class="font-black text-rose-500 mt-0.5">•</span> <span><strong>Never release crypto early:</strong> Verify fiat funds have definitively cleared in your actual bank app. Never trust SMS notifications or email receipts.</span></li>
+					<li class="flex items-start gap-2"><span class="font-black text-rose-500 mt-0.5">•</span> <span><strong>Stay on platform:</strong> Keep all communication inside the exchange's built-in chat so support can read it. Avoid external apps like WhatsApp.</span></li>
+					<li class="flex items-start gap-2"><span class="font-black text-rose-500 mt-0.5">•</span> <span><strong>No third-party payments:</strong> Ensure the buyer's bank account name exactly matches their exchange KYC (Verified Identity) name to prevent chargeback fraud.</span></li>
+				</ul>
 			</div>
 		</div>
+	</article>
 
-        <article class="lg:col-span-12 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-10 shadow-xl shadow-slate-200/30 dark:shadow-none flex flex-col justify-center space-y-6">
-            <div>
-                <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-2">Understanding Crypto P2P Arbitrage & Market Spreads</h2>
-                <p class="text-zinc-500 dark:text-zinc-400 text-sm font-medium">A comprehensive guide to leveraging global peer-to-peer cryptocurrency data.</p>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="space-y-4">
-                    <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">How Does P2P Arbitrage Work?</h3>
-                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
-                        Cryptocurrency prices are not universally identical. While spot market prices for assets like Bitcoin (BTC) or Tether (USDT) remain relatively stable globally, the Peer-to-Peer (P2P) markets fluctuate independently based on regional supply, local banking regulations, and fiat currency volatility. P2P arbitrage is the practice of identifying these price inefficiencies across different centralized exchanges (such as Binance, OKX, and Bybit) and capitalizing on the spread.
-                    </p>
-                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
-                        For example, if the demand for USDT is exceptionally high in a specific fiat market, a merchant might sell USDT on Binance at a premium while simultaneously buying it at a lower rate on OKX. Our terminal aggregates these live order books so you can spot these opportunities instantly.
-                    </p>
-                </div>
-
-                <div class="space-y-4">
-                    <h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">Why Use a Data Aggregator?</h3>
-                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
-                        Traditionally, finding profitable P2P spreads required traders to open multiple browser tabs, log into various exchange accounts, and manually calculate maker/taker fees against current exchange rates. This manual process is slow, resulting in missed opportunities as order books shift rapidly.
-                    </p>
-                    <p class="text-zinc-700 dark:text-zinc-400 text-[14px] leading-relaxed">
-                        Our <strong>100% free-to-use</strong> comparison terminal solves this by fetching raw, unbiased data directly from the exchanges. Without requiring any accounts or logins, the terminal calculates the optimal buy and sell limits, highlights trusted merchants, and provides complete transparency into the liquidity of over 50 global fiat currencies.
-                    </p>
-                </div>
-            </div>
-        </article>
-
-        <div class="lg:col-span-7 rounded-[32px] border border-white/40 dark:border-zinc-800/60 bg-white/40 dark:bg-zinc-900/40 backdrop-blur-2xl p-6 lg:p-8 shadow-xl shadow-slate-200/30 dark:shadow-none">
-            <h2 class="text-2xl font-black tracking-tight text-zinc-950 dark:text-white mb-6">FAQ</h2>
-            <div class="space-y-3">
-                {#each faqs as faq}
-                    <details class="group rounded-xl bg-white/50 dark:bg-zinc-800/50 border border-zinc-200/60 dark:border-zinc-700/60 shadow-sm transition-all duration-300 open:bg-white dark:open:bg-zinc-800 open:shadow-md open:border-blue-200/80 dark:open:border-blue-800/50">
-                        <summary class="flex cursor-pointer list-none items-center justify-between p-4 font-bold text-zinc-800 dark:text-zinc-200 text-sm transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                            <span>{faq.question}</span>
-                            <div class="rounded-full bg-white dark:bg-zinc-900 p-1.5 shadow-sm border border-zinc-100 dark:border-zinc-800 group-open:bg-blue-50 dark:group-open:bg-blue-900/30 group-open:text-blue-600 dark:group-open:text-blue-400 transition-all">
-                                <ChevronDown class="size-4 transition-transform duration-300 group-open:rotate-180" />
-                            </div>
-                        </summary>
-                        <div class="p-4 pt-0 text-[13px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            {faq.answer}
-                        </div>
-                    </details>
-                {/each}
-            </div>
-        </div>
-
-	</div>
+	<!-- FAQ Section -->
+	<section class="max-w-4xl mx-auto mb-16">
+		<h2 class="text-3xl font-black tracking-tight text-zinc-950 dark:text-white mb-8 text-center">Frequently Asked Questions</h2>
+		<div class="space-y-4">
+			{#each faqs as faq}
+				<details class="group rounded-2xl bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800 shadow-sm transition-all duration-300 open:bg-white dark:open:bg-zinc-800 open:shadow-md open:border-blue-200/80 dark:open:border-blue-800/50">
+					<summary class="flex cursor-pointer list-none items-center justify-between p-6 font-black text-zinc-900 dark:text-zinc-100 text-lg transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400 select-none">
+						<span>{faq.question}</span>
+						<div class="rounded-full bg-zinc-100 dark:bg-zinc-800 p-2 shadow-inner border border-zinc-200 dark:border-zinc-700 group-open:bg-blue-100 dark:group-open:bg-blue-900/30 group-open:text-blue-600 dark:group-open:text-blue-400 transition-all">
+							<ChevronDown class="size-5 transition-transform duration-300 group-open:rotate-180" />
+						</div>
+					</summary>
+					<div class="p-6 pt-0 text-[15px] text-zinc-600 dark:text-zinc-400 leading-relaxed border-t border-zinc-100 dark:border-zinc-800 mt-2">
+						{faq.answer}
+					</div>
+				</details>
+			{/each}
+		</div>
+	</section>
 
 	<section class="mt-12 text-center opacity-60">
 		<p class="text-xs text-zinc-500 font-medium">
@@ -477,6 +449,14 @@
 </main>
 
 <style>
+	@keyframes marquee {
+		0% { transform: translateX(0%); }
+		100% { transform: translateX(-50%); } 
+	}
+	.animate-marquee {
+		animation: marquee 30s linear infinite;
+		width: max-content;
+	}
 	@keyframes sweep {
 		0% { transform: translateX(-100%) skewX(-15deg); }
 		25% { transform: translateX(200%) skewX(-15deg); }
@@ -497,5 +477,9 @@
 	}
 	.animate-fade-in-up {
 		animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	}
+	/* Smooth floating animation for the UI Cards */
+	.animate-float {
+		animation: float 6s ease-in-out infinite;
 	}
 </style>

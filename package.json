@@ -57,6 +57,7 @@
 		"@resvg/resvg-js": "^2.6.2",
 		"@tanstack/svelte-query": "^5.87.4",
 		"@vercel/og": "^0.11.1",
+		"cobe": "^2.0.1",
 		"marked": "^15.0.6",
 		"mode-watcher": "^1.1.0",
 		"nostr-tools": "^2.10.4",
